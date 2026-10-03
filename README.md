@@ -1,4 +1,4 @@
-# Local Character — foundation 0.1.0
+# Local Character — foundation 0.2.0
 
 Independent Blender 5.2 extension for the planned local AI character workflow. The current build creates an editable Mixamo-style humanoid and exports already-bound characters to Unity. AI placement, new mesh binding, adaptive refinement, optional twists and Kimodo motion are not implemented in this release.
 
@@ -12,11 +12,17 @@ Select upright, Z-up character meshes and choose **Create Editable Humanoid**, o
 
 Select only the bound meshes you intend to export. Their armature is resolved through the modifiers; selecting it as well is allowed. Run **Check Selected Character**, choose an absolute export folder and a new character name, then **Export Character to Unity**. Relative folders require a saved blend file. Existing bundle directories are never overwritten.
 
-Export uses temporary copies in a separate scene. It retains the imported bone hierarchy, adds an unweighted Root when absent, prunes copies to four influences and normalizes them. Zero/invalid weights block export. Source weights are unchanged. Non-armature modifiers need an explicit working-copy resolution; this release exports base geometry to preserve shape keys. Nonuniform armature scale and mirrored/singular transforms are rejected. No clips are exported yet. FBX includes referenced texture copies where available; arbitrary Blender shader conversion is not provided.
+Export uses temporary copies in a separate scene. It retains the imported bone hierarchy, adds an unweighted Root when absent, prunes copies to four influences and normalizes them. Zero/invalid weights block export. Source weights are unchanged. Non-armature modifiers need an explicit working-copy resolution; this release exports base geometry to preserve shape keys. Nonuniform armature scale and mirrored/singular transforms are rejected. FBX includes referenced texture copies where available; arbitrary Blender shader conversion is not provided.
+
+## Selected animation
+
+Assign a direct bone Action to the armature and enable **Include armature's selected Action** before exporting. The character FBX stays in its actual rest pose; a separate `Animations/<Action>.fbx` contains only that Action's selected armature slot. Other Actions, other slots and NLA strips are excluded. The range comes from that slot's keys, or the Action's explicit artist range; export samples every frame at the scene frame rate. Optional **Loop clip in Unity** marks looping without repairing discontinuities.
+
+Direct bone translation, rotation and scale are supported. Bone/object constraints, drivers, object-transform animation and custom-property channels need baking to a separate deform rig first. Unkeyed bones use rest transforms. Shape-key animation is not included. Export preserves bone travel; separate in-place conversion, contact correction and animation generation remain future work.
 
 ## Unity companion
 
-Copy all C# files in `unity/Editor` into a Unity project's `Assets/LocalCharacter/Editor` directory. Copy the complete exported bundle into Assets. Select its FBX, then choose **Assets → Local Character → Configure Selected Export for Unity**. The explicit command verifies the FBX hash and manifest, applies human mappings, calibrates a disposable skeleton copy in an isolated preview scene, imports four-influence weights and writes a validation/calibration report. It does not automatically reconfigure unrelated assets or overwrite your choices on every reimport. Re-run the command only when you intend to apply the export profile again.
+Copy all C# files in `unity/Editor` into a Unity project's `Assets/LocalCharacter/Editor` directory. Copy the complete exported bundle into Assets. Configure the character FBX first, then each animation FBX with **Assets → Local Character → Configure Selected Export for Unity**. The explicit command verifies the FBX hash and manifest, applies human mappings, calibrates a disposable skeleton copy in an isolated preview scene, imports four-influence weights and writes a validation/calibration report. It does not automatically reconfigure unrelated assets or overwrite your choices on every reimport. Re-run the command only when you intend to apply the export profile again.
 
 Unity 6.3 LTS is the primary target. Avatar validity alone does not establish good deformation, a correct T-pose, motion retargeting or runtime root-motion behavior; these require the acceptance tests recorded in the build status.
 

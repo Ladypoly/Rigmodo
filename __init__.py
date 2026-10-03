@@ -15,6 +15,10 @@ class LC_Settings(PropertyGroup):
         description="Rough template fit for upright Z-up geometry; joint placement still needs review")
     character_name: StringProperty(name="Character", default="Character")
     export_directory: StringProperty(name="Export folder", subtype="DIR_PATH", default="//LocalCharacterExports/")
+    include_action: BoolProperty(name="Include armature's selected Action", default=False,
+        description="Export one direct bone Action as a separate animation FBX; ignore other Actions and NLA")
+    loop_action: BoolProperty(name="Loop clip in Unity", default=False,
+        description="Mark the selected clip as looping; does not repair its start/end pose")
     profile: EnumProperty(name="Unity rig", items=[("HUMANOID", "Humanoid", "Mixamo-style human mapping"),
         ("GENERIC", "Generic", "Preserve mechanical or custom hierarchy")])
     last_report: StringProperty(default="")
@@ -73,7 +77,8 @@ class LC_OT_export(Operator):
             if settings.export_directory.startswith("//") and not bpy.data.filepath:
                 raise ValueError("Save the blend file or choose an absolute export folder")
             rig, meshes = preflight.selection(context)
-            destination = exporter.export_bundle(context, rig, meshes, settings.export_directory, settings.character_name, settings.profile)
+            destination = exporter.export_bundle(context, rig, meshes, settings.export_directory, settings.character_name,
+                settings.profile, settings.include_action, settings.loop_action)
         except (ValueError, OSError, RuntimeError) as exc:
             self.report({"ERROR"}, str(exc)); return {"CANCELLED"}
         settings.last_export = str(destination)
@@ -107,6 +112,8 @@ class LC_PT_main(Panel):
                 if report.get("ready"): box.label(text="Weight and hierarchy checks passed", icon="CHECKMARK")
             except (ValueError, TypeError): pass
         box.prop(settings, "character_name"); box.prop(settings, "export_directory")
+        box.prop(settings, "include_action")
+        if settings.include_action: box.prop(settings, "loop_action")
         box.operator("local_character.export_unity", icon="EXPORT")
         if settings.last_export: box.label(text="Last export: " + settings.last_export)
         box = layout.box(); box.label(text="Local AI providers", icon="INFO")

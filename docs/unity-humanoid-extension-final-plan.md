@@ -2,7 +2,7 @@
 
 Decision date: 3 October 2026. Primary target: Unity 6.3 LTS, using the installed `6000.3.21f1` editor for acceptance. Authoring host: the connected Blender `5.2.0 LTS`. Hardware: NVIDIA GPU with 16–24 GB VRAM.
 
-Implementation checkpoint: foundation 0.1.0 is now enabled in the user's requested `extensions/user_default/local_character` directory. Editable skeleton, preflight, isolated FBX/manifest export and the Unity companion pass initial T/A/real-avatar acceptance. Selected clips and local AI providers remain pending; see [the current build handoff](./build-handoff.md). Planning observations below describe their original inspection dates.
+Implementation checkpoint: foundation 0.2.0 is enabled in the requested extension directory. Editable skeleton, preflight, separate character/selected-Action exports and Unity Avatar/clip configuration pass T/A/real-avatar acceptance, Generic sampled deformation and Humanoid retarget/root-travel checks. Local AI providers and full motion finishing remain pending; see [the current build handoff](./build-handoff.md). Planning observations below describe their original inspection dates.
 
 Build an independent Blender extension that replaces ARP and Voxel Heat Diffusion for the user's game-character workflow. Use a fixed Mixamo-style humanoid skeleton based on the inspected scene armature, local AI joint/weight proposals, regional geometric correction, optional twist joints, local Kimodo motion, and a tested FBX path to Unity. Include a small open-source Unity companion for deterministic import setup and optional twist evaluation.
 

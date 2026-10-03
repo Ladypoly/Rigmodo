@@ -2,8 +2,8 @@
   "passed": true,
   "user_scenes_preserved": true,
   "render_pipeline": "UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset",
-  "before_scenes": "-1720|Assets/Scenes/SampleScene.unity|True|32|True",
-  "after_scenes": "-1720|Assets/Scenes/SampleScene.unity|True|32|True",
+  "before_scenes": "-1720|Assets/Scenes/SampleScene.unity|True|32|False\n-12702|Assets/LocalCharacterValidation/Scenes/LocalCharacterPreview.unity|True|6|True",
+  "after_scenes": "-1720|Assets/Scenes/SampleScene.unity|True|32|False\n-12702|Assets/LocalCharacterValidation/Scenes/LocalCharacterPreview.unity|True|6|True",
   "acceptance": {
     "unity_version": "6000.4.3f1",
     "cases": [
@@ -73,6 +73,88 @@
         "humanoid_hand_movement_meters": 0.6680556535720825,
         "humanoid_pose_applied": true
       }
+    ],
+    "animations": [
+      {
+        "name": "SelectedActionGeneric",
+        "error": "",
+        "passed": true,
+        "generic_lbs_error_meters": 5.183912321626849e-07,
+        "root_travel_meters": 0.30000001192092896,
+        "hand_movement_meters": 0.0,
+        "finger_rotation_degrees": 0.0,
+        "validation": {
+          "asset": "Assets/LocalCharacterValidation/Fixtures/SyntheticMotionGeneric/Animations/SelectedWave.fbx",
+          "source_model": "Assets/LocalCharacterValidation/Fixtures/SyntheticMotionGeneric/SyntheticMotionGeneric.fbx",
+          "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+          "clip": "SelectedWave",
+          "unity_version": "6000.4.3f1",
+          "human": false,
+          "loop": false,
+          "duration_seconds": 1.0000001192092896,
+          "frame_rate": 24.0
+        }
+      },
+      {
+        "name": "HumanoidClipToSyntheticT",
+        "error": "",
+        "passed": true,
+        "generic_lbs_error_meters": 0.0,
+        "root_travel_meters": 0.30000001192092896,
+        "hand_movement_meters": 0.20444437861442566,
+        "finger_rotation_degrees": 23.906740188598633,
+        "validation": {
+          "asset": "Assets/LocalCharacterValidation/Fixtures/SyntheticMotionHumanoid/Animations/SelectedWave.fbx",
+          "source_model": "Assets/LocalCharacterValidation/Fixtures/SyntheticMotionHumanoid/SyntheticMotionHumanoid.fbx",
+          "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+          "clip": "SelectedWave",
+          "unity_version": "6000.4.3f1",
+          "human": true,
+          "loop": false,
+          "duration_seconds": 1.0,
+          "frame_rate": 24.0
+        }
+      },
+      {
+        "name": "HumanoidClipToSyntheticA",
+        "error": "",
+        "passed": true,
+        "generic_lbs_error_meters": 0.0,
+        "root_travel_meters": 0.23999997973442078,
+        "hand_movement_meters": 0.16355538368225098,
+        "finger_rotation_degrees": 23.906740188598633,
+        "validation": {
+          "asset": "Assets/LocalCharacterValidation/Fixtures/SyntheticMotionHumanoid/Animations/SelectedWave.fbx",
+          "source_model": "Assets/LocalCharacterValidation/Fixtures/SyntheticMotionHumanoid/SyntheticMotionHumanoid.fbx",
+          "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+          "clip": "SelectedWave",
+          "unity_version": "6000.4.3f1",
+          "human": true,
+          "loop": false,
+          "duration_seconds": 1.0,
+          "frame_rate": 24.0
+        }
+      },
+      {
+        "name": "HumanoidClipToShanePreserved",
+        "error": "",
+        "passed": true,
+        "generic_lbs_error_meters": 0.0,
+        "root_travel_meters": 0.3291109800338745,
+        "hand_movement_meters": 0.19624526798725128,
+        "finger_rotation_degrees": 23.90677261352539,
+        "validation": {
+          "asset": "Assets/LocalCharacterValidation/Fixtures/SyntheticMotionHumanoid/Animations/SelectedWave.fbx",
+          "source_model": "Assets/LocalCharacterValidation/Fixtures/SyntheticMotionHumanoid/SyntheticMotionHumanoid.fbx",
+          "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+          "clip": "SelectedWave",
+          "unity_version": "6000.4.3f1",
+          "human": true,
+          "loop": false,
+          "duration_seconds": 1.0,
+          "frame_rate": 24.0
+        }
+      }
     ]
   },
   "imported_materials": [
@@ -91,8 +173,5 @@
       "shader": "Universal Render Pipeline/Lit",
       "supported": true
     }
-  ],
-  "original_files_changed": [],
-  "preview_scene": "Assets/LocalCharacterValidation/Scenes/LocalCharacterPreview.unity",
-  "project": "R:\\UNITY\\Banter\\SQ-CreatorSDK"
+  ]
 }

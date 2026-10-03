@@ -12,6 +12,7 @@ import bpy
 from mathutils import Matrix
 from .preflight import inspect
 from .skeleton import HIERARCHY_VERSION, resolve_mapping
+from .animation import selected_action, attach_action
 
 def safe_name(value):
     name = re.sub(r"[^A-Za-z0-9_-]+", "_", value).strip("_")[:80]
@@ -66,7 +67,7 @@ def _manifest(rig, meshes, report, name, unit_scale):
                       "path": "/".join(reversed(chain)), "deform": bone.use_deform,
                       "rest_matrix_blender": [list(row) for row in bone.matrix_local]})
     signature = hashlib.sha256(json.dumps(bones, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-    return {"schema_version": 1, "generator": "local_character/0.1.0", "character": name,
+    return {"schema_version": 1, "artifact_kind": "character", "generator": "local_character/0.2.0", "character": name,
             "profile": report["profile"], "hierarchy_version": HIERARCHY_VERSION if rig.get("lc_hierarchy_version") else "imported-preserved",
             "skeleton_signature": signature, "rig_object": rig.name,
             "mapping": resolve_mapping(rig.data.bones), "bones": bones,
@@ -81,12 +82,13 @@ def _manifest(rig, meshes, report, name, unit_scale):
             "clips": [], "provenance": {"placement": rig.get("lc_placement", "imported_accepted_rig"), "skinning": "existing_weights_pruned_on_export_copy"},
             "warnings": report["warnings"]}
 
-def export_bundle(context, rig, meshes, directory, character_name, profile="HUMANOID"):
+def export_bundle(context, rig, meshes, directory, character_name, profile="HUMANOID", include_action=False, loop=False):
     if context.mode != "OBJECT":
         raise ValueError("Switch to Object Mode before exporting")
     report = inspect(rig, meshes, profile)
     if report["errors"]:
         raise ValueError("; ".join(report["errors"]))
+    selection = selected_action(rig, context.scene) if include_action else None
     name = safe_name(character_name)
     parent = Path(bpy.path.abspath(directory)).resolve()
     parent.mkdir(parents=True, exist_ok=True)
@@ -164,6 +166,39 @@ def export_bundle(context, rig, meshes, directory, character_name, profile="HUMA
                 use_mesh_modifiers=False, add_leaf_bones=False, use_armature_deform_only=False,
                 bake_anim=False, bake_anim_use_all_actions=False, bake_anim_use_nla_strips=False,
                 path_mode="COPY", embed_textures=False)
+            if selection:
+                clip_name = safe_name(selection["action"].name)
+                clip_dir = stage / "Animations"
+                clip_dir.mkdir()
+                clip_file = clip_dir / f"{clip_name}.fbx"
+                # Capture the same hierarchy/rest signature before Action evaluation.
+                clip_manifest = _manifest(copied_rig, [], report, name, scene.unit_settings.scale_length)
+                clip = {"name": clip_name, "file": f"Animations/{clip_name}.fbx",
+                        "frame_start": selection["frame_start"], "frame_end": selection["frame_end"],
+                        "fps": selection["fps"], "loop": bool(loop),
+                        "root_motion_policy": "preserve_bone_motion"}
+                clip_manifest.update(artifact_kind="animation", source_model=f"../{name}.fbx",
+                                     source_model_sha256=hashlib.sha256((stage / f"{name}.fbx").read_bytes()).hexdigest(),
+                                     clips=[clip], root_motion_policy=clip["root_motion_policy"])
+                attach_action(copied_rig, selection)
+                scene.render.fps = original_scene.render.fps
+                scene.render.fps_base = original_scene.render.fps_base
+                scene.frame_start, scene.frame_end = selection["frame_start"], selection["frame_end"]
+                scene.name = clip_name
+                scene.frame_set(scene.frame_start)
+                for mesh in copied_meshes: mesh.select_set(False, view_layer=view_layer)
+                bpy.ops.export_scene.fbx(filepath=str(clip_file), check_existing=False,
+                    use_selection=True, object_types={"ARMATURE"},
+                    global_scale=1.0, apply_unit_scale=True, apply_scale_options="FBX_SCALE_ALL",
+                    axis_forward="-Z", axis_up="Y", use_space_transform=True, bake_space_transform=False,
+                    add_leaf_bones=False, use_armature_deform_only=False,
+                    bake_anim=True, bake_anim_use_all_actions=False, bake_anim_use_nla_strips=False,
+                    bake_anim_use_all_bones=True, bake_anim_force_startend_keying=True,
+                    bake_anim_step=1.0, bake_anim_simplify_factor=0.0)
+                clip_manifest["fbx_sha256"] = hashlib.sha256(clip_file.read_bytes()).hexdigest()
+                clip_file.with_suffix(".character.json").write_text(json.dumps(clip_manifest, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+                manifest["clips"] = [clip]
+                manifest["root_motion_policy"] = clip["root_motion_policy"]
         manifest["fbx_sha256"] = hashlib.sha256((stage / f"{name}.fbx").read_bytes()).hexdigest()
         (stage / f"{name}.character.json").write_text(json.dumps(manifest, indent=2, allow_nan=False) + "\n", encoding="utf-8")
         (stage / "validation.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

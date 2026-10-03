@@ -9,11 +9,20 @@ using UnityEngine;
 namespace LocalCharacter.Editor
 {
     [Serializable] public class BoneMapping { public string bone; public string human; }
+    [Serializable] public class ClipManifest
+    {
+        public string name, file, root_motion_policy;
+        public int frame_start, frame_end;
+        public float fps;
+        public bool loop;
+    }
     [Serializable] public class CharacterManifest
     {
         public int schema_version;
         public string profile, character, fbx_sha256, skeleton_signature;
+        public string artifact_kind, source_model, source_model_sha256;
         public BoneMapping[] mapping;
+        public ClipManifest[] clips;
     }
     [Serializable] public class CalibrationNode
     {
@@ -35,7 +44,12 @@ namespace LocalCharacter.Editor
         public static void ConfigureSelected()
         {
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);
-            try { Configure(path); }
+            try
+            {
+                var manifest = ReadManifest(path);
+                if (manifest.artifact_kind == "animation") AnimationImporter.Configure(path);
+                else Configure(path);
+            }
             catch (Exception ex) { Debug.LogError("Local Character: " + ex.Message); }
         }
 
@@ -43,16 +57,8 @@ namespace LocalCharacter.Editor
         {
             if (!assetPath.EndsWith(".fbx", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("Select the exported character FBX");
-            string manifestPath = Path.ChangeExtension(assetPath, ".character.json");
-            if (!File.Exists(manifestPath)) throw new FileNotFoundException("Missing sibling character manifest", manifestPath);
-            var manifest = JsonUtility.FromJson<CharacterManifest>(File.ReadAllText(manifestPath));
-            if (manifest == null || manifest.schema_version != 1 || manifest.mapping == null)
-                throw new InvalidDataException("Unsupported character manifest");
-            using (var sha = System.Security.Cryptography.SHA256.Create())
-            {
-                string hash = BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(assetPath))).Replace("-", "").ToLowerInvariant();
-                if (hash != manifest.fbx_sha256) throw new InvalidDataException("FBX differs from its export manifest; export a new matching bundle");
-            }
+            var manifest = ReadManifest(assetPath);
+            if (manifest.artifact_kind == "animation") throw new InvalidDataException("Use animation configuration for this FBX");
             var importer = AssetImporter.GetAtPath(assetPath) as ModelImporter;
             if (importer == null) throw new InvalidDataException("Asset is not a model import");
             var model = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
@@ -112,10 +118,12 @@ namespace LocalCharacter.Editor
             importer.globalScale = 1;
             importer.useFileScale = true;
             importer.optimizeGameObjects = false;
+            importer.preserveHierarchy = true;
             importer.skinWeights = ModelImporterSkinWeights.Custom;
             importer.maxBonesPerVertex = 4;
             importer.minBoneWeight = 0;
             importer.importBlendShapes = true;
+            importer.importAnimation = false;
             importer.SaveAndReimport();
             model = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
             var avatar = AssetDatabase.LoadAllAssetsAtPath(assetPath).OfType<Avatar>().FirstOrDefault();
@@ -135,6 +143,23 @@ namespace LocalCharacter.Editor
             AssetDatabase.ImportAsset(output);
             Debug.Log("Local Character configured: " + assetPath);
             return result;
+        }
+
+        public static CharacterManifest ReadManifest(string assetPath)
+        {
+            if (string.IsNullOrEmpty(assetPath) || !assetPath.StartsWith("Assets/", StringComparison.Ordinal) || !assetPath.EndsWith(".fbx", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("Select an exported FBX under Assets");
+            string manifestPath = Path.ChangeExtension(assetPath, ".character.json");
+            if (!File.Exists(manifestPath)) throw new FileNotFoundException("Missing sibling character manifest", manifestPath);
+            var manifest = JsonUtility.FromJson<CharacterManifest>(File.ReadAllText(manifestPath));
+            if (manifest == null || manifest.schema_version != 1 || manifest.mapping == null)
+                throw new InvalidDataException("Unsupported character manifest");
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+            {
+                string hash = BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(assetPath))).Replace("-", "").ToLowerInvariant();
+                if (hash != manifest.fbx_sha256) throw new InvalidDataException("FBX differs from its export manifest; export a new matching bundle");
+            }
+            return manifest;
         }
 
         static void Align(Transform parent, Transform child, Vector3 direction)

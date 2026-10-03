@@ -17,6 +17,22 @@
       "fbx_shape_keys": 1
     },
     {
+      "case": "SyntheticMotionGeneric",
+      "status": "pass",
+      "selected_action_only": true,
+      "source_scene_preserved": true
+    },
+    {
+      "case": "SyntheticMotionHumanoid",
+      "status": "pass",
+      "selected_action_only": true,
+      "source_scene_preserved": true
+    },
+    {
+      "case": "unsupported_action_rejection",
+      "status": "pass"
+    },
+    {
       "case": "ShanePreserved",
       "status": "pass",
       "bones": 68,
@@ -98,6 +114,88 @@
         "skinned_meshes": 2,
         "blendshapes": 3,
         "height_meters": 1.854810357093811
+      }
+    }
+  ],
+  "animations": [
+    {
+      "name": "SelectedActionGeneric",
+      "error": "",
+      "passed": true,
+      "generic_lbs_error_meters": 5.183912321626849e-07,
+      "root_travel_meters": 0.30000001192092896,
+      "hand_movement_meters": 0.0,
+      "finger_rotation_degrees": 0.0,
+      "validation": {
+        "asset": "Assets/Fixtures/SyntheticMotionGeneric/Animations/SelectedWave.fbx",
+        "source_model": "Assets/Fixtures/SyntheticMotionGeneric/SyntheticMotionGeneric.fbx",
+        "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+        "clip": "SelectedWave",
+        "unity_version": "6000.3.21f1",
+        "human": false,
+        "loop": false,
+        "duration_seconds": 1.0000001192092896,
+        "frame_rate": 24.0
+      }
+    },
+    {
+      "name": "HumanoidClipToSyntheticT",
+      "error": "",
+      "passed": true,
+      "generic_lbs_error_meters": 0.0,
+      "root_travel_meters": 0.30000001192092896,
+      "hand_movement_meters": 0.20444436371326447,
+      "finger_rotation_degrees": 23.90680694580078,
+      "validation": {
+        "asset": "Assets/Fixtures/SyntheticMotionHumanoid/Animations/SelectedWave.fbx",
+        "source_model": "Assets/Fixtures/SyntheticMotionHumanoid/SyntheticMotionHumanoid.fbx",
+        "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+        "clip": "SelectedWave",
+        "unity_version": "6000.3.21f1",
+        "human": true,
+        "loop": false,
+        "duration_seconds": 1.0,
+        "frame_rate": 24.0
+      }
+    },
+    {
+      "name": "HumanoidClipToSyntheticA",
+      "error": "",
+      "passed": true,
+      "generic_lbs_error_meters": 0.0,
+      "root_travel_meters": 0.2399999499320984,
+      "hand_movement_meters": 0.1635553538799286,
+      "finger_rotation_degrees": 23.906740188598633,
+      "validation": {
+        "asset": "Assets/Fixtures/SyntheticMotionHumanoid/Animations/SelectedWave.fbx",
+        "source_model": "Assets/Fixtures/SyntheticMotionHumanoid/SyntheticMotionHumanoid.fbx",
+        "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+        "clip": "SelectedWave",
+        "unity_version": "6000.3.21f1",
+        "human": true,
+        "loop": false,
+        "duration_seconds": 1.0,
+        "frame_rate": 24.0
+      }
+    },
+    {
+      "name": "HumanoidClipToShanePreserved",
+      "error": "",
+      "passed": true,
+      "generic_lbs_error_meters": 0.0,
+      "root_travel_meters": 0.3291109800338745,
+      "hand_movement_meters": 0.19624529778957367,
+      "finger_rotation_degrees": 23.906740188598633,
+      "validation": {
+        "asset": "Assets/Fixtures/SyntheticMotionHumanoid/Animations/SelectedWave.fbx",
+        "source_model": "Assets/Fixtures/SyntheticMotionHumanoid/SyntheticMotionHumanoid.fbx",
+        "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+        "clip": "SelectedWave",
+        "unity_version": "6000.3.21f1",
+        "human": true,
+        "loop": false,
+        "duration_seconds": 1.0,
+        "frame_rate": 24.0
       }
     }
   ]

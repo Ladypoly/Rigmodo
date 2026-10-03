@@ -47,7 +47,7 @@ namespace LocalCharacter.Validation
             {
                 report.after_scenes=SceneSnapshot();
                 report.user_scenes_preserved=report.before_scenes==report.after_scenes;
-                report.passed=report.user_scenes_preserved&&report.acceptance!=null&&report.acceptance.cases.All(c=>c.passed);
+                report.passed=report.user_scenes_preserved&&report.acceptance!=null&&report.acceptance.cases.All(c=>c.passed)&&report.acceptance.animations.All(c=>c.passed);
                 File.WriteAllText(Root+"/live-validation.json",JsonUtility.ToJson(report,true));
                 AssetDatabase.ImportAsset(Root+"/live-validation.json");
             }

@@ -31,6 +31,11 @@ def snapshot(rig, meshes):
         "shapes": [[list(p.co) for p in key.data] for mesh in meshes if mesh.data.shape_keys for key in mesh.data.shape_keys.key_blocks],
         "pose": [[list(row) for row in pb.matrix_basis] for pb in rig.pose.bones],
         "scenes": sorted(s.name for s in bpy.data.scenes),
+        "frame": bpy.context.scene.frame_current,
+        "action": rig.animation_data.action.name if rig.animation_data and rig.animation_data.action else None,
+        "slot": rig.animation_data.action_slot.identifier if rig.animation_data and rig.animation_data.action_slot else None,
+        "actions": sorted(a.name for a in bpy.data.actions),
+        "nla": [(t.name, [(s.name, s.action.name) for s in t.strips]) for t in rig.animation_data.nla_tracks] if rig.animation_data else [],
     }
 
 def synthetic(rig):
@@ -109,6 +114,69 @@ try:
         world=[imported_mesh.matrix_world @ v.co for v in imported_mesh.data.vertices]
         check(abs(max(v.z for v in world)-height)<.04,"FBX scale/orientation mismatch")
         results.append({'case':name,'status':'pass','bones':53,'mapping':52,'source_scene_preserved':True,'fbx_shape_keys':1})
+
+    # Actual layered Action, a nonzero start frame, Root travel and an unrelated NLA Action.
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    rig=addon.skeleton.create_armature(bpy.context,1.75)
+    mesh=synthetic(rig);mesh.select_set(True)
+    root=rig.pose.bones['Root'];forearm=rig.pose.bones['LeftForeArm'];finger=rig.pose.bones['LeftHandIndex1']
+    forearm.rotation_mode='XYZ';finger.rotation_mode='XYZ'
+    for frame, travel, bend in ((7,0,0),(19,.15,.8),(31,.3,0)):
+        root.location.x=travel;root.keyframe_insert('location',frame=frame)
+        forearm.rotation_euler.z=bend;forearm.keyframe_insert('rotation_euler',frame=frame)
+        finger.rotation_euler.x=bend/2;finger.keyframe_insert('rotation_euler',frame=frame)
+    action=rig.animation_data.action;action.name='SelectedWave'
+    slot=rig.animation_data.action_slot
+    other=bpy.data.objects.new('OtherActionSlot',None);bpy.context.scene.collection.objects.link(other)
+    other_data=other.animation_data_create();other_data.action=action
+    other_data.action_slot=action.slots.new(id_type='OBJECT',name='OtherActionSlot')
+    other.location.x=-5;other.keyframe_insert('location',frame=-50)
+    other.location.x=5;other.keyframe_insert('location',frame=100)
+    rig.animation_data.action=None
+    root.location.x=100;root.keyframe_insert('location',frame=7)
+    root.location.x=200;root.keyframe_insert('location',frame=31)
+    unrelated=rig.animation_data.action;unrelated.name='DoNotExport'
+    track=rig.animation_data.nla_tracks.new();track.strips.new('DoNotExport',7,unrelated)
+    rig.animation_data.action=action;rig.animation_data.action_slot=slot
+    bpy.context.scene.render.fps=24;bpy.context.scene.frame_set(19)
+    before=snapshot(rig,[mesh])
+    for profile in ('GENERIC','HUMANOID'):
+        name='SyntheticMotion'+profile.title()
+        folder=addon.exporter.export_bundle(bpy.context,rig,[mesh],str(output),name,profile,include_action=True)
+        check(snapshot(rig,[mesh])==before,'Animation export mutated source Action/NLA/frame/pose')
+        manifest=json.loads((folder/f'{name}.character.json').read_text())
+        clip_manifest=json.loads((folder/'Animations/SelectedWave.character.json').read_text())
+        check(len(manifest['clips'])==1 and manifest['clips'][0]['name']=='SelectedWave','Unselected Action leaked')
+        check(clip_manifest['skeleton_signature']==manifest['skeleton_signature'],'Animation rest signature differs')
+        check(clip_manifest['clips'][0]['frame_start']==7 and clip_manifest['clips'][0]['frame_end']==31,'Other Action slot changed the selected range')
+        # Reference evaluates only the intended Action, including finger motion and Root travel.
+        rig.animation_data.use_nla=False
+        samples=[]
+        hips=rig.matrix_world @ rig.data.bones['Hips'].head_local
+        up=(rig.matrix_world @ rig.data.bones['Head'].head_local-hips).normalized()
+        left=(rig.matrix_world @ rig.data.bones['LeftArm'].head_local-rig.matrix_world @ rig.data.bones['RightArm'].head_local).normalized()
+        forward=left.cross(up).normalized()
+        for frame in (7,19,31):
+            bpy.context.scene.frame_set(frame)
+            evaluated=mesh.evaluated_get(bpy.context.evaluated_depsgraph_get())
+            points=[]
+            for v in evaluated.data.vertices:
+                delta=evaluated.matrix_world @ v.co-hips
+                points.append(dict(zip(('x','y','z'),(delta.dot(left),delta.dot(forward),delta.dot(up)))))
+            samples.append({'time':(frame-7)/24,'points':points})
+        (folder/'animation-reference.json').write_text(json.dumps({'samples':samples,'root_travel':.3}))
+        rig.animation_data.use_nla=True;bpy.context.scene.frame_set(19)
+        check(snapshot(rig,[mesh])==before,'Fixture sampling failed to restore source')
+        results.append({'case':name,'status':'pass','selected_action_only':True,'source_scene_preserved':True})
+    # Unsupported object animation and constraints fail before staging or data changes.
+    rig.location.x=1;rig.keyframe_insert('location',frame=19)
+    before=snapshot(rig,[mesh])
+    try:
+        addon.exporter.export_bundle(bpy.context,rig,[mesh],str(output),'RejectedObjectMotion',include_action=True)
+        raise AssertionError('Object animation was silently exported')
+    except ValueError as exc:check('Unsupported Action channel' in str(exc),'Unexpected channel rejection')
+    check(snapshot(rig,[mesh])==before and not (output/'RejectedObjectMotion').exists(),'Rejected clip changed source/output')
+    results.append({'case':'unsupported_action_rejection','status':'pass'})
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     path=Path(r'R:\BLENDER\BANTER_Avatars\Shane.glb')

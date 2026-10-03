@@ -20,7 +20,7 @@ namespace LocalCharacter.Tests
             public float generic_lbs_error_meters, humanoid_hand_movement_meters;
             public bool humanoid_pose_applied;
         }
-        [Serializable] public class Results { public string unity_version; public List<Result> cases = new List<Result>(); }
+        [Serializable] public class Results { public string unity_version; public List<Result> cases = new List<Result>(); public List<AnimationAcceptance.Result> animations; }
         public static void Run()
         {
             if (!Application.isBatchMode) throw new InvalidOperationException("Run is a batch entry point; use Evaluate for the live Editor");
@@ -28,7 +28,7 @@ namespace LocalCharacter.Tests
             string output = Path.Combine(Directory.GetParent(Application.dataPath).FullName,"unity-results.json");
             File.WriteAllText(output,JsonUtility.ToJson(results,true));
             Debug.Log("LOCAL_CHARACTER_UNITY_ACCEPTANCE " + output);
-            EditorApplication.Exit(results.cases.All(c=>c.passed)?0:1);
+            EditorApplication.Exit(results.cases.All(c=>c.passed) && results.animations.All(c=>c.passed)?0:1);
         }
 
         public static Results Evaluate(string fixtureRoot)
@@ -95,6 +95,7 @@ namespace LocalCharacter.Tests
                 catch (Exception ex) { result.error = ex.ToString(); Debug.LogError(ex); }
                 results.cases.Add(result);
             }
+            results.animations = AnimationAcceptance.Evaluate(fixtureRoot.TrimEnd('/'));
             return results;
         }
 
