@@ -2,7 +2,7 @@
 
 Decision date: 3 October 2026. Primary target: Unity 6.3 LTS, using the installed `6000.3.21f1` editor for acceptance. Authoring host: the connected Blender `5.2.0 LTS`. Hardware: NVIDIA GPU with 16–24 GB VRAM.
 
-Implementation checkpoint: foundation 0.2.0 is enabled in the requested extension directory. Editable skeleton, preflight, separate character/selected-Action exports and Unity Avatar/clip configuration pass T/A/real-avatar acceptance, Generic sampled deformation and Humanoid retarget/root-travel checks. Local AI providers and full motion finishing remain pending; see [the current build handoff](./build-handoff.md). Planning observations below describe their original inspection dates.
+Implementation checkpoint: foundation 0.3.0 adds actual local SkinTokens fixed-rig weight proposals, validated copy-only application and Windows/Vulkan inference. Character/selected-Action export and Unity checks pass; the export weight floor now mirrors the tested Unity importer. Regional refinement, joint placement and generated motion remain pending. The user authorized continuing through the remaining implementation steps without waiting between milestones. See [the current build handoff](./build-handoff.md). Planning observations below retain their original inspection dates.
 
 Build an independent Blender extension that replaces ARP and Voxel Heat Diffusion for the user's game-character workflow. Use a fixed Mixamo-style humanoid skeleton based on the inspected scene armature, local AI joint/weight proposals, regional geometric correction, optional twist joints, local Kimodo motion, and a tested FBX path to Unity. Include a small open-source Unity companion for deterministic import setup and optional twist evaluation.
 

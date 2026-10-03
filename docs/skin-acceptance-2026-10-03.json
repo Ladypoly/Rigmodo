@@ -1,0 +1,297 @@
+{
+  "date": "2026-10-03",
+  "version": "0.3.0",
+  "cases": {
+    "core52": {
+      "status": "pass",
+      "provider_revision": "46dbfecda3d9c2dcd87301c9f1127e1f437ed0ed",
+      "model_revision": "2c55d38ffe01871c6956103926cc4a40bd7acc8a",
+      "job": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-skin-core52-dfs\\jobs\\skin-r9hei3ni",
+      "bundle": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-skin-core52-dfs\\ShaneAISkin",
+      "vertices": 7234,
+      "joints": 52,
+      "source_preserved": true,
+      "accepted_joints_preserved": true,
+      "materials_morphs_preserved": true,
+      "maximum_influences": 4,
+      "preflight": {
+        "schema_version": 1,
+        "rig": "Armature_AI_Skin",
+        "profile": "HUMANOID",
+        "bones": 67,
+        "meshes": [
+          {
+            "name": "Wolf3D_Body_AI_Skin",
+            "vertices": 3608,
+            "polygons": 5956,
+            "shape_keys": 0,
+            "unweighted": 0,
+            "invalid": 0,
+            "over_four": 0
+          },
+          {
+            "name": "Wolf3D_Head_AI_Skin",
+            "vertices": 3626,
+            "polygons": 5638,
+            "shape_keys": 3,
+            "unweighted": 0,
+            "invalid": 0,
+            "over_four": 0
+          }
+        ],
+        "errors": [],
+        "warnings": [
+          "Export will add an unweighted structural Root on a temporary copy"
+        ],
+        "ready": true
+      },
+      "inference": {
+        "schema_version": 1,
+        "status": "complete",
+        "exit_code": 0,
+        "elapsed_seconds": 65.09401660000003
+      },
+      "quality_diagnostics": [
+        {
+          "pose": "forearm",
+          "reference_difference_mean_m": 9.632633855471409e-05,
+          "reference_difference_max_m": 0.014143738884374353,
+          "finite": true
+        },
+        {
+          "pose": "index",
+          "reference_difference_mean_m": 0.00048135118839834383,
+          "reference_difference_max_m": 0.049740340628700336,
+          "finite": true
+        },
+        {
+          "pose": "knee",
+          "reference_difference_mean_m": 8.716978256487773e-05,
+          "reference_difference_max_m": 0.027128179868033234,
+          "finite": true
+        }
+      ],
+      "stale_geometry_rejected": true,
+      "stale_weights_rejected": true,
+      "corrupt_weights_rejected": true,
+      "public_apply_operator": true
+    },
+    "imported67": {
+      "status": "pass",
+      "provider_revision": "46dbfecda3d9c2dcd87301c9f1127e1f437ed0ed",
+      "model_revision": "2c55d38ffe01871c6956103926cc4a40bd7acc8a",
+      "job": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-skin-full67-dfs\\jobs\\skin-c5q8uy0j",
+      "bundle": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-skin-full67-dfs\\ShaneAISkin",
+      "vertices": 7234,
+      "joints": 67,
+      "source_preserved": true,
+      "accepted_joints_preserved": true,
+      "materials_morphs_preserved": true,
+      "maximum_influences": 4,
+      "preflight": {
+        "schema_version": 1,
+        "rig": "Armature_AI_Skin",
+        "profile": "HUMANOID",
+        "bones": 67,
+        "meshes": [
+          {
+            "name": "Wolf3D_Body_AI_Skin",
+            "vertices": 3608,
+            "polygons": 5956,
+            "shape_keys": 0,
+            "unweighted": 0,
+            "invalid": 0,
+            "over_four": 0
+          },
+          {
+            "name": "Wolf3D_Head_AI_Skin",
+            "vertices": 3626,
+            "polygons": 5638,
+            "shape_keys": 3,
+            "unweighted": 0,
+            "invalid": 0,
+            "over_four": 0
+          }
+        ],
+        "errors": [],
+        "warnings": [
+          "Export will add an unweighted structural Root on a temporary copy"
+        ],
+        "ready": true
+      },
+      "inference": {
+        "schema_version": 1,
+        "status": "complete",
+        "exit_code": 0,
+        "elapsed_seconds": 83.62041829999725
+      },
+      "quality_diagnostics": [
+        {
+          "pose": "forearm",
+          "reference_difference_mean_m": 0.00020838080483576987,
+          "reference_difference_max_m": 0.0257830654337309,
+          "finite": true
+        },
+        {
+          "pose": "index",
+          "reference_difference_mean_m": 0.00017186764010293067,
+          "reference_difference_max_m": 0.02283710793014913,
+          "finite": true
+        },
+        {
+          "pose": "knee",
+          "reference_difference_mean_m": 0.00024335640398928093,
+          "reference_difference_max_m": 0.04020808869289785,
+          "finite": true
+        }
+      ],
+      "stale_geometry_rejected": true,
+      "stale_weights_rejected": true,
+      "corrupt_weights_rejected": true,
+      "public_apply_operator": true
+    },
+    "protocol": {
+      "status": "pass",
+      "provider_revision": "46dbfecda3d9c2dcd87301c9f1127e1f437ed0ed",
+      "model_revision": "2c55d38ffe01871c6956103926cc4a40bd7acc8a",
+      "job": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-skin-unity-policy\\jobs\\skin-bjpz6zz0",
+      "bundle": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-skin-unity-policy\\ShaneAISkin",
+      "vertices": 7234,
+      "joints": 52,
+      "source_preserved": true,
+      "accepted_joints_preserved": true,
+      "materials_morphs_preserved": true,
+      "maximum_influences": 4,
+      "preflight": {
+        "schema_version": 1,
+        "rig": "Armature_AI_Skin",
+        "profile": "HUMANOID",
+        "bones": 67,
+        "meshes": [
+          {
+            "name": "Wolf3D_Body_AI_Skin",
+            "vertices": 3608,
+            "polygons": 5956,
+            "shape_keys": 0,
+            "unweighted": 0,
+            "invalid": 0,
+            "over_four": 0,
+            "below_export_floor": 3145
+          },
+          {
+            "name": "Wolf3D_Head_AI_Skin",
+            "vertices": 3626,
+            "polygons": 5638,
+            "shape_keys": 3,
+            "unweighted": 0,
+            "invalid": 0,
+            "over_four": 0,
+            "below_export_floor": 6306
+          }
+        ],
+        "errors": [],
+        "warnings": [
+          "Export will add an unweighted structural Root on a temporary copy",
+          "Wolf3D_Body_AI_Skin: 3145 influences below Unity's tested 0.001 floor will be pruned on the export copy; review deformation",
+          "Wolf3D_Head_AI_Skin: 6306 influences below Unity's tested 0.001 floor will be pruned on the export copy; review deformation"
+        ],
+        "ready": true
+      },
+      "inference": {
+        "schema_version": 1,
+        "status": "complete",
+        "reused_result": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-skin-core52-dfs\\jobs\\skin-r9hei3ni"
+      },
+      "quality_diagnostics": [
+        {
+          "pose": "forearm",
+          "reference_difference_mean_m": 9.632633855471409e-05,
+          "reference_difference_max_m": 0.014143738884374353,
+          "finite": true
+        },
+        {
+          "pose": "index",
+          "reference_difference_mean_m": 0.00048135118839834383,
+          "reference_difference_max_m": 0.049740340628700336,
+          "finite": true
+        },
+        {
+          "pose": "knee",
+          "reference_difference_mean_m": 8.716978256487773e-05,
+          "reference_difference_max_m": 0.027128179868033234,
+          "finite": true
+        }
+      ],
+      "stale_geometry_rejected": true,
+      "stale_weights_rejected": true,
+      "stale_joints_rejected": true,
+      "corrupt_weights_rejected": true,
+      "cancellation_passed": true,
+      "duplicate_application_rejected": true,
+      "public_apply_operator": true
+    }
+  },
+  "live_unity": {
+    "passed": true,
+    "user_scenes_preserved": true,
+    "vertices_preserved": true,
+    "binds_preserved": true,
+    "unity_version": "6000.4.3f1",
+    "error": "",
+    "generic_lbs_error_meters": 1.9559761312848423e-06,
+    "initial_min_bone_weight": 0.0010000000474974513,
+    "configured_min_bone_weight": 0.0010000000474974513,
+    "minimum_full_api_weight": 0.0010005654767155647,
+    "reloaded_min_bone_weight": 0.0010000000474974513,
+    "avatar": {
+      "asset": "Assets/LocalCharacterValidation/Fixtures/ShaneAISkin/ShaneAISkin.fbx",
+      "unity_version": "6000.4.3f1",
+      "skeleton_signature": "d9a76c4e0a969466bd569792ec0edbce425a81346bede7b4995569fd56133cea",
+      "valid_avatar": true,
+      "human_avatar": true,
+      "mapped_bones": 54,
+      "skinned_meshes": 2,
+      "blendshapes": 3,
+      "height_meters": 1.8720372915267944
+    }
+  },
+  "original_project_hashes_preserved": {
+    "Assets/Scenes/SampleScene.unity": true,
+    "Packages/manifest.json": true,
+    "Packages/packages-lock.json": true,
+    "ProjectSettings/GraphicsSettings.asset": true,
+    "ProjectSettings/EditorBuildSettings.asset": true
+  },
+  "native_tests": {
+    "api": "pass",
+    "c_api": "pass",
+    "binding": "pass",
+    "tokenizer": "pass"
+  },
+  "native_official_parity": "not_yet_run",
+  "full_consumer_memory_benchmark": "not_yet_run",
+  "fresh_unity": {
+    "passed": true,
+    "user_scenes_preserved": true,
+    "vertices_preserved": true,
+    "binds_preserved": true,
+    "unity_version": "6000.3.21f1",
+    "error": "",
+    "generic_lbs_error_meters": 1.9559761312848423e-06,
+    "initial_min_bone_weight": 0.0010000000474974513,
+    "configured_min_bone_weight": 0.0010000000474974513,
+    "minimum_full_api_weight": 0.0010005654767155647,
+    "reloaded_min_bone_weight": 0.0010000000474974513,
+    "avatar": {
+      "asset": "Assets/Fixtures/ShaneAISkin/ShaneAISkin.fbx",
+      "unity_version": "6000.3.21f1",
+      "skeleton_signature": "d9a76c4e0a969466bd569792ec0edbce425a81346bede7b4995569fd56133cea",
+      "valid_avatar": true,
+      "human_avatar": true,
+      "mapped_bones": 54,
+      "skinned_meshes": 2,
+      "blendshapes": 3,
+      "height_meters": 1.8720372915267944
+    }
+  }
+}

@@ -121,7 +121,9 @@ namespace LocalCharacter.Editor
             importer.preserveHierarchy = true;
             importer.skinWeights = ModelImporterSkinWeights.Custom;
             importer.maxBonesPerVertex = 4;
-            importer.minBoneWeight = 0;
+            // Tested Unity 6.3/6.4 import validation restores smaller values
+            // to .001. The Blender export copy uses this same explicit floor.
+            importer.minBoneWeight = .001f;
             importer.importBlendShapes = true;
             importer.importAnimation = false;
             importer.SaveAndReimport();

@@ -3,6 +3,8 @@
 import math
 from .skeleton import REQUIRED, canonical_name, resolve_mapping
 
+UNITY_WEIGHT_FLOOR = .001
+
 def selection(context):
     selected = list(context.selected_objects)
     rigs = {o for o in selected if o.type == "ARMATURE"}
@@ -66,7 +68,7 @@ def inspect(rig, meshes, profile="HUMANOID"):
                 elif image.source == "FILE" and not image.packed_file and not Path(bpy.path.abspath(image.filepath, library=image.library)).is_file():
                     errors.append(f"{mesh.name}: missing texture {image.name}")
         groups = {g.index for g in mesh.vertex_groups if g.name in rig.data.bones and rig.data.bones[g.name].use_deform}
-        unweighted = invalid = over_limit = unnormalized = 0
+        unweighted = invalid = over_limit = unnormalized = below_floor = 0
         for vertex in mesh.data.vertices:
             weights = [g.weight for g in vertex.groups if g.group in groups and g.weight != 0]
             invalid += any(not math.isfinite(w) or w < 0 for w in weights)
@@ -74,13 +76,17 @@ def inspect(rig, meshes, profile="HUMANOID"):
             unweighted += not positive
             over_limit += len(positive) > 4
             unnormalized += bool(positive) and abs(sum(positive) - 1) > 1e-4
+            below_floor += sum(w < UNITY_WEIGHT_FLOOR for w in positive)
         if invalid or unweighted:
             errors.append(f"{mesh.name}: {unweighted} unweighted vertices; {invalid} invalid weight rows")
         if over_limit or unnormalized:
             warnings.append(f"{mesh.name}: export copy will prune {over_limit} rows to four weights and normalize {unnormalized} rows; deformation needs review")
+        if below_floor:
+            warnings.append(f"{mesh.name}: {below_floor} influences below Unity's tested 0.001 floor will be pruned on the export copy; review deformation")
         summaries.append({"name": mesh.name, "vertices": len(mesh.data.vertices),
                           "polygons": len(mesh.data.polygons), "shape_keys": len(mesh.data.shape_keys.key_blocks)-1 if mesh.data.shape_keys else 0,
-                          "unweighted": unweighted, "invalid": invalid, "over_four": over_limit})
+                          "unweighted": unweighted, "invalid": invalid, "over_four": over_limit,
+                          "below_export_floor": below_floor})
     return {"schema_version": 1, "rig": rig.name, "profile": profile,
             "bones": len(rig.data.bones), "mapping": mapping, "meshes": summaries,
             "errors": errors, "warnings": warnings, "ready": not errors}

@@ -10,7 +10,7 @@ import tempfile
 
 import bpy
 from mathutils import Matrix
-from .preflight import inspect
+from .preflight import inspect, UNITY_WEIGHT_FLOOR
 from .skeleton import HIERARCHY_VERSION, resolve_mapping
 from .animation import selected_action, attach_action
 
@@ -30,7 +30,12 @@ def _prune(mesh, rig):
         total = sum(weight for _, weight in row)
         if not total:
             raise ValueError(f"{mesh.name}: vertex {vertex.index} has no deform weights")
-        rows.append([(index, weight / total) for index, weight in row])
+        # Unity 6.3/6.4 reload a requested smaller minimum as .001. Mirror
+        # its policy on the export copy, always retaining the strongest bone.
+        normalized = [(index, weight / total) for index, weight in row]
+        retained = [pair for n, pair in enumerate(normalized) if n == 0 or pair[1] >= UNITY_WEIGHT_FLOOR]
+        retained_total = sum(weight for _, weight in retained)
+        rows.append([(index, weight / retained_total) for index, weight in retained])
     vertices = list(range(len(mesh.data.vertices)))
     for group in bone_groups.values():
         group.remove(vertices)
@@ -67,19 +72,23 @@ def _manifest(rig, meshes, report, name, unit_scale):
                       "path": "/".join(reversed(chain)), "deform": bone.use_deform,
                       "rest_matrix_blender": [list(row) for row in bone.matrix_local]})
     signature = hashlib.sha256(json.dumps(bones, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-    return {"schema_version": 1, "artifact_kind": "character", "generator": "local_character/0.2.0", "character": name,
+    return {"schema_version": 1, "artifact_kind": "character", "generator": "local_character/0.3.0", "character": name,
             "profile": report["profile"], "hierarchy_version": HIERARCHY_VERSION if rig.get("lc_hierarchy_version") else "imported-preserved",
             "skeleton_signature": signature, "rig_object": rig.name,
             "mapping": resolve_mapping(rig.data.bones), "bones": bones,
             "rig_world_blender": [list(row) for row in rig.matrix_world],
             "units": {"source_meters_per_unit": unit_scale, "target": "meters", "fbx_forward": "-Z", "fbx_up": "Y"},
-            "maximum_influences": 4, "root_motion_policy": "no_clips_exported",
+            "maximum_influences": 4, "minimum_export_weight": UNITY_WEIGHT_FLOOR, "root_motion_policy": "no_clips_exported",
             "calibration_state": "unity_companion_required" if report["profile"] == "HUMANOID" else "not_applicable",
             "modules": {"twist": False, "eyes": any(b.name.endswith("Eye") for b in rig.data.bones)},
             "meshes": [{"name": obj.name, "vertices": len(obj.data.vertices),
                         "shape_keys": [key.name for key in obj.data.shape_keys.key_blocks][1:] if obj.data.shape_keys else [],
                         "materials": [m.name if m else "" for m in obj.data.materials]} for obj in meshes],
-            "clips": [], "provenance": {"placement": rig.get("lc_placement", "imported_accepted_rig"), "skinning": "existing_weights_pruned_on_export_copy"},
+            "clips": [], "provenance": {"placement": rig.get("lc_placement", "imported_accepted_rig"),
+                "skinning": rig.get("lc_skinning", "existing_weights_pruned_on_export_copy"),
+                "skin_provider_revision": rig.get("lc_skin_provider_revision", ""),
+                "skin_model_revision": rig.get("lc_skin_model_revision", ""),
+                "export_weight_policy": "four_influences_001_floor_normalized_on_copy"},
             "warnings": report["warnings"]}
 
 def export_bundle(context, rig, meshes, directory, character_name, profile="HUMANOID", include_action=False, loop=False):

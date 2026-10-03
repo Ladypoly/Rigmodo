@@ -1,6 +1,6 @@
-# Local Character — foundation 0.2.0
+# Local Character — foundation 0.3.0
 
-Independent Blender 5.2 extension for the planned local AI character workflow. The current build creates an editable Mixamo-style humanoid and exports already-bound characters to Unity. AI placement, new mesh binding, adaptive refinement, optional twists and Kimodo motion are not implemented in this release.
+Independent Blender 5.2 extension for a local AI character workflow. This build creates an editable Mixamo-style humanoid, proposes learned skin weights for an accepted rig, and exports characters and selected animations to Unity. AI joint placement, adaptive refinement, optional twists and Kimodo motion remain pending.
 
 Enable **Local Character** in Blender Preferences → Add-ons. Open the **Local Character** tab in the 3D View sidebar.
 
@@ -12,7 +12,17 @@ Select upright, Z-up character meshes and choose **Create Editable Humanoid**, o
 
 Select only the bound meshes you intend to export. Their armature is resolved through the modifiers; selecting it as well is allowed. Run **Check Selected Character**, choose an absolute export folder and a new character name, then **Export Character to Unity**. Relative folders require a saved blend file. Existing bundle directories are never overwritten.
 
-Export uses temporary copies in a separate scene. It retains the imported bone hierarchy, adds an unweighted Root when absent, prunes copies to four influences and normalizes them. Zero/invalid weights block export. Source weights are unchanged. Non-armature modifiers need an explicit working-copy resolution; this release exports base geometry to preserve shape keys. Nonuniform armature scale and mirrored/singular transforms are rejected. FBX includes referenced texture copies where available; arbitrary Blender shader conversion is not provided.
+Export uses temporary copies in a separate scene. It retains the imported bone hierarchy, adds an unweighted Root when absent, prunes copies to four influences and normalizes them. Influences below the tested Unity importer floor of 0.001 are removed on export copies, retaining each vertex's strongest bone and renormalizing; preflight warns and the manifest records this policy. Zero/invalid weights block export. Source weights are unchanged. Non-armature modifiers need an explicit working-copy resolution; this release exports base geometry to preserve shape keys. Nonuniform armature scale and mirrored/singular transforms are rejected. FBX includes referenced texture copies where available; arbitrary Blender shader conversion is not provided.
+
+## Local AI skinning (experimental)
+
+Select an accepted armature and the meshes to bind. Existing weights are optional and are withheld from inference. Under **Local AI providers**, choose **AI Skin to New Copy**. The prepared local SkinTokens worker runs in a separate process using Vulkan on this machine's RTX 4090. Escape cancels it. Completion creates a new collection containing separate armature and mesh-data copies with learned weights; originals stay in place. Hide one collection when comparing their deformation. Review joints and poses before export.
+
+The adapter preserves accepted joints and original vertex IDs, including UV seam splits. It applies only validated weights to Blender copies, preserving UVs, materials and shape keys. Original geometry/joint/weight edits during inference invalidate the result. Finished jobs can be reapplied in the same Blender session after undo/removal of their previous copies. Jobs and worker logs remain under `%LOCALAPPDATA%/LocalCharacter/jobs`; the last job path is available in scene settings. Loading a file into a new Blender process invalidates its old source pointers; prepare a fresh job.
+
+Default worker/models are already installed locally for this development session. The ZIP contains no checkpoints or native binaries. [Provider setup and evidence](docs/skin-tokens-provider.md) describe the pinned F16 models, isolated Windows build, reproducible helper and current limits. In private fixed-rig tests, 52/67 joints on 7,234 vertices took about 65/84 seconds. Body results passed the reviewed diagnostic poses; finger-tip artifacts remain. This is one avatar, not a broad quality benchmark. No automatic rigid/digit/seam/voxel routing is available yet.
+
+Use an unconstrained deform rig, Object Mode, positive transforms and resolved visible non-armature modifiers on working copies. The initial path supports one deform root and 1–256 deform bones. Structural nondeform parents stay in the Blender rig but are excluded from neural conditioning. Armature modifier masks and envelopes require explicit preparation. CPU mode exists but has not been benchmarked.
 
 ## Selected animation
 
@@ -30,7 +40,7 @@ The same import/deformation checks also passed in the user's live Unity 6000.4.3
 
 ## Development
 
-The extension is developed directly in Blender's `extensions/user_default/local_character` directory at the user's request. Its Git repository is separate from Mesh2Motion. `docs/`, `tests/` and `unity/` are excluded from the Blender extension ZIP; the companion can be copied separately. Private test avatars and exported binaries are excluded from Git.
+The extension is developed directly in Blender's `extensions/user_default/local_character` directory at the user's request. Its Git repository is separate from Mesh2Motion. `docs/`, `tests/`, `tools/` and `unity/` are excluded from the Blender extension ZIP; the companion can be copied separately. Private test avatars and exported binaries are excluded from Git.
 
 Blender code: GPL-3.0-or-later. Independently written Unity companion: MIT, see `unity/LICENSE`. No proprietary ARP/VHD code, source avatar template or AI checkpoint is distributed.
 

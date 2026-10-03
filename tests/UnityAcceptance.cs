@@ -99,7 +99,7 @@ namespace LocalCharacter.Tests
             return results;
         }
 
-        static float CompareGeneric(string path)
+        internal static float CompareGeneric(string path)
         {
             string reference=Path.Combine(Path.GetDirectoryName(path),"generic-lbs-reference-flat.json");
             var data=JsonUtility.FromJson<FlatReference>(File.ReadAllText(reference));
