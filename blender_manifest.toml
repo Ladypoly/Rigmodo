@@ -1,0 +1,15 @@
+schema_version = "1.0.0"
+id = "local_character"
+version = "0.1.0"
+name = "Local Character"
+tagline = "Editable game skeletons and validated Unity character exports"
+maintainer = "Local Character contributors"
+type = "add-on"
+blender_version_min = "5.2.0"
+blender_version_max = "5.3.0"
+license = ["SPDX:GPL-3.0-or-later"]
+tags = ["Rigging", "Animation", "Import-Export"]
+[permissions]
+files = "Write selected character exports and validation reports"
+[build]
+paths_exclude_pattern = [".*", "__pycache__/", "tests/", "docs/", "unity/", "artifacts/", "*.zip", "*.log"]

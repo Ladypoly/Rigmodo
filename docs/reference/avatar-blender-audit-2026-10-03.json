@@ -1,0 +1,2715 @@
+{
+  "blender_version": "5.2.0 LTS",
+  "source_files_saved": false,
+  "live_scene_used": false,
+  "cases": [
+    {
+      "id": "banter-shane",
+      "path": "R:\\BLENDER\\BANTER_Avatars\\Shane.glb",
+      "armatures": [
+        {
+          "name": "Armature",
+          "bones": 67,
+          "roots": [
+            "Hips"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Wolf3D_Body",
+          "vertices": 3608,
+          "polygons": 5956,
+          "edge_components": 32,
+          "largest_components": [
+            341,
+            341,
+            333,
+            333,
+            205,
+            205,
+            159,
+            145
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 3608,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wolf3D_Head",
+          "vertices": 3626,
+          "polygons": 5638,
+          "edge_components": 53,
+          "largest_components": [
+            628,
+            337,
+            160,
+            141,
+            141,
+            141,
+            141,
+            117
+          ],
+          "shape_keys": 3,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 3626,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Icosphere",
+          "vertices": 42,
+          "polygons": 80,
+          "edge_components": 1,
+          "largest_components": [
+            42
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "actions": 0,
+      "unit_settings": {
+        "system": "METRIC",
+        "scale_length": 1.0
+      },
+      "status": "import_or_open_succeeded"
+    },
+    {
+      "id": "banter-bloom-fbx",
+      "path": "R:\\BLENDER\\BANTER_Avatars\\Bloom\\Bloom2.fbx",
+      "armatures": [
+        {
+          "name": "Armature",
+          "bones": 78,
+          "roots": [
+            "mixamorig:Hips"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Body",
+          "vertices": 14977,
+          "polygons": 24165,
+          "edge_components": 100,
+          "largest_components": [
+            962,
+            918,
+            665,
+            582,
+            539,
+            497,
+            488,
+            484
+          ],
+          "shape_keys": 1,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 14977,
+          "object_scale": [
+            0.9999998807907104,
+            0.9999998807907104,
+            1.0
+          ]
+        },
+        {
+          "name": "NoMir",
+          "vertices": 6880,
+          "polygons": 11565,
+          "edge_components": 25,
+          "largest_components": [
+            854,
+            835,
+            564,
+            491,
+            406,
+            386,
+            363,
+            327
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 6880,
+          "object_scale": [
+            0.9999998807907104,
+            0.9999998807907104,
+            0.9999999403953552
+          ]
+        },
+        {
+          "name": "Avatar_LOD1",
+          "vertices": 7602,
+          "polygons": 14996,
+          "edge_components": 11,
+          "largest_components": [
+            7293,
+            99,
+            95,
+            33,
+            21,
+            13,
+            13,
+            13
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 7602,
+          "object_scale": [
+            0.9999998807907104,
+            0.9999998807907104,
+            0.9999999403953552
+          ]
+        },
+        {
+          "name": "Avatar_LOD0",
+          "vertices": 19192,
+          "polygons": 30000,
+          "edge_components": 178,
+          "largest_components": [
+            805,
+            661,
+            621,
+            473,
+            454,
+            453,
+            445,
+            444
+          ],
+          "shape_keys": 1,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 19192,
+          "object_scale": [
+            0.9999998807907104,
+            0.9999998807907104,
+            0.9999999403953552
+          ]
+        },
+        {
+          "name": "Avatar_LOD2",
+          "vertices": 2325,
+          "polygons": 4992,
+          "edge_components": 5,
+          "largest_components": [
+            2291,
+            14,
+            10,
+            6,
+            4
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 2325,
+          "object_scale": [
+            0.9999998807907104,
+            0.9999998807907104,
+            0.9999999403953552
+          ]
+        },
+        {
+          "name": "Avatar_LOD3",
+          "vertices": 436,
+          "polygons": 956,
+          "edge_components": 2,
+          "largest_components": [
+            431,
+            5
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 436,
+          "object_scale": [
+            0.9999998807907104,
+            0.9999998807907104,
+            0.9999999403953552
+          ]
+        }
+      ],
+      "actions": 0,
+      "unit_settings": {
+        "system": "METRIC",
+        "scale_length": 1.0
+      },
+      "status": "import_or_open_succeeded"
+    },
+    {
+      "id": "banter-cardboard-boy",
+      "path": "R:\\BLENDER\\BANTER_Avatars\\CardboardBoy\\CardboardBoy_02.glb",
+      "armatures": [
+        {
+          "name": "Armature",
+          "bones": 65,
+          "roots": [
+            "mixamorig:Hips"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Arms",
+          "vertices": 2541,
+          "polygons": 2160,
+          "edge_components": 206,
+          "largest_components": [
+            51,
+            51,
+            42,
+            42,
+            42,
+            42,
+            41,
+            41
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 2541,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Body",
+          "vertices": 1870,
+          "polygons": 1994,
+          "edge_components": 113,
+          "largest_components": [
+            115,
+            115,
+            104,
+            104,
+            34,
+            34,
+            34,
+            34
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 1870,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hands",
+          "vertices": 4303,
+          "polygons": 3384,
+          "edge_components": 512,
+          "largest_components": [
+            100,
+            100,
+            25,
+            18,
+            18,
+            18,
+            18,
+            18
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 4303,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Head",
+          "vertices": 272,
+          "polygons": 198,
+          "edge_components": 39,
+          "largest_components": [
+            12,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10
+          ],
+          "shape_keys": 18,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 272,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Legs",
+          "vertices": 2466,
+          "polygons": 2348,
+          "edge_components": 182,
+          "largest_components": [
+            119,
+            119,
+            57,
+            57,
+            34,
+            34,
+            34,
+            34
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 2466,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Icosphere",
+          "vertices": 42,
+          "polygons": 80,
+          "edge_components": 1,
+          "largest_components": [
+            42
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "actions": 0,
+      "unit_settings": {
+        "system": "METRIC",
+        "scale_length": 1.0
+      },
+      "status": "import_or_open_succeeded"
+    },
+    {
+      "id": "banter-t800",
+      "path": "R:\\BLENDER\\BANTER_Avatars\\FN T-800_5.glb",
+      "armatures": [
+        {
+          "name": "Armature",
+          "bones": 67,
+          "roots": [
+            "Hips"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Wolf3D_Head",
+          "vertices": 6601,
+          "polygons": 11752,
+          "edge_components": 44,
+          "largest_components": [
+            2336,
+            797,
+            666,
+            401,
+            400,
+            217,
+            199,
+            199
+          ],
+          "shape_keys": 3,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 6601,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wolf3D_Outfit_Top",
+          "vertices": 11361,
+          "polygons": 18069,
+          "edge_components": 149,
+          "largest_components": [
+            679,
+            557,
+            465,
+            464,
+            293,
+            293,
+            272,
+            271
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 11361,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Icosphere",
+          "vertices": 42,
+          "polygons": 80,
+          "edge_components": 1,
+          "largest_components": [
+            42
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "actions": 0,
+      "unit_settings": {
+        "system": "METRIC",
+        "scale_length": 1.0
+      },
+      "status": "import_or_open_succeeded"
+    },
+    {
+      "id": "altspace-base-bundle",
+      "path": "R:\\BLENDER\\Altspace_Avatars\\Humanoid\\human_base_meshes_bundle.blend",
+      "armatures": [],
+      "meshes": [
+        {
+          "name": "Eye - Realistic",
+          "vertices": 946,
+          "polygons": 944,
+          "edge_components": 2,
+          "largest_components": [
+            546,
+            400
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Skull - Realistic",
+          "vertices": 11684,
+          "polygons": 11634,
+          "edge_components": 32,
+          "largest_components": [
+            4916,
+            1102,
+            358,
+            358,
+            358,
+            358,
+            338,
+            338
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.945684015750885,
+            0.945684015750885,
+            0.945684015750885
+          ]
+        },
+        {
+          "name": "Jaw - Realistic",
+          "vertices": 5294,
+          "polygons": 5058,
+          "edge_components": 29,
+          "largest_components": [
+            2354,
+            105,
+            105,
+            105,
+            105,
+            105,
+            105,
+            105
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hand  - Realistic",
+          "vertices": 831,
+          "polygons": 820,
+          "edge_components": 1,
+          "largest_components": [
+            831
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Foot - Realistic",
+          "vertices": 1497,
+          "polygons": 1481,
+          "edge_components": 1,
+          "largest_components": [
+            1497
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-head_animation_realistic",
+          "vertices": 3242,
+          "polygons": 3234,
+          "edge_components": 1,
+          "largest_components": [
+            3242
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.8999999761581421,
+            0.8999999761581421,
+            0.8999999761581421
+          ]
+        },
+        {
+          "name": "GEO-head_animation_realistic.iris.L",
+          "vertices": 400,
+          "polygons": 400,
+          "edge_components": 1,
+          "largest_components": [
+            400
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.8999999761581421,
+            0.8999999761581421,
+            0.8999999761581421
+          ]
+        },
+        {
+          "name": "GEO-head_animation_realistic.iris.R",
+          "vertices": 400,
+          "polygons": 400,
+          "edge_components": 1,
+          "largest_components": [
+            400
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.6395564079284668,
+            0.6395564079284668,
+            0.639556348323822
+          ]
+        },
+        {
+          "name": "GEO-head_animation_realistic.sclera.L",
+          "vertices": 546,
+          "polygons": 544,
+          "edge_components": 1,
+          "largest_components": [
+            546
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.639556348323822,
+            0.639556348323822,
+            0.639556348323822
+          ]
+        },
+        {
+          "name": "GEO-head_animation_realistic.sclera.R",
+          "vertices": 546,
+          "polygons": 544,
+          "edge_components": 1,
+          "largest_components": [
+            546
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.6395564079284668,
+            0.6395564079284668,
+            0.639556348323822
+          ]
+        },
+        {
+          "name": "GEO-head_sculpting_realistic",
+          "vertices": 3307,
+          "polygons": 3300,
+          "edge_components": 1,
+          "largest_components": [
+            3307
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.8999999761581421,
+            0.8999999761581421,
+            0.8999999761581421
+          ]
+        },
+        {
+          "name": "GEO-head_sculpting_realistic.iris.R",
+          "vertices": 400,
+          "polygons": 400,
+          "edge_components": 1,
+          "largest_components": [
+            400
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.8999999761581421,
+            0.8999999761581421,
+            0.8999999761581421
+          ]
+        },
+        {
+          "name": "GEO-head_sculpting_realistic.sclera.L",
+          "vertices": 546,
+          "polygons": 544,
+          "edge_components": 1,
+          "largest_components": [
+            546
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.639556348323822,
+            0.639556348323822,
+            0.6395562887191772
+          ]
+        },
+        {
+          "name": "GEO-head_sculpting_realistic.sclera.R",
+          "vertices": 546,
+          "polygons": 544,
+          "edge_components": 1,
+          "largest_components": [
+            546
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.6395562887191772,
+            0.6395562291145325,
+            0.6395562887191772
+          ]
+        },
+        {
+          "name": "GEO-head_sculpting_realistic.iris.L",
+          "vertices": 400,
+          "polygons": 400,
+          "edge_components": 1,
+          "largest_components": [
+            400
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.8999999761581421,
+            0.8999999761581421,
+            0.8999999761581421
+          ]
+        },
+        {
+          "name": "Skull - Planar",
+          "vertices": 900,
+          "polygons": 898,
+          "edge_components": 1,
+          "largest_components": [
+            900
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Head - Planar",
+          "vertices": 318,
+          "polygons": 316,
+          "edge_components": 1,
+          "largest_components": [
+            318
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Eye - Stylized",
+          "vertices": 802,
+          "polygons": 832,
+          "edge_components": 1,
+          "largest_components": [
+            802
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Foot - Stylized ",
+          "vertices": 786,
+          "polygons": 798,
+          "edge_components": 1,
+          "largest_components": [
+            786
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hand - Stylized ",
+          "vertices": 871,
+          "polygons": 880,
+          "edge_components": 1,
+          "largest_components": [
+            871
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Jaw - Stylized ",
+          "vertices": 6566,
+          "polygons": 6308,
+          "edge_components": 31,
+          "largest_components": [
+            986,
+            986,
+            310,
+            195,
+            195,
+            195,
+            195,
+            195
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-body_male_stylized",
+          "vertices": 5598,
+          "polygons": 5524,
+          "edge_components": 1,
+          "largest_components": [
+            5598
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-body_female_stylized",
+          "vertices": 12502,
+          "polygons": 12500,
+          "edge_components": 1,
+          "largest_components": [
+            12502
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.1066621541976929,
+            1.1066621541976929,
+            1.1066621541976929
+          ]
+        },
+        {
+          "name": "GEO-body_female_stylized.eye.L",
+          "vertices": 802,
+          "polygons": 832,
+          "edge_components": 1,
+          "largest_components": [
+            802
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-body_female_stylized.eye.R",
+          "vertices": 802,
+          "polygons": 832,
+          "edge_components": 1,
+          "largest_components": [
+            802
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-head_stylized",
+          "vertices": 4118,
+          "polygons": 4134,
+          "edge_components": 1,
+          "largest_components": [
+            4118
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-head_stylized.eye.L",
+          "vertices": 802,
+          "polygons": 832,
+          "edge_components": 1,
+          "largest_components": [
+            802
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-head_stylized.eye.R",
+          "vertices": 802,
+          "polygons": 832,
+          "edge_components": 1,
+          "largest_components": [
+            802
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Head - Generic Topology",
+          "vertices": 318,
+          "polygons": 316,
+          "edge_components": 1,
+          "largest_components": [
+            318
+          ],
+          "shape_keys": 9,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-head_primitve",
+          "vertices": 266,
+          "polygons": 264,
+          "edge_components": 1,
+          "largest_components": [
+            266
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-eye_primitve.L",
+          "vertices": 162,
+          "polygons": 176,
+          "edge_components": 1,
+          "largest_components": [
+            162
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.5390419960021973,
+            0.539042055606842,
+            0.539042055606842
+          ]
+        },
+        {
+          "name": "GEO-nose_bridge_primitve",
+          "vertices": 110,
+          "polygons": 108,
+          "edge_components": 1,
+          "largest_components": [
+            110
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-eyelid_lower_primitve.L",
+          "vertices": 98,
+          "polygons": 96,
+          "edge_components": 1,
+          "largest_components": [
+            98
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            0.9999999403953552,
+            0.9999999403953552
+          ]
+        },
+        {
+          "name": "GEO-eyelid_upper_primitve.L",
+          "vertices": 131,
+          "polygons": 129,
+          "edge_components": 1,
+          "largest_components": [
+            131
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            0.9999999403953552,
+            0.9999999403953552
+          ]
+        },
+        {
+          "name": "GEO-nose_primitve",
+          "vertices": 192,
+          "polygons": 190,
+          "edge_components": 1,
+          "largest_components": [
+            192
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "GEO-eye_primitve.R",
+          "vertices": 162,
+          "polygons": 176,
+          "edge_components": 1,
+          "largest_components": [
+            162
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            -0.5390419960021973,
+            0.539042055606842,
+            0.539042055606842
+          ]
+        },
+        {
+          "name": "GEO-ear_primitve.R",
+          "vertices": 96,
+          "polygons": 94,
+          "edge_components": 1,
+          "largest_components": [
+            96
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            -0.695183277130127,
+            0.6951832175254822,
+            0.6951832175254822
+          ]
+        },
+        {
+          "name": "GEO-eyelid_lower_primitve.R",
+          "vertices": 98,
+          "polygons": 96,
+          "edge_components": 1,
+          "largest_components": [
+            98
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            0.9999999403953552,
+            0.9999999403953552
+          ]
+        },
+        {
+          "name": "GEO-eyelid_upper_primitve.R",
+          "vertices": 131,
+          "polygons": 129,
+          "edge_components": 1,
+          "largest_components": [
+            131
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            0.9999999403953552,
+            0.9999999403953552
+          ]
+        },
+        {
+          "name": "GEO-ear_primitve.L",
+          "vertices": 96,
+          "polygons": 94,
+          "edge_components": 1,
+          "largest_components": [
+            96
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 0,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.695183277130127,
+            0.6951832175254822,
+            0.6951832175254822
+          ]
+        },
+        {
+          "name": "ChatGPT Image 12. Aug. 2026, 11_56_41",
+          "vertices": 4,
+          "polygons": 1,
+          "edge_components": 1,
+          "largest_components": [
+            4
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.9965516328811646,
+            1.9965516328811646,
+            1.9965516328811646
+          ]
+        },
+        {
+          "name": "ChatGPT Image 12. Aug. 2026, 11_56_41.001",
+          "vertices": 4,
+          "polygons": 1,
+          "edge_components": 1,
+          "largest_components": [
+            4
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.9965516328811646,
+            1.9965516328811646,
+            1.9965516328811646
+          ]
+        },
+        {
+          "name": "ChatGPT Image 12. Aug. 2026, 11_56_41.002",
+          "vertices": 4,
+          "polygons": 1,
+          "edge_components": 1,
+          "largest_components": [
+            4
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.9965516328811646,
+            1.9965516328811646,
+            1.9965516328811646
+          ]
+        },
+        {
+          "name": "ChatGPT Image 12. Aug. 2026, 11_56_41.003",
+          "vertices": 4,
+          "polygons": 1,
+          "edge_components": 1,
+          "largest_components": [
+            4
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.9965516328811646,
+            1.9965516328811646,
+            1.9965516328811646
+          ]
+        }
+      ],
+      "actions": 0,
+      "unit_settings": {
+        "system": "METRIC",
+        "scale_length": 1.0
+      },
+      "status": "import_or_open_succeeded"
+    },
+    {
+      "id": "altspace-guest",
+      "path": "R:\\BLENDER\\Altspace_Avatars\\Guest\\Guest_29.blend",
+      "armatures": [
+        {
+          "name": "Armature",
+          "bones": 59,
+          "roots": [
+            "Hips"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Robot_Hands",
+          "vertices": 2298,
+          "polygons": 2244,
+          "edge_components": 10,
+          "largest_components": [
+            485,
+            485,
+            166,
+            166,
+            166,
+            166,
+            166,
+            166
+          ],
+          "shape_keys": 1,
+          "uv_layers": 2,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 2298,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Robot_Head",
+          "vertices": 595,
+          "polygons": 584,
+          "edge_components": 1,
+          "largest_components": [
+            595
+          ],
+          "shape_keys": 0,
+          "uv_layers": 2,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 595,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Robot_Body_Basic",
+          "vertices": 4507,
+          "polygons": 4468,
+          "edge_components": 8,
+          "largest_components": [
+            2644,
+            783,
+            783,
+            94,
+            94,
+            72,
+            32,
+            5
+          ],
+          "shape_keys": 1,
+          "uv_layers": 2,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 4507,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Shoe_Default",
+          "vertices": 369,
+          "polygons": 395,
+          "edge_components": 1,
+          "largest_components": [
+            369
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 369,
+          "object_scale": [
+            0.4549201726913452,
+            0.4549201726913452,
+            0.4549201726913452
+          ]
+        },
+        {
+          "name": "Robot_BodyJumper",
+          "vertices": 2340,
+          "polygons": 2645,
+          "edge_components": 5,
+          "largest_components": [
+            1060,
+            1015,
+            175,
+            45,
+            45
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 2340,
+          "object_scale": [
+            0.7667808532714844,
+            0.7667808532714844,
+            0.7667808532714844
+          ]
+        },
+        {
+          "name": "Robot_Face",
+          "vertices": 80,
+          "polygons": 66,
+          "edge_components": 1,
+          "largest_components": [
+            80
+          ],
+          "shape_keys": 0,
+          "uv_layers": 2,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 80,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Feather",
+          "vertices": 1119,
+          "polygons": 1205,
+          "edge_components": 13,
+          "largest_components": [
+            303,
+            184,
+            98,
+            95,
+            84,
+            74,
+            65,
+            36
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Blade_A",
+          "vertices": 435,
+          "polygons": 452,
+          "edge_components": 2,
+          "largest_components": [
+            336,
+            99
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Bat",
+          "vertices": 675,
+          "polygons": 663,
+          "edge_components": 2,
+          "largest_components": [
+            576,
+            99
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Diamond",
+          "vertices": 680,
+          "polygons": 688,
+          "edge_components": 5,
+          "largest_components": [
+            166,
+            162,
+            140,
+            113,
+            99
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Dragonfly_A",
+          "vertices": 935,
+          "polygons": 931,
+          "edge_components": 9,
+          "largest_components": [
+            184,
+            180,
+            156,
+            126,
+            92,
+            57,
+            54,
+            48
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Butterfly",
+          "vertices": 703,
+          "polygons": 630,
+          "edge_components": 36,
+          "largest_components": [
+            536,
+            99,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.2659862041473389,
+            1.2659862041473389,
+            0.7781493663787842
+          ]
+        },
+        {
+          "name": "Wing_Leaf",
+          "vertices": 398,
+          "polygons": 358,
+          "edge_components": 2,
+          "largest_components": [
+            299,
+            99
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Dragonfly_B",
+          "vertices": 487,
+          "polygons": 540,
+          "edge_components": 8,
+          "largest_components": [
+            184,
+            78,
+            54,
+            40,
+            36,
+            32,
+            32,
+            31
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Blade_B",
+          "vertices": 378,
+          "polygons": 337,
+          "edge_components": 6,
+          "largest_components": [
+            164,
+            99,
+            36,
+            33,
+            24,
+            22
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.3316744565963745,
+            1.3316744565963745,
+            1.3316744565963745
+          ]
+        },
+        {
+          "name": "Wing_Sun",
+          "vertices": 723,
+          "polygons": 632,
+          "edge_components": 20,
+          "largest_components": [
+            187,
+            99,
+            65,
+            42,
+            42,
+            39,
+            33,
+            25
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.1378241777420044,
+            1.1378241777420044,
+            1.1378241777420044
+          ]
+        },
+        {
+          "name": "Wing_Skeleton",
+          "vertices": 692,
+          "polygons": 638,
+          "edge_components": 8,
+          "largest_components": [
+            204,
+            174,
+            99,
+            72,
+            42,
+            42,
+            33,
+            26
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Fin",
+          "vertices": 573,
+          "polygons": 629,
+          "edge_components": 2,
+          "largest_components": [
+            389,
+            184
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.9801588654518127,
+            0.9801588654518127,
+            0.9801588654518127
+          ]
+        },
+        {
+          "name": "Wing_Moon",
+          "vertices": 415,
+          "polygons": 327,
+          "edge_components": 8,
+          "largest_components": [
+            99,
+            76,
+            68,
+            63,
+            57,
+            33,
+            10,
+            9
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            0.6056591272354126
+          ]
+        },
+        {
+          "name": "Wing_Small",
+          "vertices": 578,
+          "polygons": 580,
+          "edge_components": 4,
+          "largest_components": [
+            308,
+            99,
+            89,
+            82
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.7483354806900024,
+            0.7483354806900024,
+            0.7483354806900024
+          ]
+        },
+        {
+          "name": "Hat_IceHorns",
+          "vertices": 199,
+          "polygons": 208,
+          "edge_components": 1,
+          "largest_components": [
+            199
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_IceEars",
+          "vertices": 74,
+          "polygons": 92,
+          "edge_components": 1,
+          "largest_components": [
+            74
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_BunnyEars",
+          "vertices": 153,
+          "polygons": 148,
+          "edge_components": 1,
+          "largest_components": [
+            153
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Witch",
+          "vertices": 349,
+          "polygons": 455,
+          "edge_components": 2,
+          "largest_components": [
+            325,
+            24
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Mushroom",
+          "vertices": 401,
+          "polygons": 380,
+          "edge_components": 12,
+          "largest_components": [
+            192,
+            19,
+            19,
+            19,
+            19,
+            19,
+            19,
+            19
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Deer",
+          "vertices": 287,
+          "polygons": 341,
+          "edge_components": 2,
+          "largest_components": [
+            174,
+            113
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Felt",
+          "vertices": 874,
+          "polygons": 946,
+          "edge_components": 1,
+          "largest_components": [
+            874
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Cylinder",
+          "vertices": 654,
+          "polygons": 764,
+          "edge_components": 3,
+          "largest_components": [
+            630,
+            12,
+            12
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_CatEars",
+          "vertices": 112,
+          "polygons": 104,
+          "edge_components": 1,
+          "largest_components": [
+            112
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Mask",
+          "vertices": 499,
+          "polygons": 494,
+          "edge_components": 4,
+          "largest_components": [
+            377,
+            64,
+            49,
+            9
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Iro",
+          "vertices": 144,
+          "polygons": 126,
+          "edge_components": 1,
+          "largest_components": [
+            144
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 2,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Iro_2",
+          "vertices": 288,
+          "polygons": 252,
+          "edge_components": 2,
+          "largest_components": [
+            144,
+            144
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 2,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Iro_3",
+          "vertices": 144,
+          "polygons": 126,
+          "edge_components": 1,
+          "largest_components": [
+            144
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 2,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Chef",
+          "vertices": 669,
+          "polygons": 769,
+          "edge_components": 2,
+          "largest_components": [
+            627,
+            42
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_CrystalIro",
+          "vertices": 416,
+          "polygons": 444,
+          "edge_components": 13,
+          "largest_components": [
+            42,
+            40,
+            37,
+            32,
+            31,
+            30,
+            30,
+            29
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Dish",
+          "vertices": 625,
+          "polygons": 677,
+          "edge_components": 5,
+          "largest_components": [
+            450,
+            80,
+            35,
+            30,
+            30
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Fedora_A",
+          "vertices": 1078,
+          "polygons": 1064,
+          "edge_components": 2,
+          "largest_components": [
+            602,
+            476
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Fedora_B",
+          "vertices": 1281,
+          "polygons": 1265,
+          "edge_components": 2,
+          "largest_components": [
+            737,
+            544
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Beanie",
+          "vertices": 377,
+          "polygons": 368,
+          "edge_components": 1,
+          "largest_components": [
+            377
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Cap",
+          "vertices": 553,
+          "polygons": 564,
+          "edge_components": 3,
+          "largest_components": [
+            442,
+            86,
+            25
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Antlers",
+          "vertices": 220,
+          "polygons": 176,
+          "edge_components": 11,
+          "largest_components": [
+            136,
+            12,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Samurai",
+          "vertices": 847,
+          "polygons": 921,
+          "edge_components": 6,
+          "largest_components": [
+            365,
+            126,
+            123,
+            97,
+            68,
+            68
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Pirate",
+          "vertices": 611,
+          "polygons": 670,
+          "edge_components": 5,
+          "largest_components": [
+            411,
+            76,
+            76,
+            24,
+            24
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Hat_Crown",
+          "vertices": 518,
+          "polygons": 539,
+          "edge_components": 14,
+          "largest_components": [
+            148,
+            43,
+            42,
+            40,
+            40,
+            37,
+            36,
+            26
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Tail_Pluf",
+          "vertices": 527,
+          "polygons": 545,
+          "edge_components": 6,
+          "largest_components": [
+            429,
+            70,
+            8,
+            8,
+            6,
+            6
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.8288878798484802,
+            0.828887939453125,
+            0.828887939453125
+          ]
+        },
+        {
+          "name": "Tail_Dragon_B",
+          "vertices": 558,
+          "polygons": 633,
+          "edge_components": 17,
+          "largest_components": [
+            221,
+            61,
+            29,
+            22,
+            21,
+            21,
+            21,
+            21
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.8878837823867798,
+            0.8878837823867798,
+            0.8878837823867798
+          ]
+        },
+        {
+          "name": "Tail_Fox",
+          "vertices": 561,
+          "polygons": 653,
+          "edge_components": 1,
+          "largest_components": [
+            561
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Tail_Dragon_A",
+          "vertices": 545,
+          "polygons": 786,
+          "edge_components": 1,
+          "largest_components": [
+            545
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Tail_Cat",
+          "vertices": 526,
+          "polygons": 555,
+          "edge_components": 2,
+          "largest_components": [
+            418,
+            108
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Tail_Devil",
+          "vertices": 546,
+          "polygons": 664,
+          "edge_components": 1,
+          "largest_components": [
+            546
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "name": "Wing_Mount",
+          "vertices": 99,
+          "polygons": 98,
+          "edge_components": 1,
+          "largest_components": [
+            99
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.6529382467269897,
+            0.2750285863876343,
+            0.6529382467269897
+          ]
+        },
+        {
+          "name": "Scarf_01",
+          "vertices": 273,
+          "polygons": 245,
+          "edge_components": 2,
+          "largest_components": [
+            213,
+            60
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.6050351858139038,
+            0.6050351858139038,
+            0.6050351858139038
+          ]
+        },
+        {
+          "name": "Scarf_02",
+          "vertices": 166,
+          "polygons": 169,
+          "edge_components": 1,
+          "largest_components": [
+            166
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 0,
+          "positive_deform_weight_vertices": 0,
+          "object_scale": [
+            0.4980689287185669,
+            0.4980689287185669,
+            0.4980689287185669
+          ]
+        },
+        {
+          "name": "Shoe_02",
+          "vertices": 523,
+          "polygons": 590,
+          "edge_components": 1,
+          "largest_components": [
+            523
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 523,
+          "object_scale": [
+            0.3651154637336731,
+            0.3651154637336731,
+            0.3651154637336731
+          ]
+        },
+        {
+          "name": "Shoe_04",
+          "vertices": 505,
+          "polygons": 585,
+          "edge_components": 1,
+          "largest_components": [
+            505
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 505,
+          "object_scale": [
+            0.3651154637336731,
+            0.3651154637336731,
+            0.3651154637336731
+          ]
+        },
+        {
+          "name": "Shoe_03",
+          "vertices": 543,
+          "polygons": 641,
+          "edge_components": 3,
+          "largest_components": [
+            451,
+            46,
+            46
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 543,
+          "object_scale": [
+            0.3651154637336731,
+            0.3651154637336731,
+            0.3651154637336731
+          ]
+        },
+        {
+          "name": "Shoe_01",
+          "vertices": 535,
+          "polygons": 597,
+          "edge_components": 2,
+          "largest_components": [
+            521,
+            14
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 535,
+          "object_scale": [
+            0.36511552333831787,
+            0.36511552333831787,
+            0.36511552333831787
+          ]
+        },
+        {
+          "name": "Shoe_05",
+          "vertices": 532,
+          "polygons": 596,
+          "edge_components": 1,
+          "largest_components": [
+            532
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 532,
+          "object_scale": [
+            0.3651154637336731,
+            0.3651154637336731,
+            0.3651154637336731
+          ]
+        },
+        {
+          "name": "Shoe_06",
+          "vertices": 562,
+          "polygons": 681,
+          "edge_components": 1,
+          "largest_components": [
+            562
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 562,
+          "object_scale": [
+            0.3651154637336731,
+            0.3651154637336731,
+            0.3651154637336731
+          ]
+        },
+        {
+          "name": "Shoe_07",
+          "vertices": 541,
+          "polygons": 606,
+          "edge_components": 1,
+          "largest_components": [
+            541
+          ],
+          "shape_keys": 0,
+          "uv_layers": 1,
+          "materials": 1,
+          "armature_modifiers": 1,
+          "positive_deform_weight_vertices": 541,
+          "object_scale": [
+            0.3651154637336731,
+            0.3651154637336731,
+            0.3651154637336731
+          ]
+        }
+      ],
+      "actions": 4,
+      "unit_settings": {
+        "system": "METRIC",
+        "scale_length": 1.0
+      },
+      "status": "import_or_open_succeeded"
+    }
+  ]
+}

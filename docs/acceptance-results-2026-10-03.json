@@ -1,0 +1,104 @@
+{
+  "blender": [
+    {
+      "case": "SyntheticT",
+      "status": "pass",
+      "bones": 53,
+      "mapping": 52,
+      "source_scene_preserved": true,
+      "fbx_shape_keys": 1
+    },
+    {
+      "case": "SyntheticA",
+      "status": "pass",
+      "bones": 53,
+      "mapping": 52,
+      "source_scene_preserved": true,
+      "fbx_shape_keys": 1
+    },
+    {
+      "case": "ShanePreserved",
+      "status": "pass",
+      "bones": 68,
+      "source_file_preserved": true,
+      "shape_keys": 3
+    },
+    {
+      "case": "unweighted_rejection",
+      "status": "pass"
+    },
+    {
+      "case": "copy_only_four_weight_pruning",
+      "status": "pass"
+    }
+  ],
+  "unity_version": "6000.3.21f1",
+  "unity": [
+    {
+      "name": "SyntheticT",
+      "error": "",
+      "passed": true,
+      "bind_preserved": true,
+      "vertices_preserved": true,
+      "max_bind_delta": 0.0,
+      "generic_lbs_error_meters": 5.733831471843587e-07,
+      "humanoid_hand_movement_meters": 0.18530434370040894,
+      "humanoid_pose_applied": true,
+      "validation": {
+        "asset": "Assets/Fixtures/SyntheticT/SyntheticT.fbx",
+        "unity_version": "6000.3.21f1",
+        "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+        "valid_avatar": true,
+        "human_avatar": true,
+        "mapped_bones": 52,
+        "skinned_meshes": 1,
+        "blendshapes": 1,
+        "height_meters": 1.7242501974105835
+      }
+    },
+    {
+      "name": "SyntheticA",
+      "error": "",
+      "passed": true,
+      "bind_preserved": true,
+      "vertices_preserved": true,
+      "max_bind_delta": 0.0,
+      "generic_lbs_error_meters": 5.342935196495091e-07,
+      "humanoid_hand_movement_meters": 0.48060938715934753,
+      "humanoid_pose_applied": true,
+      "validation": {
+        "asset": "Assets/Fixtures/SyntheticA/SyntheticA.fbx",
+        "unity_version": "6000.3.21f1",
+        "skeleton_signature": "9c56639a3247edc247451aa173dd7a001183db8e5130e50d0d985d4e4048bc16",
+        "valid_avatar": true,
+        "human_avatar": true,
+        "mapped_bones": 52,
+        "skinned_meshes": 1,
+        "blendshapes": 1,
+        "height_meters": 1.3829994201660156
+      }
+    },
+    {
+      "name": "ShanePreserved",
+      "error": "",
+      "passed": true,
+      "bind_preserved": true,
+      "vertices_preserved": true,
+      "max_bind_delta": 0.0,
+      "generic_lbs_error_meters": 0.0,
+      "humanoid_hand_movement_meters": 0.6680556535720825,
+      "humanoid_pose_applied": true,
+      "validation": {
+        "asset": "Assets/Fixtures/ShanePreserved/ShanePreserved.fbx",
+        "unity_version": "6000.3.21f1",
+        "skeleton_signature": "1d9e00b6439e86133d953b839541dbaeb28793903ced52c6ce86b77fcaf0ec50",
+        "valid_avatar": true,
+        "human_avatar": true,
+        "mapped_bones": 54,
+        "skinned_meshes": 2,
+        "blendshapes": 3,
+        "height_meters": 1.854810357093811
+      }
+    }
+  ]
+}

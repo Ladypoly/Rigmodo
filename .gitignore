@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.zip
+*.log
+artifacts/
+*.blend
+*.blend1
+*.fbx
+*.glb
+*.png
+*.jpg
