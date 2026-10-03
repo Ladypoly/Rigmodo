@@ -1,0 +1,102 @@
+{
+  "python": "3.11",
+  "platform": "win_amd64",
+  "packages": [
+    {
+      "name": "numpy",
+      "version": "2.2.6",
+      "url": "https://files.pythonhosted.org/packages/31/0a/f354fb7176b81747d870f7991dc763e157a934c717b67b58456bc63da3df/numpy-2.2.6-cp311-cp311-win_amd64.whl",
+      "sha256": "e8213002e427c69c45a52bbd94163084025f533a55a59d6f9c5b820774ef3303",
+      "filename": "numpy-2.2.6-cp311-cp311-win_amd64.whl",
+      "bytes": 12907455
+    },
+    {
+      "name": "einops",
+      "version": "0.8.1",
+      "url": "https://files.pythonhosted.org/packages/87/62/9773de14fe6c45c23649e98b83231fffd7b9892b6cf863251dc2afa73643/einops-0.8.1-py3-none-any.whl",
+      "sha256": "919387eb55330f5757c6bea9165c5ff5cfe63a642682ea788a6d472576d81737",
+      "filename": "einops-0.8.1-py3-none-any.whl",
+      "bytes": 64359
+    },
+    {
+      "name": "filelock",
+      "version": "3.18.0",
+      "url": "https://files.pythonhosted.org/packages/4d/36/2a115987e2d8c300a974597416d9de88f2444426de9571f4b59b2cca3acc/filelock-3.18.0-py3-none-any.whl",
+      "sha256": "c401f4f8377c4464e6db25fff06205fd89bdd83b65eb0488ed1b160f780e21de",
+      "filename": "filelock-3.18.0-py3-none-any.whl",
+      "bytes": 16215
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.14.0",
+      "url": "https://files.pythonhosted.org/packages/69/e0/552843e0d356fbb5256d21449fa957fa4eff3bbc135a74a691ee70c7c5da/typing_extensions-4.14.0-py3-none-any.whl",
+      "sha256": "a1514509136dd0b477638fc68d6a91497af5076466ad0fa6c338e44e359944af",
+      "filename": "typing_extensions-4.14.0-py3-none-any.whl",
+      "bytes": 43839
+    },
+    {
+      "name": "sympy",
+      "version": "1.13.3",
+      "url": "https://files.pythonhosted.org/packages/99/ff/c87e0622b1dadea79d2fb0b25ade9ed98954c9033722eb707053d310d4f3/sympy-1.13.3-py3-none-any.whl",
+      "sha256": "54612cf55a62755ee71824ce692986f23c88ffa77207b30c1368eda4a7060f73",
+      "filename": "sympy-1.13.3-py3-none-any.whl",
+      "bytes": 6189483
+    },
+    {
+      "name": "networkx",
+      "version": "3.4.2",
+      "url": "https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl",
+      "sha256": "df5d4365b724cf81b8c6a7312509d0c22386097011ad1abe274afd5e9d3bbc5f",
+      "filename": "networkx-3.4.2-py3-none-any.whl",
+      "bytes": 1723263
+    },
+    {
+      "name": "jinja2",
+      "version": "3.1.6",
+      "url": "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl",
+      "sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67",
+      "filename": "jinja2-3.1.6-py3-none-any.whl",
+      "bytes": 134899
+    },
+    {
+      "name": "fsspec",
+      "version": "2025.3.0",
+      "url": "https://files.pythonhosted.org/packages/56/53/eb690efa8513166adef3e0669afd31e95ffde69fb3c52ec2ac7223ed6018/fsspec-2025.3.0-py3-none-any.whl",
+      "sha256": "efb87af3efa9103f94ca91a7f8cb7a4df91af9f74fc106c9c7ea0efd7277c1b3",
+      "filename": "fsspec-2025.3.0-py3-none-any.whl",
+      "bytes": 193615
+    },
+    {
+      "name": "markupsafe",
+      "version": "3.0.2",
+      "url": "https://files.pythonhosted.org/packages/da/b8/3a3bd761922d416f3dc5d00bfbed11f66b1ab89a0c2b6e887240a30b0f6b/MarkupSafe-3.0.2-cp311-cp311-win_amd64.whl",
+      "sha256": "70a87b411535ccad5ef2f1df5136506a10775d267e197e4cf531ced10537bd6b",
+      "filename": "MarkupSafe-3.0.2-cp311-cp311-win_amd64.whl",
+      "bytes": 15521
+    },
+    {
+      "name": "mpmath",
+      "version": "1.3.0",
+      "url": "https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl",
+      "sha256": "a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c",
+      "filename": "mpmath-1.3.0-py3-none-any.whl",
+      "bytes": 536198
+    },
+    {
+      "name": "pip",
+      "version": "25.1.1",
+      "url": "https://files.pythonhosted.org/packages/29/a2/d40fb2460e883eca5199c62cfc2463fd261f760556ae6290f88488c362c0/pip-25.1.1-py3-none-any.whl",
+      "sha256": "2913a38a2abf4ea6b64ab507bd9e967f3b53dc1ede74b01b0931e1ce548751af",
+      "filename": "pip-25.1.1-py3-none-any.whl",
+      "bytes": 1825227
+    },
+    {
+      "name": "torch",
+      "version": "2.7.1+cu128",
+      "url": "https://download-r2.pytorch.org/whl/cu128/torch-2.7.1%2Bcu128-cp311-cp311-win_amd64.whl",
+      "sha256": "138c66dcd0ed2f07aafba3ed8b7958e2bed893694990e0b4b55b6b2b4a336aa6",
+      "filename": "torch-2.7.1+cu128-cp311-cp311-win_amd64.whl",
+      "bytes": 3273066072
+    }
+  ]
+}

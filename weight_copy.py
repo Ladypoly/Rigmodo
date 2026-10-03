@@ -6,6 +6,30 @@ import bpy
 from mathutils import Matrix
 
 
+def clone(context,rig,meshes,label='Root'):
+    """Structural adaptation must preserve even unbound or unfinished paint."""
+    if context.mode!='OBJECT':raise ValueError('Return to Object Mode before copying a character')
+    collection=bpy.data.collections.new('Local Character '+label);objects=[];blocks=[]
+    try:
+        target=rig.copy();target.data=rig.data.copy();objects.append(target);blocks.append(target.data)
+        target.name=rig.name+'_'+label;target.parent=None;target.matrix_world=rig.matrix_world.copy();collection.objects.link(target)
+        for original in meshes:
+            mesh=original.copy();mesh.data=original.data.copy();objects.append(mesh);blocks.append(mesh.data)
+            mesh.name=original.name+'_'+label;mesh.parent=target;mesh.parent_type='OBJECT'
+            mesh.matrix_parent_inverse=Matrix.Identity(4);mesh.matrix_world=original.matrix_world.copy();collection.objects.link(mesh)
+            for modifier in mesh.modifiers:
+                if modifier.type=='ARMATURE' and modifier.object==rig:modifier.object=target
+        target['lc_revision']=str(uuid.uuid4())
+        context.scene.collection.children.link(collection)
+        return collection,target,objects[1:]
+    except Exception:
+        for obj in objects:bpy.data.objects.remove(obj,do_unlink=True)
+        for block in blocks:
+            if block.users==0:(bpy.data.armatures if isinstance(block,bpy.types.Armature) else bpy.data.meshes).remove(block)
+        bpy.data.collections.remove(collection)
+        raise
+
+
 def create(context, rig, meshes, bone_names, weights, label='Refined', method='surface_refined', metadata=None):
     if context.mode != 'OBJECT': raise ValueError('Switch to Object Mode before creating weighted copies')
     if len(meshes) != len(weights) or len(set(bone_names)) != len(bone_names): raise ValueError('Copy correspondence mismatch')

@@ -10,7 +10,11 @@ root=Path(__file__).resolve().parents[1]
 bundle=Path(sys.argv[1]).resolve()
 project=Path(tempfile.mkdtemp(prefix='local-character-ai-unity-')).resolve()
 editor=project/'Assets/LocalCharacter/Editor';editor.mkdir(parents=True)
-for file in (root/'unity/Editor').glob('*.cs'): shutil.copy2(file,editor/file.name)
+for file in (root/'unity/Editor').glob('*'):
+    if file.suffix in {'.cs','.asmdef'}:shutil.copy2(file,editor/file.name)
+runtime=editor.parent/'Runtime';runtime.mkdir()
+for file in (root/'unity/Runtime').glob('*'):
+    if file.suffix in {'.cs','.asmdef'}:shutil.copy2(file,runtime/file.name)
 for name in ('UnityAcceptance.cs','AnimationAcceptance.cs','SkinningAcceptance.cs'):
     shutil.copy2(root/'tests'/name,editor/name)
 shutil.copytree(bundle,project/'Assets/Fixtures/ShaneAISkin')

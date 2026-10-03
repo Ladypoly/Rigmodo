@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Local Character: independent game-character workflow, foundation release."""
+"""Local Character: independent local humanoid workflow."""
 import json
 import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa
 
 class LC_Settings(PropertyGroup):
     height: FloatProperty(name="Height (m)", default=1.75, min=.1, max=10)
@@ -14,7 +14,7 @@ class LC_Settings(PropertyGroup):
     fit_bounds: BoolProperty(name="Use selected mesh bounds", default=True,
         description="Rough template fit for upright Z-up geometry; joint placement still needs review")
     character_name: StringProperty(name="Character", default="Character")
-    export_directory: StringProperty(name="Export folder", subtype="DIR_PATH", default="//LocalCharacterExports/")
+    export_directory: StringProperty(name="Export folder", subtype="DIR_PATH", default="//LocalCharacterExports/",options={'PATH_SUPPORTS_BLEND_RELATIVE'})
     include_action: BoolProperty(name="Include armature's selected Action", default=False,
         description="Export one direct bone Action as a separate animation FBX; ignore other Actions and NLA")
     loop_action: BoolProperty(name="Loop clip in Unity", default=False,
@@ -34,7 +34,11 @@ class LC_Settings(PropertyGroup):
     skin_job: StringProperty(default="")
     skin_status: StringProperty(default="")
     refine_method: EnumProperty(name='Refinement', items=[('AUTO', 'Auto regions', 'Keep AI body weights; surface-refine digits and apply marked rigid regions'),
-        ('SURFACE', 'Surface heat', 'Refine all selected scope on actual surface adjacency')], default='AUTO')
+        ('SURFACE', 'Surface heat', 'Refine all selected scope on actual surface adjacency'),
+        ('RIGID_PARTS','Rigid mesh parts','Declare selected meshes rigid: confident connected parts bind to one AI-suggested bone; ambiguous parts retain their weights'),
+        ('GEODESIC','Surface distance binding','Bind or refine along actual surface edges without crossing disconnected geometry'),
+        ('VOXEL','Volume heat with surface details','Closed-volume diffusion; digits use surface distance; unsuitable geometry falls back with a report')], default='AUTO')
+    voxel_resolution: IntProperty(name='Volume resolution',default=48,min=24,max=64)
     refine_iterations: IntProperty(name='Heat steps', default=12, min=1, max=200)
     refine_strength: FloatProperty(name='Strength', default=.35, min=.01, max=1)
     refine_selected: BoolProperty(name='Selected vertices only', default=False)
@@ -48,6 +52,91 @@ class LC_Settings(PropertyGroup):
     region_report: StringProperty(default='')
     region_job: StringProperty(default='')
     region_status: StringProperty(default='')
+    motion_provider: StringProperty(name='Kimodo runtime folder', subtype='DIR_PATH', default=str(motion_jobs.cache()))
+    motion_prompt: StringProperty(name='Motion', default='A person walks forward naturally at a steady pace.')
+    motion_frames: IntProperty(name='Frames at 30 fps', default=90, min=15, max=900)
+    motion_steps: IntProperty(name='Sampling steps', default=100, min=10, max=200)
+    motion_seed: IntProperty(name='Seed', default=101, min=0, max=2147483647)
+    motion_in_place: BoolProperty(name='In place', default=False, description='Remove ground travel while preserving hip sway and jump height')
+    motion_contacts: BoolProperty(name='Correct foot contacts',default=True,description='Bake local leg IK for detected contacts; review ground height and reachable foot positions')
+    motion_heading: BoolProperty(name='Extract turning to Root',default=True,description='Move the source hip’s changing ground heading into Root while preserving the body’s world pose')
+    motion_loop_blend: IntProperty(name='Loop blend frames',default=8,min=2,max=120)
+    motion_hand_curl: FloatProperty(name='Hand curl', default=0., min=0, max=1, description='Editable finger pose; SOMA motion has no animated finger joints')
+    hand_controls: BoolProperty(name='Individual hand controls',default=False,description='Override the shared curl with per-hand, per-finger settings')
+    hand_side: EnumProperty(name='Hand',items=[('Left','Left',''),('Right','Right','')])
+    hand_preset: EnumProperty(name='Pose',items=[(p,p.title(),'Editable finger preset') for p in hand_pose.PRESETS])
+    optional_kind: EnumProperty(name='Optional bone',items=[('LEFT_EYE','Left eye','Cursor at the eye centre'),('RIGHT_EYE','Right eye','Cursor at the eye centre'),('JAW','Jaw','Cursor at jaw hinge'),('SOCKET','Attachment socket','Unweighted attachment bone')])
+    optional_parent: StringProperty(name='Socket parent',default='RightHand')
+    optional_name: StringProperty(name='Socket name',default='WeaponSocket')
+    motion_job: StringProperty(default='')
+    motion_status: StringProperty(default='')
+    placement_python: StringProperty(name='MIA Python runtime',subtype='FILE_PATH',default=str(placement.cache()/'runtime/Scripts/python.exe'))
+    placement_job: StringProperty(default='')
+    placement_status: StringProperty(default='')
+    workflow_reuse_joints: BoolProperty(name='Reuse accepted joints',default=True,description='Keep corrected humanoid joints when an accepted Root and core hierarchy already exist')
+    workflow_rebind: BoolProperty(name='Rebuild AI weights',default=True,description='Protected paint and locked bone weights remain fixed')
+    workflow_motion: BoolProperty(name='Generate motion',default=True)
+    workflow_export: BoolProperty(name='Export when complete',default=False)
+    workflow_loop: BoolProperty(name='Blend loop endpoint',default=False,description='Create an editable pose blend; inspect foot timing before using it as a loop')
+    workflow_hide_sources: BoolProperty(name='Hide source and intermediate copies',default=True,description='Hide only after success; originals remain recoverable in the Outliner')
+    workflow_twists: BoolProperty(name='Optional forearm twists',default=False,description='Add two deform helpers after core AI binding; arbitrary Unity Humanoid clips use the companion twist component')
+    workflow_rigid: BoolProperty(name='Treat meshes as rigid character parts',default=False,description='An explicit material decision for robots: clear connected parts use one AI-suggested joint; ambiguous parts stay editable')
+    workflow_allow_strain: BoolProperty(name='Allow severe deformation findings',default=False,description='Expert override after inspecting the recorded edge-strain probes; automatic motion/export normally stops for correction')
+    deformation_report: StringProperty(default='')
+    workflow_status: StringProperty(default='')
+    workflow_id: StringProperty(default='')
+    setup_python: StringProperty(name='Python 3.11',subtype='FILE_PATH',default=str(__import__('pathlib').Path.home()/'miniconda3/python.exe'))
+    setup_archive: StringProperty(name='Windows provider archive',subtype='FILE_PATH',default=str(__import__('pathlib').Path(__file__).parent/'artifacts/local_character-windows-providers.zip'))
+    setup_status: StringProperty(default='')
+    setup_job: StringProperty(default='')
+    show_controls: BoolProperty(name='Joint, skinning and export controls',default=False)
+
+for _side in ('Left','Right'):
+    for _finger in skeleton.FINGERS:
+        LC_Settings.__annotations__['hand_'+_side.lower()+'_'+_finger.lower()]=FloatProperty(name=_finger+' curl',default=0,min=0,max=1)
+
+
+class LC_OT_optional_bone(Operator):
+    bl_idname='local_character.add_optional_bone'
+    bl_label='Add at Cursor to New Copy'
+    bl_options={'REGISTER','UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs and not workflow._runs
+    def execute(self,context):
+        try:
+            rig,meshes=skinning.selection(context);s=context.scene.lc_settings
+            collection,rig,meshes=rig_modules.add(context,rig,meshes,s.optional_kind,s.optional_parent,s.optional_name)
+            workflow.select(context,rig,meshes)
+            self.report({'INFO'},'Optional bone added. Review its position, then paint weights or mark a rigid region')
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return {'FINISHED'}
+
+
+class LC_OT_hand_preset(Operator):
+    bl_idname='local_character.hand_preset'
+    bl_label='Use Hand Preset'
+    bl_options={'UNDO'}
+    def execute(self,context):
+        s=context.scene.lc_settings;s.hand_controls=True
+        for finger,value in zip(skeleton.FINGERS,hand_pose.PRESETS[s.hand_preset]):
+            setattr(s,'hand_'+s.hand_side.lower()+'_'+finger.lower(),value)
+        return {'FINISHED'}
+
+
+class LC_OT_deformation_check(Operator):
+    bl_idname='local_character.check_deformation'
+    bl_label='Check Deformation Probes'
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
+    def execute(self,context):
+        try:
+            rig,meshes=skinning.selection(context);report=deformation_qa.inspect(rig,meshes)
+            context.scene.lc_settings.deformation_report=json.dumps(report)
+            severe,warnings=deformation_qa.findings(report)
+            self.report({'WARNING'} if severe or warnings else {'INFO'},(severe+warnings)[0] if severe or warnings else 'No severe strain detected; joint and pose review is still required')
+        except (ValueError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return {'FINISHED'}
+
 
 class LC_OT_create_template(Operator):
     bl_idname = "local_character.create_template"
@@ -140,12 +229,12 @@ class WorkerModal:
         if event.type != 'TIMER': return {'PASS_THROUGH'}
         state = skinning.poll(self._folder)
         if state['status'] == 'running':
-            setattr(settings, self.status_property, f"Running locally: {int(state['elapsed_seconds'])} s; Escape cancels")
+            setattr(settings, self.status_property, f"{state.get('phase','Running locally')}: {int(state['elapsed_seconds'])} s; Escape cancels")
             if context.screen:
                 for area in context.screen.areas: area.tag_redraw()
             return {'PASS_THROUGH'}
         try:
-            if state['status'] != 'complete': raise ValueError('Worker failed; inspect worker.log in the last job folder')
+            if state['status'] != 'complete': raise ValueError(state.get('error') or 'Worker failed; inspect worker.log in the last job folder')
             if context.scene != self._scene: raise ValueError('Return to the source scene and create the weighted copy from the finished job')
             result = getattr(bpy.ops.local_character, self.apply_operator)('EXEC_DEFAULT')
             if result != {'FINISHED'}: raise ValueError(getattr(settings, self.status_property))
@@ -261,7 +350,7 @@ class LC_OT_refine(WorkerModal, Operator):
             rig, meshes = skinning.selection(context)
             self._folder = regional_jobs.prepare(context, rig, meshes, method=settings.refine_method,
                 iterations=settings.refine_iterations, strength=settings.refine_strength,
-                selected_only=settings.refine_selected, join_seams=settings.refine_seams)
+                selected_only=settings.refine_selected, join_seams=settings.refine_seams,voxel_resolution=settings.voxel_resolution)
             regional_jobs.start(self._folder)
         except (ValueError, OSError, RuntimeError) as exc: self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
         return self.begin(context)
@@ -287,6 +376,252 @@ class LC_OT_apply_region(Operator):
         self.report({'INFO'}, f'Created {collection.name}; protected weights preserved')
         return {'FINISHED'}
 
+class LC_OT_place(WorkerModal,Operator):
+    bl_idname='local_character.place_joints'
+    bl_label='Find Humanoid Joints Locally'
+    bl_options={'REGISTER'}
+    status_property='placement_status'
+    job_property='placement_job'
+    apply_operator='apply_placement_job'
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
+    def execute(self,context):
+        try:
+            rig,meshes=placement.selected(context)
+            self._folder=placement.prepare(context,meshes,rig)
+            placement.start(self._folder,context.scene.lc_settings.placement_python)
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return self.begin(context)
+
+
+class LC_OT_apply_placement(Operator):
+    bl_idname='local_character.apply_placement_job'
+    bl_label='Create Editable Joint Proposal'
+    bl_options={'REGISTER','UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs and bool(context.scene.lc_settings.placement_job)
+    def execute(self,context):
+        settings=context.scene.lc_settings
+        try:
+            collection,rig,meshes,result=placement.apply(context,settings.placement_job)
+            for obj in context.selected_objects:obj.select_set(False)
+            for obj in [rig,*meshes]:obj.select_set(True)
+            context.view_layer.objects.active=rig
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:
+            settings.placement_status=str(exc);self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        settings.placement_status='Joint proposal created. Review feet, shoulders and fingers; edit joints before AI binding'
+        self.report({'INFO'},f'Created {collection.name}: 52 proposed joints and Root')
+        return {'FINISHED'}
+
+
+class LC_OT_lock_joints(Operator):
+    bl_idname='local_character.lock_joints'
+    bl_label='Lock Selected Joint Positions'
+    bl_options={'REGISTER','UNDO'}
+    enabled:BoolProperty(default=True)
+    @classmethod
+    def poll(cls,context):return context.active_object and context.active_object.type=='ARMATURE' and context.mode in {'OBJECT','POSE'}
+    def execute(self,context):
+        bones=[b for b in context.active_object.data.bones if b.select]
+        if not bones:self.report({'ERROR'},'Select corrected joints first');return {'CANCELLED'}
+        if context.active_object.data.users>1:self.report({'ERROR'},'Make the armature data single-user first');return {'CANCELLED'}
+        for bone in bones:bone['lc_joint_locked']=self.enabled
+        self.report({'INFO'},f'{len(bones)} joint position locks updated')
+        return {'FINISHED'}
+
+
+class LC_OT_motion(WorkerModal, Operator):
+    bl_idname='local_character.generate_motion'
+    bl_label='Generate Local Motion'
+    bl_options={'REGISTER'}
+    status_property='motion_status'
+    job_property='motion_job'
+    apply_operator='apply_motion_job'
+    @classmethod
+    def poll(cls, context): return context.mode=='OBJECT' and not skinning._jobs
+    def execute(self, context):
+        settings=context.scene.lc_settings
+        try:
+            rig=motion_jobs.selected_rig(context)
+            self._folder=motion_jobs.prepare(context,rig,settings.motion_prompt,settings.motion_frames,
+                settings.motion_steps,settings.motion_seed,settings.motion_in_place)
+            motion_jobs.start(self._folder,settings.motion_provider)
+        except (ValueError,OSError,RuntimeError,KeyError) as exc: self.report({'ERROR'},str(exc)); return {'CANCELLED'}
+        return self.begin(context)
+
+
+class LC_OT_apply_motion(Operator):
+    bl_idname='local_character.apply_motion_job'
+    bl_label='Create Copy from Finished Motion'
+    bl_options={'REGISTER','UNDO'}
+    @classmethod
+    def poll(cls, context): return context.mode=='OBJECT' and not skinning._jobs and bool(context.scene.lc_settings.motion_job)
+    def execute(self, context):
+        settings=context.scene.lc_settings
+        try:
+            collection,rig,meshes,action,report=motion_apply.apply(context,settings.motion_job,settings.motion_hand_curl,settings.motion_contacts,settings.motion_heading,
+                hand_pose.settings(settings) if settings.hand_controls else None)
+            for obj in context.selected_objects: obj.select_set(False)
+            for obj in [rig,*meshes]: obj.select_set(True)
+            context.view_layer.objects.active=rig
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:
+            settings.motion_status=str(exc); self.report({'ERROR'},str(exc)); return {'CANCELLED'}
+        settings.motion_status='Editable motion copy created; inspect contacts and export the selected Action'
+        self.report({'INFO'},f'Created {collection.name}: {report["frames"]} frames at 30 fps')
+        return {'FINISHED'}
+
+
+class LC_OT_finish_loop(Operator):
+    bl_idname='local_character.finish_loop'
+    bl_label='Make Editable Loop Copy'
+    bl_options={'REGISTER','UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
+    def execute(self,context):
+        settings=context.scene.lc_settings
+        try:
+            rig=motion_jobs.selected_rig(context)
+            action=motion_finish.loop(context,rig,settings.motion_loop_blend)
+        except (ValueError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        settings.loop_action=True
+        settings.motion_status='Loop copy created; review endpoint velocities and contact timing before export'
+        self.report({'INFO'},f'Created {action.name}; original Action preserved')
+        return {'FINISHED'}
+
+
+class LC_OT_preview_motion(Operator):
+    bl_idname='local_character.preview_motion'
+    bl_label='Preview Selected Motion'
+    bl_options={'UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
+    def execute(self,context):
+        try:
+            from .animation import selected_action
+            rig=motion_jobs.selected_rig(context);selection=selected_action(rig,context.scene)
+            scene=context.scene;scene.use_preview_range=True;scene.frame_preview_start=selection['frame_start'];scene.frame_preview_end=selection['frame_end']
+            scene.frame_set(selection['frame_start'])
+        except (ValueError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return {'FINISHED'}
+
+
+class LC_OT_install(WorkerModal,Operator):
+    bl_idname='local_character.install_providers'
+    bl_label='Install Local Providers'
+    bl_description='Install verified native files and download pinned checkpoints into the local cache; inference stays local'
+    bl_options={'REGISTER'}
+    status_property='setup_status'
+    job_property='setup_job'
+    apply_operator='finish_provider_setup'
+    @classmethod
+    def poll(cls,context):return not skinning._jobs and not workflow._runs
+    def execute(self,context):
+        try:self._folder=install_jobs.start(bpy.path.abspath(context.scene.lc_settings.setup_python),bpy.path.abspath(context.scene.lc_settings.setup_archive))
+        except (ValueError,OSError,RuntimeError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return self.begin(context)
+
+
+class LC_OT_install_finished(Operator):
+    bl_idname='local_character.finish_provider_setup'
+    bl_label='Finish Provider Setup'
+    bl_options={'INTERNAL'}
+    def execute(self,context):
+        if skinning.poll(context.scene.lc_settings.setup_job)['status']!='complete':return {'CANCELLED'}
+        context.scene.lc_settings.setup_status='Local providers installed; model hashes are checked again when jobs launch'
+        return {'FINISHED'}
+
+
+class LC_OT_twists(Operator):
+    bl_idname='local_character.add_twists'
+    bl_label='Add Forearm Twists to New Copy'
+    bl_options={'REGISTER','UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
+    def execute(self,context):
+        try:
+            rig,meshes=skinning.selection(context);_,rig,meshes=twists.add(context,rig,meshes)
+            workflow.select(context,rig,meshes)
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        self.report({'INFO'},'Two optional helpers added; selected Actions are baked. Unity Humanoid needs the twist component')
+        return {'FINISHED'}
+
+
+class LC_OT_twist_pose(Operator):
+    bl_idname='local_character.update_twist_pose'
+    bl_label='Update Twist Pose'
+    bl_options={'UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode in {'OBJECT','POSE'} and not skinning._jobs
+    def execute(self,context):
+        try:twists.update_pose(motion_jobs.selected_rig(context))
+        except (ValueError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return {'FINISHED'}
+
+
+class LC_OT_build(Operator):
+    bl_idname='local_character.build_character'
+    bl_label='Build Character Locally'
+    bl_description='Place humanoid joints, bind with AI, refine regions, and optionally generate motion and export'
+    bl_options={'REGISTER'}
+    _timer=None
+    _run=None
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and any(o.type=='MESH' for o in context.selected_objects) and not skinning._jobs and not workflow._runs
+    def execute(self,context):
+        try:
+            self._run=workflow.Run(context,workflow.options(context.scene.lc_settings));self._run.launch(context)
+            context.scene.lc_settings.workflow_id=self._run.id
+            self._timer=context.window_manager.event_timer_add(.5,window=context.window)
+            context.window_manager.modal_handler_add(self)
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:
+            if self._run:self._run.cancel(str(exc))
+            self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return {'RUNNING_MODAL'}
+    def _finish(self,context):
+        if self._timer:context.window_manager.event_timer_remove(self._timer)
+        self._timer=None
+    def modal(self,context,event):
+        if event.type=='ESC':
+            self._run.cancel();self._run.scene.lc_settings.workflow_status='Cancelled; finished review copies remain available'
+            self._finish(context);return {'CANCELLED'}
+        if event.type!='TIMER':return {'PASS_THROUGH'}
+        try:
+            settings=self._run.scene.lc_settings;state=skinning.poll(self._run.folder)
+            if state['status']=='running':
+                settings.workflow_status=f"{self._run.stage}: {state.get('phase','Running locally')} ({int(state['elapsed_seconds'])} s); Escape cancels"
+            else:
+                if state['status']!='complete':raise ValueError(state.get('error') or 'Local phase failed; inspect its worker.log')
+                if context.scene!=self._run.scene:raise ValueError('Return to the original scene; finished phase is available from its individual job')
+                if bpy.ops.local_character.advance_workflow('EXEC_DEFAULT')!={'FINISHED'}:raise ValueError(settings.workflow_status)
+                if self._run.halted:
+                    self.report({'WARNING'},self._run.halted);self._finish(context);return {'FINISHED'}
+                if self._run.finished:
+                    settings.workflow_status='Character ready for deformation review; editable results selected'
+                    self._finish(context);return {'FINISHED'}
+            if context.screen:
+                for area in context.screen.areas:area.tag_redraw()
+        except (ReferenceError,ValueError,OSError,RuntimeError,KeyError) as exc:
+            self._run.cancel(str(exc));self.report({'ERROR'},str(exc));self._finish(context);return {'CANCELLED'}
+        return {'PASS_THROUGH'}
+    def cancel(self,context):
+        if self._run:self._run.cancel()
+        self._finish(context)
+
+
+class LC_OT_advance_workflow(Operator):
+    bl_idname='local_character.advance_workflow'
+    bl_label='Accept Finished Workflow Phase'
+    bl_options={'UNDO','INTERNAL'}
+    def execute(self,context):
+        try:
+            run=workflow._runs.get(context.scene.lc_settings.workflow_id)
+            if not run:raise ValueError('Workflow session no longer exists; apply the finished individual job instead')
+            run.apply_step(context)
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:
+            context.scene.lc_settings.workflow_status=str(exc);self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return {'FINISHED'}
+
+
 class LC_PT_main(Panel):
     bl_label = "Local Character"
     bl_idname = "LC_PT_main"
@@ -295,15 +630,62 @@ class LC_PT_main(Panel):
     bl_category = "Local Character"
     def draw(self, context):
         layout = self.layout; settings = context.scene.lc_settings
+        box=layout.box();box.label(text='Model to animation',icon='OUTLINER_OB_ARMATURE')
+        box.label(text='Select one character’s meshes')
+        box.prop(settings,'workflow_reuse_joints');box.prop(settings,'workflow_rebind')
+        box.prop(settings,'workflow_twists')
+        box.prop(settings,'workflow_rigid')
+        box.prop(settings,'workflow_motion')
+        if settings.workflow_motion:
+            box.prop(settings,'motion_prompt');box.prop(settings,'motion_frames');box.prop(settings,'motion_in_place');box.prop(settings,'workflow_loop')
+        box.prop(settings,'workflow_export')
+        if settings.workflow_export:box.prop(settings,'export_directory');box.prop(settings,'character_name')
+        box.operator('local_character.build_character',icon='PLAY')
+        if context.active_object and context.active_object.type=='ARMATURE' and context.active_object.animation_data and context.active_object.animation_data.action:
+            box.operator('local_character.preview_motion',icon='PREVIEW_RANGE')
+        available=install_jobs.inventory(settings)
+        if all(available.values()):box.label(text='Local provider files available',icon='CHECKMARK')
+        else:box.label(text='Provider setup needed; open controls below',icon='INFO')
+        if settings.workflow_status:
+            import textwrap
+            for line in textwrap.wrap(settings.workflow_status,width=42):box.label(text=line)
+        layout.prop(settings,'show_controls')
+        if not settings.show_controls:return
         box = layout.box(); box.label(text="Editable humanoid", icon="ARMATURE_DATA")
         box.prop(settings, "fit_bounds")
         if not settings.fit_bounds: box.prop(settings, "height")
         box.prop(settings, "arm_angle"); box.prop(settings, "eyes")
         box.operator("local_character.create_template")
+        box.prop(settings,'placement_python')
+        box.operator('local_character.place_joints',icon='VIEWZOOM')
+        row=box.row(align=True);row.operator('local_character.lock_joints',text='Lock joints').enabled=True
+        row.operator('local_character.lock_joints',text='Unlock').enabled=False
+        if settings.placement_status:
+            import textwrap
+            for line in textwrap.wrap(settings.placement_status,width=42):box.label(text=line)
+        if settings.placement_job:box.operator('local_character.apply_placement_job')
         box.label(text="Review joints before AI skinning", icon="INFO")
+        box.operator('local_character.add_twists');box.operator('local_character.update_twist_pose')
+        box.label(text='Optional bones: place the 3D cursor first')
+        box.prop(settings,'optional_kind')
+        if settings.optional_kind=='SOCKET':
+            try:box.prop_search(settings,'optional_parent',motion_jobs.selected_rig(context).data,'bones')
+            except ValueError:box.prop(settings,'optional_parent')
+            box.prop(settings,'optional_name')
+        box.operator('local_character.add_optional_bone')
         box = layout.box(); box.label(text="Existing bound character", icon="MESH_DATA")
         box.label(text="Select only the meshes to export")
         box.prop(settings, "profile"); box.operator("local_character.preflight")
+        box.operator('local_character.check_deformation')
+        box.prop(settings,'workflow_allow_strain')
+        if settings.deformation_report:
+            try:
+                severe,warnings=deformation_qa.findings(json.loads(settings.deformation_report))
+                import textwrap
+                for finding in (severe+warnings)[:8]:
+                    for line in textwrap.wrap(finding,width=42):box.label(text=line,icon='ERROR' if severe else 'INFO')
+                if not severe and not warnings:box.label(text='No severe edge strain in tested probes',icon='CHECKMARK')
+            except (ValueError,KeyError):pass
         if settings.last_report:
             try:
                 report = json.loads(settings.last_report)
@@ -319,6 +701,12 @@ class LC_PT_main(Panel):
         box.operator("local_character.export_unity", icon="EXPORT")
         if settings.last_export: box.label(text="Last export: " + settings.last_export)
         box = layout.box(); box.label(text="Local AI providers", icon="INFO")
+        for name,available in install_jobs.inventory(settings).items():box.label(text=name+(': files found' if available else ': setup needed'),icon='CHECKMARK' if available else 'ERROR')
+        box.prop(settings,'setup_python');box.prop(settings,'setup_archive');box.operator('local_character.install_providers')
+        box.label(text='Setup downloads model files; inference is local')
+        if settings.setup_status:
+            import textwrap
+            for line in textwrap.wrap(settings.setup_status,width=42):box.label(text=line)
         box.label(text="SkinTokens: experimental weight proposal")
         box.label(text="Select accepted rig and character meshes")
         box.prop(settings, 'skin_executable'); box.prop(settings, 'skin_models')
@@ -328,7 +716,6 @@ class LC_PT_main(Panel):
             import textwrap
             for line in textwrap.wrap(settings.skin_status, width=42): box.label(text=line)
         if settings.skin_job: box.operator('local_character.apply_skin_job')
-        box.label(text="Joint placement and generated motion: next phase")
         box = layout.box(); box.label(text='Regional correction', icon='GROUP_VERTEX')
         box.label(text='Select vertices in Edit Mode; return to Object Mode')
         row = box.row(align=True)
@@ -344,6 +731,7 @@ class LC_PT_main(Panel):
         box.operator('local_character.mark_region')
         box.operator('local_character.clear_region')
         box.prop(settings, 'refine_method'); box.prop(settings, 'refine_selected')
+        if settings.refine_method=='VOXEL':box.prop(settings,'voxel_resolution')
         box.prop(settings, 'refine_seams'); box.prop(settings, 'refine_iterations'); box.prop(settings, 'refine_strength')
         box.operator('local_character.refine_regions')
         if settings.region_status:
@@ -355,15 +743,40 @@ class LC_PT_main(Panel):
                 for report in json.loads(settings.region_report):
                     box.label(text=f"{report['mesh']}: {report['rigid_vertices']} rigid, {report['protected_vertices']} protected")
                     if report['seam_constraint_conflicts']: box.label(text='Conflicting seam constraints need review', icon='ERROR')
+                    if 'rigid_components_assigned' in report:
+                        box.label(text=f"{report['rigid_components_assigned']} rigid parts assigned")
+                        box.label(text=f"{report['ambiguous_components_preserved']} ambiguous parts kept")
+                    if report.get('volume_fallback_reason'):
+                        import textwrap
+                        for line in textwrap.wrap('Surface fallback: '+report['volume_fallback_reason'],width=42):box.label(text=line,icon='INFO')
             except (ValueError, KeyError): pass
+        box=layout.box(); box.label(text='Local generated motion',icon='ACTION')
+        box.prop(settings,'motion_prompt'); box.prop(settings,'motion_frames')
+        box.prop(settings,'motion_in_place'); box.prop(settings,'motion_hand_curl')
+        box.prop(settings,'hand_controls')
+        if settings.hand_controls:
+            box.prop(settings,'hand_side');box.prop(settings,'hand_preset');box.operator('local_character.hand_preset')
+            for finger in skeleton.FINGERS:box.prop(settings,'hand_'+settings.hand_side.lower()+'_'+finger.lower())
+        box.prop(settings,'motion_contacts')
+        box.prop(settings,'motion_heading')
+        box.prop(settings,'motion_seed'); box.prop(settings,'motion_steps'); box.prop(settings,'motion_provider')
+        box.operator('local_character.generate_motion')
+        if settings.motion_status:
+            import textwrap
+            for line in textwrap.wrap(settings.motion_status,width=42): box.label(text=line)
+        if settings.motion_job: box.operator('local_character.apply_motion_job')
+        box.prop(settings,'motion_loop_blend');box.operator('local_character.finish_loop')
 
 CLASSES = (LC_Settings, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
-           LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region, LC_PT_main)
+           LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
+           LC_OT_place,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
+           LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
 def register():
     for cls in CLASSES: bpy.utils.register_class(cls)
     bpy.types.Scene.lc_settings = PointerProperty(type=LC_Settings)
 
 def unregister():
+    for run in list(workflow._runs.values()):run.cancel()
     skinning.cancel_all()
     del bpy.types.Scene.lc_settings
     for cls in reversed(CLASSES): bpy.utils.unregister_class(cls)

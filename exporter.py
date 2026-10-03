@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import shutil
 import tempfile
+import tomllib
 
 import bpy
 from mathutils import Matrix
@@ -14,11 +15,35 @@ from .preflight import inspect, UNITY_WEIGHT_FLOOR
 from .skeleton import HIERARCHY_VERSION, resolve_mapping
 from .animation import selected_action, attach_action
 
+VERSION = tomllib.loads(Path(__file__).with_name('blender_manifest.toml').read_text())['version']
+
+
+def _root_motion(scene, rig, selection):
+    """Independent root trajectory in Unity's reflected model frame, meters."""
+    from mathutils import Vector
+    if selection['frame_end']-selection['frame_start'] > 3600: raise ValueError('Explicit Root motion exceeds the 3600-frame export budget')
+    conversion=Matrix(((-1,0,0),(0,0,1),(0,-1,0)))
+    samples=[];first=None;previous=None
+    for frame in range(selection['frame_start'],selection['frame_end']+1):
+        scene.frame_set(frame)
+        evaluated=rig.evaluated_get(bpy.context.evaluated_depsgraph_get())
+        matrix=evaluated.matrix_world@evaluated.pose.bones['Root'].matrix
+        if first is None:first=matrix.copy()
+        delta=(matrix.translation-first.translation)*scene.unit_settings.scale_length
+        rotation=conversion@(matrix.to_quaternion().to_matrix()@first.to_quaternion().to_matrix().transposed())@conversion.transposed()
+        q=rotation.to_quaternion()
+        if previous and q.dot(previous)<0:q.negate()
+        previous=q.copy();p=conversion@delta
+        samples.append(dict(time=(frame-selection['frame_start'])/selection['fps'],
+            position=dict(x=p.x,y=p.y,z=p.z),rotation=dict(x=q.x,y=q.y,z=q.z,w=q.w)))
+    return dict(coordinate_space='unity_model_meters',samples=samples)
+
 def safe_name(value):
     name = re.sub(r"[^A-Za-z0-9_-]+", "_", value).strip("_")[:80]
     if not name or name.upper() in {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(1, 10)), *(f"LPT{i}" for i in range(1, 10))}:
         raise ValueError("Choose a character name containing letters or numbers")
     return name
+
 
 def _prune(mesh, rig):
     bone_groups = {g.index: g for g in mesh.vertex_groups if g.name in rig.data.bones}
@@ -72,7 +97,7 @@ def _manifest(rig, meshes, report, name, unit_scale):
                       "path": "/".join(reversed(chain)), "deform": bone.use_deform,
                       "rest_matrix_blender": [list(row) for row in bone.matrix_local]})
     signature = hashlib.sha256(json.dumps(bones, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-    return {"schema_version": 1, "artifact_kind": "character", "generator": "local_character/0.3.0", "character": name,
+    return {"schema_version": 1, "artifact_kind": "character", "generator": "local_character/"+VERSION, "character": name,
             "profile": report["profile"], "hierarchy_version": HIERARCHY_VERSION if rig.get("lc_hierarchy_version") else "imported-preserved",
             "skeleton_signature": signature, "rig_object": rig.name,
             "mapping": resolve_mapping(rig.data.bones), "bones": bones,
@@ -80,7 +105,11 @@ def _manifest(rig, meshes, report, name, unit_scale):
             "units": {"source_meters_per_unit": unit_scale, "target": "meters", "fbx_forward": "-Z", "fbx_up": "Y"},
             "maximum_influences": 4, "minimum_export_weight": UNITY_WEIGHT_FLOOR, "root_motion_policy": "no_clips_exported",
             "calibration_state": "unity_companion_required" if report["profile"] == "HUMANOID" else "not_applicable",
-            "modules": {"twist": False, "eyes": any(b.name.endswith("Eye") for b in rig.data.bones)},
+            "modules": {"twist": bool(rig.get('lc_twists')), "eyes": any(b.name.endswith("Eye") for b in rig.data.bones),
+                        "jaw":any(b.name.rsplit(':',1)[-1]=='Jaw' for b in rig.data.bones),
+                        "sockets":any(m.get('kind')=='SOCKET' for m in json.loads(rig.get('lc_optional_bones','[]')))},
+            "optional_bones":json.loads(rig.get('lc_optional_bones','[]')),
+            "twists": json.loads(rig.get('lc_twists','[]')),
             "meshes": [{"name": obj.name, "vertices": len(obj.data.vertices),
                         "shape_keys": [key.name for key in obj.data.shape_keys.key_blocks][1:] if obj.data.shape_keys else [],
                         "materials": [m.name if m else "" for m in obj.data.materials]} for obj in meshes],
@@ -113,6 +142,7 @@ def export_bundle(context, rig, meshes, directory, character_name, profile="HUMA
     scene.unit_settings.system = "METRIC"
     scene.unit_settings.scale_length = original_scene.unit_settings.scale_length
     created, copied_data, copied_materials, copied_images = [], [], [], []
+    twist_action=None
     try:
         copied_rig = rig.copy(); copied_rig.data = rig.data.copy()
         created.append(copied_rig); copied_data.append(copied_rig.data)
@@ -193,8 +223,14 @@ def export_bundle(context, rig, meshes, directory, character_name, profile="HUMA
                 scene.render.fps = original_scene.render.fps
                 scene.render.fps_base = original_scene.render.fps_base
                 scene.frame_start, scene.frame_end = selection["frame_start"], selection["frame_end"]
+                if copied_rig.get('lc_twists'):
+                    from . import twists
+                    twist_action=twists.bake_action(context,copied_rig,selection)
                 scene.name = clip_name
                 scene.frame_set(scene.frame_start)
+                if selection['action'].get('lc_explicit_root_motion'):
+                    clip['explicit_root_motion']=_root_motion(scene,copied_rig,selection)
+                    scene.frame_set(scene.frame_start)
                 for mesh in copied_meshes: mesh.select_set(False, view_layer=view_layer)
                 bpy.ops.export_scene.fbx(filepath=str(clip_file), check_existing=False,
                     use_selection=True, object_types={"ARMATURE"},
@@ -224,6 +260,7 @@ def export_bundle(context, rig, meshes, directory, character_name, profile="HUMA
             if data.users == 0:
                 if isinstance(data, bpy.types.Armature): bpy.data.armatures.remove(data)
                 else: bpy.data.meshes.remove(data)
+        if twist_action and twist_action.users==0:bpy.data.actions.remove(twist_action)
         bpy.data.scenes.remove(scene)
         for material in copied_materials:
             if material.users == 0: bpy.data.materials.remove(material)

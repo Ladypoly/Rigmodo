@@ -5,8 +5,21 @@ import numpy as np
 
 def solve_region(field, iterations=12, strength=.35):
     original, locked, protected, rigid = (np.asarray(field[k]) for k in ('original', 'locked', 'protected', 'rigid'))
-    result, report = surface_diffusion(original, field['edges'], field['conductance'], field['editable'],
-                                      locked, protected, field['allowed'], iterations, strength, field['seam_groups'])
+    if 'geometry_method' in field:
+        try:from .geometry_math import solve
+        except ImportError:from geometry_math import solve
+        result,report=solve(field,iterations,strength)
+    else:
+        result, report = surface_diffusion(original, field['edges'], field['conductance'], field['editable'],
+                                          locked, protected, field['allowed'], iterations, strength, field['seam_groups'])
+    result=apply_rigid(result,original,locked,protected,rigid)
+    if not np.array_equal(result[protected], original[protected]): raise RuntimeError('Protected weights changed')
+    if locked.any() and not np.array_equal(result[:, locked], original[:, locked]): raise RuntimeError('Locked weights changed')
+    report['maximum_weight_change'] = float(np.max(np.abs(result - original))) if len(original) else 0
+    return result, report
+
+
+def apply_rigid(result,original,locked,protected,rigid):
     for vertex in np.flatnonzero(rigid >= 0):
         bone = int(rigid[vertex])
         if protected[vertex]: raise ValueError('Protected region cannot be rebound')
@@ -15,10 +28,7 @@ def solve_region(field, iterations=12, strength=.35):
             raise ValueError('Locked influences conflict with exact rigid binding; unlock or protect this region')
         if locked[bone] and original[vertex, bone] != 1: raise ValueError('Locked target weight prevents exact rigid binding')
         result[vertex] = 0; result[vertex, bone] = 1
-    if not np.array_equal(result[protected], original[protected]): raise RuntimeError('Protected weights changed')
-    if locked.any() and not np.array_equal(result[:, locked], original[:, locked]): raise RuntimeError('Locked weights changed')
-    report['maximum_weight_change'] = float(np.max(np.abs(result - original))) if len(original) else 0
-    return result, report
+    return result
 
 
 def constrained_weights(proposal, original, locked, protected, allowed=None):

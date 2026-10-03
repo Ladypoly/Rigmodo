@@ -25,6 +25,11 @@ def load_fields(folder, request):
                 'original', 'edges', 'conductance', 'editable', 'locked', 'protected', 'allowed', 'rigid')}
             if field['original'].shape != (span['count'], len(request['bones'])):
                 raise ValueError('Regional vertex/bone correspondence changed')
+            if request.get('method') in {'GEODESIC','VOXEL'}:
+                for key in ('points','heads','tails','triangles','geometry_method','voxel_resolution','digit_surface'):field[key]=arrays[f'{i}_{key}']
+                triangles=field['triangles']
+                if triangles.ndim!=2 or triangles.shape[1]!=3 or not np.issubdtype(triangles.dtype,np.integer) or (len(triangles) and (triangles.min()<0 or triangles.max()>=span['count'])):
+                    raise ValueError('Invalid volume triangles')
             n, b = field['original'].shape
             if any(field[k].shape != (n,) for k in ('editable', 'protected', 'rigid')) or field['locked'].shape != (b,) or field['allowed'].shape != (n, b):
                 raise ValueError('Regional constraints disagree')

@@ -1,0 +1,18 @@
+{
+  "enabled": [
+    true,
+    true
+  ],
+  "version": "0.5.0",
+  "reference_preserved": true,
+  "objects": 1,
+  "bones": 67,
+  "providers": {
+    "Joint placement": true,
+    "AI skinning": true,
+    "Generated motion": true
+  },
+  "relative_export_supported": true,
+  "deformation_guard_loaded": true,
+  "imported_root_copy_loaded": true
+}

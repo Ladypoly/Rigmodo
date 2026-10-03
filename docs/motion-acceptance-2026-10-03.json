@@ -1,0 +1,89 @@
+{
+    "unity_version": "6000.3.21f1",
+    "cases": [
+        {
+            "name": "Generic0False",
+            "error": "",
+            "passed": true,
+            "human_root_delta": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "max_lbs_error_m": 0.000003953724899474764,
+            "root_travel_m": 3.2575597763061525,
+            "expected_travel_m": 3.2575600147247316,
+            "hand_motion_m": 0.0
+        },
+        {
+            "name": "Generic55False",
+            "error": "",
+            "passed": true,
+            "human_root_delta": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "max_lbs_error_m": 0.0000030100345611572267,
+            "root_travel_m": 3.2575597763061525,
+            "expected_travel_m": 3.2575600147247316,
+            "hand_motion_m": 0.0
+        },
+        {
+            "name": "Generic55True",
+            "error": "",
+            "passed": true,
+            "human_root_delta": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "max_lbs_error_m": 0.000002031550820902339,
+            "root_travel_m": 0.0,
+            "expected_travel_m": 0.0,
+            "hand_motion_m": 0.0
+        },
+        {
+            "name": "Motion0False",
+            "error": "",
+            "passed": true,
+            "human_root_delta": {
+                "x": 0.2781952917575836,
+                "y": -5.8910144472424e-23,
+                "z": 3.245659351348877
+            },
+            "max_lbs_error_m": 0.0,
+            "root_travel_m": 3.2575600147247316,
+            "expected_travel_m": 3.2575600147247316,
+            "hand_motion_m": 0.22654861211776734
+        },
+        {
+            "name": "Motion55False",
+            "error": "",
+            "passed": true,
+            "human_root_delta": {
+                "x": 0.2781952917575836,
+                "y": -5.8910144472424e-23,
+                "z": 3.245659351348877
+            },
+            "max_lbs_error_m": 0.0,
+            "root_travel_m": 3.2575600147247316,
+            "expected_travel_m": 3.2575600147247316,
+            "hand_motion_m": 0.22654838860034944
+        },
+        {
+            "name": "Motion55True",
+            "error": "",
+            "passed": true,
+            "human_root_delta": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "max_lbs_error_m": 0.0,
+            "root_travel_m": 0.0,
+            "expected_travel_m": 0.0,
+            "hand_motion_m": 0.2265486717224121
+        }
+    ]
+}

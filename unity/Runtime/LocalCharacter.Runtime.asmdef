@@ -1,0 +1,6 @@
+{
+  "name": "LocalCharacter.Runtime",
+  "rootNamespace": "LocalCharacter",
+  "references": [],
+  "autoReferenced": true
+}

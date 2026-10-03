@@ -1,0 +1,41 @@
+[
+  {
+    "angle": 0,
+    "scale": 1.0,
+    "maximum_contact_ankle_step_before_m": 0.003520264022140422,
+    "maximum_contact_ankle_step_after_m": 5.223914427446754e-07,
+    "maximum_local_limb_length_error": 1.7908483851414303e-07,
+    "diagnostics": {
+      "contact_frames": 62,
+      "unreachable_contact_frames": 0,
+      "max_ankle_correction_m": 0.02145115554721532,
+      "maximum_pelvis_lowering_m": 0.02462376153014678
+    }
+  },
+  {
+    "angle": 55,
+    "scale": 1.0,
+    "maximum_contact_ankle_step_before_m": 0.003520264022140422,
+    "maximum_contact_ankle_step_after_m": 5.223914427446754e-07,
+    "maximum_local_limb_length_error": 1.7908483851414303e-07,
+    "diagnostics": {
+      "contact_frames": 62,
+      "unreachable_contact_frames": 0,
+      "max_ankle_correction_m": 0.02145115554721532,
+      "maximum_pelvis_lowering_m": 0.02462376153014678
+    }
+  },
+  {
+    "angle": 55,
+    "scale": 2.0,
+    "maximum_contact_ankle_step_before_m": 0.007040528044280844,
+    "maximum_contact_ankle_step_after_m": 1.0447828854893508e-06,
+    "maximum_local_limb_length_error": 1.7908483851414303e-07,
+    "diagnostics": {
+      "contact_frames": 62,
+      "unreachable_contact_frames": 0,
+      "max_ankle_correction_m": 0.04290231109443064,
+      "maximum_pelvis_lowering_m": 0.049237174083006874
+    }
+  }
+]

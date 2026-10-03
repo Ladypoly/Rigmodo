@@ -45,16 +45,20 @@ def selection(context):
 
 def _digest(rig, meshes):
     digest = hashlib.sha256()
-    digest.update(str(rig.as_pointer()).encode())
-    digest.update(json.dumps([(c.name, c.type, c.mute) for c in rig.constraints]).encode())
-    digest.update(json.dumps([(b.name, [(c.name, c.type, c.mute) for c in b.constraints]) for b in rig.pose.bones]).encode())
-    for row in rig.matrix_world: digest.update(struct.pack('<4d', *row))
-    for bone in rig.data.bones:
+    digest.update(str(rig.as_pointer() if rig else None).encode())
+    if rig:
+        digest.update(json.dumps((rig.get('lc_twists','[]'),rig.get('lc_optional_bones','[]'))).encode())
+        digest.update(json.dumps([(c.name, c.type, c.mute) for c in rig.constraints]).encode())
+        digest.update(json.dumps([(b.name, [(c.name, c.type, c.mute) for c in b.constraints]) for b in rig.pose.bones]).encode())
+        for row in rig.matrix_world: digest.update(struct.pack('<4d', *row))
+    for bone in rig.data.bones if rig else []:
         digest.update(json.dumps((bone.name, bone.parent.name if bone.parent else None, bone.use_deform)).encode())
         for row in bone.matrix_local: digest.update(struct.pack('<4d', *row))
         digest.update(struct.pack('<3d', *bone.tail_local))
     for mesh in meshes:
         digest.update(str(mesh.as_pointer()).encode())
+        digest.update(str(mesh.parent.as_pointer() if mesh.parent else None).encode())
+        for row in mesh.matrix_parent_inverse:digest.update(struct.pack('<4d',*row))
         digest.update(json.dumps((mesh.parent_type, [(c.name, c.type, c.mute) for c in mesh.constraints])).encode())
         digest.update(str(mesh.get('lc_region_policies', '[]')).encode())
         digest.update(json.dumps([(g.name, g.lock_weight) for g in mesh.vertex_groups]).encode())
@@ -84,6 +88,7 @@ def prepare(context, rig, meshes, parent=None, device='vulkan', beams=10):
     if len(meshes) != len(set(meshes)) or any(o.type != 'MESH' for o in meshes) or not meshes:
         raise ValueError('Expected distinct mesh objects')
     if rig.type != 'ARMATURE': raise ValueError('Choose an accepted armature')
+    if rig.get('lc_twists'):raise ValueError('AI binding currently uses the core rig. Bind and refine the core, then add the optional twists')
     if rig.constraints or any(b.constraints for b in rig.pose.bones):
         raise ValueError('Bake a separate accepted deform rig before skinning a constrained armature')
     if rig.matrix_world.determinant() <= 1e-12: raise ValueError('Mirrored or singular armature transforms need preparation')
@@ -164,21 +169,51 @@ def start(folder, executable, models):
     if request['provider_revision'] != PROVIDER_REVISION or request['model_revision'] != MODEL_REVISION:
         raise ValueError('Job uses a different provider or model revision')
     if not executable.is_file(): raise ValueError('Choose the installed skintokens-cli executable')
+    if _jobs: raise ValueError('Wait for the current local job or cancel it')
+    manifest=json.loads((executable.parent.parent/'build-manifest.json').read_text())
+    if manifest['provider_revision']!=PROVIDER_REVISION or manifest['model_revision']!=MODEL_REVISION:
+        raise ValueError('SkinTokens binary uses a different source or model revision')
+    from .provider_verify import native_files
+    files=native_files(executable.parent,manifest['binaries'],'skin-tokens-46dbfec')
     for name, expected in MODEL_HASHES.items():
         path = models / name
         if not path.is_file(): raise ValueError(f'Missing model component: {name}')
-        stamp = (str(path), path.stat().st_size, path.stat().st_mtime_ns)
-        if stamp not in _verified_models:
-            with path.open('rb') as stream: actual = hashlib.file_digest(stream, 'sha256').hexdigest()
-            if actual != expected: raise ValueError(f'{name}: model hash differs from the pinned F16 release')
-            _verified_models[stamp] = True
+        files.append(dict(path=str(path),sha256=expected))
     if hashlib.sha256((folder / 'input.glb').read_bytes()).hexdigest() != request['input_sha256']:
         raise ValueError('Job input changed after preparation')
     if str(folder) in _jobs or (folder / 'output.glb').exists(): raise ValueError('Job was already started; prepare a new request')
     runtime = {'executable': str(executable), 'sha256': hashlib.sha256(executable.read_bytes()).hexdigest(),
                'model_hashes': MODEL_HASHES}
     (folder / 'runtime.json').write_text(json.dumps(runtime, indent=2) + '\n')
-    log = (folder / 'worker.log').open('wb')
+    pending=[]
+    for entry in files:
+        path=Path(entry['path']);stamp=(str(path),path.stat().st_size,path.stat().st_mtime_ns)
+        if _verified_models.get(stamp)!=entry['sha256']:pending.append(entry)
+    if not pending:return _launch(folder,executable,models)
+    from .regional_jobs import python_executable
+    (folder/'verify.json').write_text(json.dumps(dict(files=pending)))
+    log=(folder/'worker.log').open('wb');python=python_executable()
+    try:
+        process=subprocess.Popen([str(python),'-I',str(Path(__file__).with_name('provider_verify.py')),str(folder)],
+            stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
+    except Exception:log.close();raise
+    _jobs[str(folder)]=dict(process=process,log=log,started=time.monotonic(),phase='Verifying skin model and native files',
+        advance=lambda completed:_verified_launch(completed,executable,models))
+    _state(folder,'running',pid=process.pid)
+    return process.pid
+
+
+def _verified_launch(folder,executable,models):
+    from .provider_verify import accept
+    accept(folder,_verified_models)
+    return _launch(folder,executable,models)
+
+
+def _launch(folder,executable,models):
+    request=json.loads((folder/'request.json').read_text())
+    if hashlib.sha256((folder/'input.glb').read_bytes()).hexdigest()!=request['input_sha256']:
+        raise ValueError('Skin input changed during verification')
+    log = (folder / 'worker.log').open('ab')
     command = [str(executable), 'skin', str(models), str(folder / 'input.glb'), str(folder / 'input.glb'),
                str(folder / 'output.glb'), '--device', request['device'], '--fit', 'none', '--beams', str(request['beams'])]
     environment = os.environ.copy()
@@ -191,7 +226,7 @@ def start(folder, executable, models):
                                    env=environment, creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
     except Exception:
         log.close(); raise
-    _jobs[str(folder)] = {'process': process, 'log': log, 'started': time.monotonic()}
+    _jobs[str(folder)] = {'process': process, 'log': log, 'started': time.monotonic(), 'phase':'Generating AI skin weights'}
     try: _state(folder, 'running', pid=process.pid, provider_executable=str(executable))
     except OSError:
         cancel(folder); raise
@@ -203,10 +238,29 @@ def poll(folder):
     job = _jobs.get(str(folder))
     if not job: return json.loads((folder / 'status.json').read_text())
     code = job['process'].poll()
-    if code is None: return {'status': 'running', 'elapsed_seconds': time.monotonic() - job['started']}
+    if code is None: return {'status': 'running', 'elapsed_seconds': time.monotonic() - job['started'], 'phase':job.get('phase','Running locally')}
     job['log'].close()
+    if job.get('job_object'):job['job_object'].close()
     _jobs.pop(str(folder))
-    _state(folder, 'complete' if code == 0 else 'failed', exit_code=code,
+    error = None
+    if code == 0 and job.get('advance'):
+        try:
+            job['advance'](folder)
+            following=_jobs.get(str(folder),{})
+            return {'status':'running','elapsed_seconds':time.monotonic()-job['started'],'phase':following.get('phase','Running locally')}
+        except (ValueError,OSError,KeyError) as exc: error=str(exc)
+    if code == 0 and job.get('finish'):
+        try: job['finish'](folder)
+        except (ValueError, OSError, KeyError) as exc: error = str(exc)
+    if code!=0 and error is None:
+        with (folder/'worker.log').open('rb') as stream:
+            stream.seek(max(0,(folder/'worker.log').stat().st_size-8192));tail=stream.read().decode('utf-8',errors='replace')
+        if any(word in tail.lower() for word in ('out of memory','out_of_device_memory')):
+            error='The local provider ran out of memory. Close GPU-heavy applications or reduce the skin search beams, then retry'
+        else:
+            lines=[line.strip() for line in tail.splitlines() if line.strip()]
+            error='Local provider failed: '+(lines[-1][:800] if lines else f'exit code {code}')
+    _state(folder, 'complete' if code == 0 and error is None else 'failed', exit_code=code, error=error,
            elapsed_seconds=time.monotonic() - job['started'])
     return json.loads((folder / 'status.json').read_text())
 
@@ -215,6 +269,7 @@ def cancel(folder):
     folder = Path(folder).resolve()
     job = _jobs.pop(str(folder), None)
     if job:
+        if job.get('job_object'):job['job_object'].close()
         job['process'].terminate()
         try: job['process'].wait(timeout=3)
         except subprocess.TimeoutExpired: job['process'].kill(); job['process'].wait(timeout=3)
@@ -269,15 +324,16 @@ def apply(context, folder):
         raise ValueError('A weighted copy from this job already exists; undo/remove it before reapplying')
     # Artist protection is authoritative across new AI proposals. Inference
     # still sees placeholder weights; constraints are applied after validation.
-    from .regions import dense_weights, group_mask, PROTECTED
-    from .weight_math import constrained_weights
+    from .regions import dense_weights, group_mask, PROTECTED, POLICIES
+    from .weight_math import constrained_weights,apply_rigid
     import numpy as np
     names = [j['name'] for j in request['joints']]
     protected_count = 0
     for mesh, span in zip(meshes, request['meshes']):
         protected = group_mask(mesh, PROTECTED)
         locked = np.array([bool(mesh.vertex_groups.get(name) and mesh.vertex_groups[name].lock_weight) for name in names])
-        if protected.any() or locked.any():
+        policies=json.loads(mesh.get(POLICIES,'[]'))
+        if protected.any() or locked.any() or policies:
             original = dense_weights(mesh, names)
             if protected.any() and np.max(np.abs(original[protected].sum(axis=1) - 1)) > 1e-4:
                 raise ValueError('Protected vertices need normalized accepted weights before AI binding')
@@ -285,6 +341,14 @@ def apply(context, folder):
             for n, row in enumerate(rows[span['start']:span['start'] + span['count']]):
                 for i, weight in row: matrix[n, i] = weight
             result = constrained_weights(matrix, original, locked, protected)
+            rigid=np.full(len(original),-1,dtype=np.int32)
+            for policy in policies:
+                mask=group_mask(mesh,policy['group'])&~protected
+                if policy['kind']=='RIGID':
+                    if policy['bone'] not in names:raise ValueError('Rigid policy references a missing deform bone')
+                    rigid[mask]=names.index(policy['bone'])
+                else:rigid[mask]=-1
+            result=apply_rigid(result,original,locked,protected,rigid)
             for n, row in enumerate(result):
                 rows[span['start'] + n] = [(int(i), float(row[i])) for i in np.flatnonzero(row > 0)]
             protected_count += int(protected.sum())

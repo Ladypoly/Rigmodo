@@ -1,0 +1,7 @@
+{
+  "name": "LocalCharacter.Editor",
+  "rootNamespace": "LocalCharacter.Editor",
+  "references": ["LocalCharacter.Runtime"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

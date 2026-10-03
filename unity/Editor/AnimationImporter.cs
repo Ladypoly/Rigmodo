@@ -9,7 +9,7 @@ namespace LocalCharacter.Editor
 {
     [Serializable] public class AnimationValidation
     {
-        public string asset, source_model, skeleton_signature, clip, unity_version;
+        public string asset, source_model, skeleton_signature, clip, unity_version, editable_clip_asset;
         public bool human, loop;
         public float duration_seconds, frame_rate;
     }
@@ -50,7 +50,9 @@ namespace LocalCharacter.Editor
             importer.preserveHierarchy = true;
             // Preserve evaluated keys for the initial import; compression is an explicit later choice.
             importer.animationCompression = ModelImporterAnimationCompression.Off;
-            if (!human) importer.motionNodeName = "Root";
+            var rootPaths = importer.transformPaths.Where(path => path.Split('/').Last() == "Root").ToArray();
+            if (rootPaths.Length != 1) throw new InvalidDataException("Animation needs one unambiguous Root motion transform");
+            importer.motionNodeName = human ? "" : rootPaths[0];
             var takes = importer.defaultClipAnimations;
             if (takes.Length != 1) throw new InvalidDataException("Expected exactly one FBX take");
             var take = takes[0];
@@ -70,6 +72,8 @@ namespace LocalCharacter.Editor
             var result = new AnimationValidation { asset = assetPath, source_model = sourceAsset, skeleton_signature = manifest.skeleton_signature,
                 clip = imported.name, human = human, loop = clip.loop, duration_seconds = imported.length, frame_rate = imported.frameRate,
                 unity_version = Application.unityVersion };
+            if (human && clip.explicit_root_motion != null)
+                result.editable_clip_asset = RootMotionClip.Create(assetPath, sourceAsset, imported, manifest);
             string output = Path.ChangeExtension(assetPath, ".unity-validation.json");
             File.WriteAllText(output, JsonUtility.ToJson(result, true)); AssetDatabase.ImportAsset(output);
             Debug.Log("Local Character animation configured: " + assetPath);

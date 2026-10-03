@@ -9,13 +9,17 @@ using UnityEngine;
 namespace LocalCharacter.Editor
 {
     [Serializable] public class BoneMapping { public string bone; public string human; }
+    [Serializable] public class RootMotionSample { public float time; public Vector3 position; public Quaternion rotation; }
+    [Serializable] public class ExplicitRootMotion { public string coordinate_space; public RootMotionSample[] samples; }
     [Serializable] public class ClipManifest
     {
         public string name, file, root_motion_policy;
         public int frame_start, frame_end;
         public float fps;
         public bool loop;
+        public ExplicitRootMotion explicit_root_motion;
     }
+    [Serializable] public class TwistModule { public string source,helper; public float fraction; }
     [Serializable] public class CharacterManifest
     {
         public int schema_version;
@@ -23,6 +27,7 @@ namespace LocalCharacter.Editor
         public string artifact_kind, source_model, source_model_sha256;
         public BoneMapping[] mapping;
         public ClipManifest[] clips;
+        public TwistModule[] twists;
     }
     [Serializable] public class CalibrationNode
     {
@@ -47,7 +52,11 @@ namespace LocalCharacter.Editor
             try
             {
                 var manifest = ReadManifest(path);
-                if (manifest.artifact_kind == "animation") AnimationImporter.Configure(path);
+                if (manifest.artifact_kind == "animation")
+                {
+                    var result = AnimationImporter.Configure(path);
+                    if (result.editable_clip_asset != null) Selection.activeObject = AssetDatabase.LoadAssetAtPath<AnimationClip>(result.editable_clip_asset);
+                }
                 else Configure(path);
             }
             catch (Exception ex) { Debug.LogError("Local Character: " + ex.Message); }

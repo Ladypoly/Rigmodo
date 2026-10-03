@@ -1,0 +1,23 @@
+Local Character
+
+soma30.json contains the SOMA-30 skeleton definitions from NVIDIA Kimodo,
+distributed under Apache License 2.0, and the parent-local rest offsets
+distributed by localai-org/kimodo.cpp at revision
+5679ff19ba0a522c0b0516e9a9d402fe1af2c027 under Apache License 2.0.
+The root offset is zero: generated root positions already include hip height.
+See licenses/Apache-2.0.txt.
+
+External inference code, native binaries, model checkpoints and Python
+dependencies are installed separately in the LocalCharacter provider cache.
+Their individual license texts and notices remain with those components.
+kimodo.cpp uses ggml, copyright the ggml authors.
+
+Kimodo's text encoder is based on Meta Llama 3: Built with Meta Llama 3.
+Its weights are subject to the Meta Llama 3 Community License and acceptable
+use policy. The SOMA motion weights use the NVIDIA Open Model License.
+These model licenses do not become GPL by use with this extension.
+
+The original Make-It-Animatable model code is MIT licensed. Its models_ae.py
+derives from 1zb/3DShape2VecSet, MIT licensed. The selected original MIA
+checkpoint model card identifies its weights as Apache-2.0. Neither ARP nor
+the original Blender, UI, dataset or pose modules are imported by our adapter.

@@ -92,7 +92,7 @@ def digit_labels(matrix, bone_names):
     return np.array([families[i] if c >= .2 and m >= .1 else '' for i, c, m in zip(best, confidence, margin)], dtype=object)
 
 
-def joint_digit_labels(mesh, rig, matrix, names):
+def joint_digit_labels(mesh, rig, matrix, names, geometry_only=False):
     """Resolve finger identity from accepted rest chains near the digit surface.
 
     Existing weights bound the hand scope; joint distance disambiguates wrong
@@ -119,7 +119,7 @@ def joint_digit_labels(mesh, rig, matrix, names):
     finger_mass = matrix[:, [bool(_digit(n)) for n in names]].sum(axis=1)
     # Closely spaced ambiguous digits stay artist-reviewable. No nearest-point
     # surface edges are added, and remote accessories are never auto-rigid.
-    confident = (finger_mass >= .2) & (best < np.asarray(radii)[closest]) & (relative_margin >= .15)
+    confident = ((finger_mass >= .2) | (geometry_only & (matrix.sum(axis=1)==0))) & (best < np.asarray(radii)[closest]) & (relative_margin >= .15)
     changed = 0
     for vertex in np.flatnonzero(confident):
         family = families[closest[vertex]]
@@ -177,7 +177,30 @@ def surface_graph(mesh, labels, join_seams=True):
     return edges, conductance, seam_groups, report
 
 
-def prepare_fields(context, rig, meshes, method='AUTO', selected_only=False, join_seams=True):
+def rigid_components(weights,edges,scope,locked):
+    """An explicit rigid-mesh mode: suggest single joints only for clear islands."""
+    adjacency=[[] for _ in range(len(weights))]
+    for a,b in edges:adjacency[a].append(int(b));adjacency[b].append(int(a))
+    visited=np.zeros(len(weights),dtype=bool);assign=np.full(len(weights),-1,dtype=np.int32)
+    accepted=ambiguous=0
+    for start in range(len(weights)):
+        if visited[start] or not scope[start]:continue
+        stack=[start];visited[start]=True;vertices=[]
+        while stack:
+            vertex=stack.pop();vertices.append(vertex)
+            for neighbor in adjacency[vertex]:
+                if scope[neighbor] and not visited[neighbor]:visited[neighbor]=True;stack.append(neighbor)
+        ids=np.asarray(vertices);rows=weights[ids];mean=rows.mean(axis=0);bone=int(mean.argmax())
+        incompatible=locked.copy();incompatible[bone]=False
+        # Neural certainty suggests a parent, not material rigidity. The artist
+        # explicitly declares these meshes rigid by choosing this mode.
+        if len(ids)<3 or mean[bone]<.82 or np.mean(rows[:,bone]>=.6)<.8 or np.any(rows[:,incompatible]>0) or (locked[bone] and np.any(rows[:,bone]!=1)):
+            ambiguous+=1;continue
+        assign[ids]=bone;accepted+=1
+    return assign,dict(rigid_components_assigned=accepted,ambiguous_components_preserved=ambiguous)
+
+
+def prepare_fields(context, rig, meshes, method='AUTO', selected_only=False, join_seams=True,voxel_resolution=48):
     if context.mode != 'OBJECT' or not meshes: raise ValueError('Select an accepted rig and character meshes in Object Mode')
     names = [b.name for b in rig.data.bones if b.use_deform]
     if not names: raise ValueError('No accepted deform bones')
@@ -194,17 +217,20 @@ def prepare_fields(context, rig, meshes, method='AUTO', selected_only=False, joi
         if any(m.type == 'ARMATURE' and (m.object != rig or m.vertex_group or m.use_bone_envelopes or not m.use_vertex_groups)
                for m in mesh.modifiers): raise ValueError(f'{mesh.name}: use one unmasked vertex-group armature binding')
         original = dense_weights(mesh, names)
-        if not np.isfinite(original).all() or (original < 0).any() or (original.sum(axis=1) <= 0).any():
+        geometric=method in {'GEODESIC','VOXEL'}
+        totals=original.sum(axis=1);unbound=totals<=0
+        if not np.isfinite(original).all() or (original < 0).any() or (unbound.any() and not geometric):
             raise ValueError(f'{mesh.name}: surface refinement needs existing valid weights; bind with AI or a baseline first')
-        if np.max(np.abs(original.sum(axis=1) - 1)) > 1e-4:
+        if np.max(np.abs(totals[~unbound] - 1),initial=0) > 1e-4:
             raise ValueError(f'{mesh.name}: normalize accepted weights before refinement')
         protected = group_mask(mesh, PROTECTED)
         locked = np.array([bool(mesh.vertex_groups.get(name) and mesh.vertex_groups[name].lock_weight) for name in names])
-        labels, relabeled = joint_digit_labels(mesh, rig, original, names)
+        labels, relabeled = joint_digit_labels(mesh, rig, original, names,geometric)
         selected = np.array([v.select for v in mesh.data.vertices]) if selected_only else np.ones(len(original), dtype=bool)
         editable = selected & ~protected
         if method == 'AUTO': editable &= labels != ''
-        elif method != 'SURFACE': raise ValueError('Unsupported refinement method')
+        elif method=='RIGID_PARTS':editable[:]=False
+        elif method not in {'SURFACE','GEODESIC','VOXEL'}: raise ValueError('Unsupported refinement method')
         rigid = np.full(len(original), -1, dtype=np.int32)
         for policy in json.loads(mesh.get(POLICIES, '[]')):
             mask = group_mask(mesh, policy['group']) & selected & ~protected
@@ -222,12 +248,26 @@ def prepare_fields(context, rig, meshes, method='AUTO', selected_only=False, joi
             if not any(columns): raise ValueError('Region digit is absent from the accepted rig')
             allowed[labels == family] = columns
         graph, conductance, seams, report = surface_graph(mesh, labels, join_seams)
-        fields.append(dict(original=original, edges=graph, conductance=conductance, editable=editable,
-                           locked=locked, protected=protected, allowed=allowed, rigid=rigid, seam_groups=seams))
+        if method=='RIGID_PARTS':
+            explicit=np.zeros(len(original),dtype=bool)
+            for policy in json.loads(mesh.get(POLICIES,'[]')):explicit|=group_mask(mesh,policy['group'])
+            suggested,diagnostic=rigid_components(original,graph,selected&~protected&~explicit,locked)
+            chosen=suggested>=0;rigid[chosen]=suggested[chosen];report.update(diagnostic)
+        if (unbound & (protected | (~editable & (rigid<0)))).any():raise ValueError('Unweighted protected or excluded vertices need an initial binding before regional refinement')
+        field=dict(original=original, edges=graph, conductance=conductance, editable=editable,
+                   locked=locked, protected=protected, allowed=allowed, rigid=rigid, seam_groups=seams)
+        if geometric:
+            mesh.data.calc_loop_triangles()
+            field.update(points=np.array([tuple(mesh.matrix_world@v.co) for v in mesh.data.vertices]),
+                heads=np.array([tuple(rig.matrix_world@rig.data.bones[n].head_local) for n in names]),
+                tails=np.array([tuple(rig.matrix_world@rig.data.bones[n].tail_local) for n in names]),
+                triangles=np.array([tuple(t.vertices) for t in mesh.data.loop_triangles],dtype=np.int64).reshape((-1,3)),
+                geometry_method=np.array(2 if method=='VOXEL' else 1),voxel_resolution=np.array(voxel_resolution),digit_surface=labels!='')
+        fields.append(field)
         report.update(mesh=mesh.name, method=method, digit_vertices=int(np.count_nonzero(labels != '')),
                       joint_evidence_relabels=relabeled,
                       rigid_vertices=int(np.count_nonzero(rigid >= 0)), protected_vertices=int(protected.sum()),
-                      locked_bones=int(locked.sum()), body_policy='preserve_AI' if method == 'AUTO' else 'surface')
+                      locked_bones=int(locked.sum()), body_policy='preserve_AI' if method == 'AUTO' else ('rigid_parts_preserve_ambiguous' if method=='RIGID_PARTS' else 'surface'))
         reports.append(report)
     return names, fields, reports
 

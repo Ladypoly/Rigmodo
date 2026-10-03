@@ -19,8 +19,11 @@ subprocess.run([args.blender,'--background','--factory-startup','--disable-autoe
 blender_results=json.loads((fixtures/'blender-results.json').read_text())
 assert all(c['status']=='pass' for c in blender_results)
 editor=project/'Assets/LocalCharacter/Editor';editor.mkdir(parents=True)
-for file in (root/'unity/Editor').glob('*.cs'):
-    shutil.copyfile(file,editor/file.name)
+for file in (root/'unity/Editor').glob('*'):
+    if file.suffix in {'.cs','.asmdef'}:shutil.copyfile(file,editor/file.name)
+runtime=editor.parent/'Runtime';runtime.mkdir()
+for file in (root/'unity/Runtime').glob('*'):
+    if file.suffix in {'.cs','.asmdef'}:shutil.copyfile(file,runtime/file.name)
 shutil.copyfile(root/'tests/UnityAcceptance.cs',editor/'UnityAcceptance.cs')
 shutil.copyfile(root/'tests/AnimationAcceptance.cs',editor/'AnimationAcceptance.cs')
 for name in ('SyntheticT','SyntheticA','ShanePreserved','SyntheticMotionGeneric','SyntheticMotionHumanoid'):

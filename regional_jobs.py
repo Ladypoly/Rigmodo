@@ -26,9 +26,9 @@ def python_executable():
 
 
 def prepare(context, rig, meshes, parent=None, method='AUTO', iterations=12, strength=.35,
-            selected_only=False, join_seams=True):
+            selected_only=False, join_seams=True,voxel_resolution=48):
     if not 1 <= iterations <= 200 or not 0 < strength <= 1: raise ValueError('Invalid refinement settings')
-    names, fields, reports = regions.prepare_fields(context, rig, meshes, method, selected_only, join_seams)
+    names, fields, reports = regions.prepare_fields(context, rig, meshes, method, selected_only, join_seams,voxel_resolution)
     arrays = {}
     for i, field in enumerate(fields):
         for key, value in field.items():
@@ -46,7 +46,7 @@ def prepare(context, rig, meshes, parent=None, method='AUTO', iterations=12, str
                    rig=rig.name, rig_pointer=str(rig.as_pointer()), bones=names,
                    source_digest=skinning._digest(rig, meshes), scene_unit_scale=context.scene.unit_settings.scale_length,
                    meshes=[dict(name=o.name, pointer=str(o.as_pointer()), count=len(o.data.vertices)) for o in meshes],
-                   iterations=iterations, strength=strength, reports=reports,
+                   iterations=iterations, strength=strength, reports=reports,method=method,
                    maximum_array_bytes=total_bytes + len(arrays) * 4096,
                    input_sha256=hashlib.sha256((folder / 'input.npz').read_bytes()).hexdigest())
     (folder / 'request.json').write_text(json.dumps(request, indent=2, allow_nan=False))
@@ -116,7 +116,12 @@ def apply(context, folder):
             fields.append(weights.copy()); report.update(solve); reports.append(report)
     if len(fields) != len(meshes): raise ValueError('Regional result omitted meshes')
     copied = weight_copy.create(context, rig, meshes, request['bones'], fields,
-        method=rig.get('lc_skinning', 'accepted_weights') + '+regional_surface', metadata=json.dumps(reports))
+        method=rig.get('lc_skinning', 'accepted_weights') + '+' + request.get('method','surface').lower(), metadata=json.dumps(reports))
+    if request.get('method')=='RIGID_PARTS':
+        for mesh,field in zip(copied[2],inputs):
+            for index in set(field['rigid'])-{-1}:
+                ids=np.flatnonzero(field['rigid']==index).tolist()
+                regions.mark(mesh,ids,'RIGID',request['bones'][int(index)])
     for obj in [copied[1], *copied[2]]: obj['lc_region_job'] = request['job_id']
     state = skinning.poll(folder)
     skinning._state(folder, 'applied', collection=copied[0].name, elapsed_seconds=state.get('elapsed_seconds'))

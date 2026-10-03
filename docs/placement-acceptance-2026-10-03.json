@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "geometry_only": true,
+  "source_preserved": true,
+  "joint_locks_preserved": true,
+  "provider": "mia_original_landmarks",
+  "elapsed_seconds": 2.9219999999986612,
+  "device": "NVIDIA GeForce RTX 4090",
+  "peak_reserved_vram_bytes": 979369984,
+  "reference_equivalence": "not_yet_measured",
+  "placement_quality": "feet_toes_and_anatomical_depth_require_visual_review",
+  "job": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-placement-exact-hand\\joints-st14gs21",
+  "held_out_reference_head_differences_mm": {
+    "mean": 18.41294153456137,
+    "worst": [
+      [
+        "LeftUpLeg",
+        76.67018901039015
+      ],
+      [
+        "Head",
+        73.69390360679385
+      ],
+      [
+        "RightUpLeg",
+        55.50620903146502
+      ],
+      [
+        "RightToeBase",
+        45.552576761329206
+      ],
+      [
+        "LeftToeBase",
+        43.8003064945869
+      ],
+      [
+        "Spine1",
+        40.92189762588922
+      ],
+      [
+        "RightArm",
+        39.70895502235773
+      ],
+      [
+        "Spine",
+        37.621902490819565
+      ]
+    ]
+  },
+  "reference_note": "Imported joints are an independent comparison, not anatomical ground truth"
+}
