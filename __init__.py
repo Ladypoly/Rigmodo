@@ -5,7 +5,7 @@ import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs
 
 class LC_Settings(PropertyGroup):
     height: FloatProperty(name="Height (m)", default=1.75, min=.1, max=10)
@@ -33,6 +33,21 @@ class LC_Settings(PropertyGroup):
         description="Ten is the upstream default; fewer beams trade search quality for speed and memory")
     skin_job: StringProperty(default="")
     skin_status: StringProperty(default="")
+    refine_method: EnumProperty(name='Refinement', items=[('AUTO', 'Auto regions', 'Keep AI body weights; surface-refine digits and apply marked rigid regions'),
+        ('SURFACE', 'Surface heat', 'Refine all selected scope on actual surface adjacency')], default='AUTO')
+    refine_iterations: IntProperty(name='Heat steps', default=12, min=1, max=200)
+    refine_strength: FloatProperty(name='Strength', default=.35, min=.01, max=1)
+    refine_selected: BoolProperty(name='Selected vertices only', default=False)
+    refine_seams: BoolProperty(name='Link verified seam edges', default=True)
+    region_kind: EnumProperty(name='Region policy', items=[('SURFACE', 'Surface', 'Surface refinement'),
+        ('RIGID', 'Rigid attachment', 'Exact single-bone binding'), ('AUTO', 'Auto', 'Regional refinement')])
+    region_bone: StringProperty(name='Attachment bone')
+    region_digit: EnumProperty(name='Digit mask', items=[('NONE', 'Automatic', 'Use confident existing digit weights')] +
+        [(side + 'Hand' + finger, side + ' ' + finger, 'Exclude neighboring digits')
+         for side in ('Left', 'Right') for finger in skeleton.FINGERS])
+    region_report: StringProperty(default='')
+    region_job: StringProperty(default='')
+    region_status: StringProperty(default='')
 
 class LC_OT_create_template(Operator):
     bl_idname = "local_character.create_template"
@@ -95,28 +110,18 @@ class LC_OT_export(Operator):
         self.report({"INFO"}, f"Exported {destination}")
         return {"FINISHED"}
 
-class LC_OT_skin(Operator):
-    bl_idname = "local_character.ai_skin"
-    bl_label = "AI Skin to New Copy"
-    bl_description = "Run experimental local SkinTokens on accepted joints and create weighted copies"
-    # A long-running job must not group the user's intervening edits into its undo.
-    # The separate apply operator owns the short copy-creation undo boundary.
-    bl_options = {"REGISTER"}
+class WorkerModal:
     _timer = None
     _folder = None
     _scene = None
-    @classmethod
-    def poll(cls, context): return context.mode == 'OBJECT' and not skinning._jobs
-    def execute(self, context):
-        settings = context.scene.lc_settings
-        try:
-            rig, meshes = skinning.selection(context)
-            self._folder = skinning.prepare(context, rig, meshes, device=settings.skin_device, beams=settings.skin_beams)
-            skinning.start(self._folder, bpy.path.abspath(settings.skin_executable), bpy.path.abspath(settings.skin_models))
-        except (ValueError, OSError, RuntimeError) as exc:
-            self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
+    status_property = 'skin_status'
+    job_property = 'skin_job'
+    apply_operator = 'apply_skin_job'
+    def begin(self, context):
         self._scene = context.scene
-        settings.skin_job = str(self._folder); settings.skin_status = 'Running locally; Escape cancels'
+        settings = self._scene.lc_settings
+        setattr(settings, self.job_property, str(self._folder))
+        setattr(settings, self.status_property, 'Running locally; Escape cancels')
         self._timer = context.window_manager.event_timer_add(.5, window=context.window)
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
@@ -130,26 +135,46 @@ class LC_OT_skin(Operator):
         except (ReferenceError, AttributeError):
             skinning.cancel(self._folder); self._finish(context); return {'CANCELLED'}
         if event.type == 'ESC':
-            skinning.cancel(self._folder); settings.skin_status = 'Cancelled; source character preserved'
+            skinning.cancel(self._folder); setattr(settings, self.status_property, 'Cancelled; source character preserved')
             self._finish(context); return {'CANCELLED'}
         if event.type != 'TIMER': return {'PASS_THROUGH'}
         state = skinning.poll(self._folder)
         if state['status'] == 'running':
-            settings.skin_status = f"Running locally: {int(state['elapsed_seconds'])} s; Escape cancels"
-            for area in context.screen.areas: area.tag_redraw()
+            setattr(settings, self.status_property, f"Running locally: {int(state['elapsed_seconds'])} s; Escape cancels")
+            if context.screen:
+                for area in context.screen.areas: area.tag_redraw()
             return {'PASS_THROUGH'}
         try:
             if state['status'] != 'complete': raise ValueError('Worker failed; inspect worker.log in the last job folder')
             if context.scene != self._scene: raise ValueError('Return to the source scene and create the weighted copy from the finished job')
-            result = bpy.ops.local_character.apply_skin_job('EXEC_DEFAULT')
-            if result != {'FINISHED'}: raise ValueError(settings.skin_status)
+            result = getattr(bpy.ops.local_character, self.apply_operator)('EXEC_DEFAULT')
+            if result != {'FINISHED'}: raise ValueError(getattr(settings, self.status_property))
         except (ValueError, OSError, RuntimeError, KeyError) as exc:
-            settings.skin_status = str(exc); self.report({'ERROR'}, str(exc))
+            setattr(settings, self.status_property, str(exc)); self.report({'ERROR'}, str(exc))
             self._finish(context); return {'CANCELLED'}
         self._finish(context); return {'FINISHED'}
     def cancel(self, context):
         if self._folder: skinning.cancel(self._folder)
         self._finish(context)
+
+
+class LC_OT_skin(WorkerModal, Operator):
+    bl_idname = 'local_character.ai_skin'
+    bl_label = 'AI Skin to New Copy'
+    bl_description = 'Run local SkinTokens on accepted joints and create weighted copies'
+    # Separate apply owns undo; intervening user edits never join the job's undo.
+    bl_options = {'REGISTER'}
+    @classmethod
+    def poll(cls, context): return context.mode == 'OBJECT' and not skinning._jobs
+    def execute(self, context):
+        settings = context.scene.lc_settings
+        try:
+            rig, meshes = skinning.selection(context)
+            self._folder = skinning.prepare(context, rig, meshes, device=settings.skin_device, beams=settings.skin_beams)
+            skinning.start(self._folder, bpy.path.abspath(settings.skin_executable), bpy.path.abspath(settings.skin_models))
+        except (ValueError, OSError, RuntimeError) as exc:
+            self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
+        return self.begin(context)
 
 class LC_OT_apply_skin(Operator):
     bl_idname = 'local_character.apply_skin_job'
@@ -169,6 +194,97 @@ class LC_OT_apply_skin(Operator):
             self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
         settings.skin_status = 'Weighted copies created; review deformation. Originals remain in place'
         self.report({'INFO'}, f'Created {collection.name}; accepted joints preserved')
+        return {'FINISHED'}
+
+class LC_OT_protect(Operator):
+    bl_idname = 'local_character.protect_region'
+    bl_label = 'Protect Selected Weights'
+    bl_options = {'REGISTER', 'UNDO'}
+    enabled: BoolProperty(default=True)
+    @classmethod
+    def poll(cls, context): return context.mode == 'OBJECT' and context.active_object and context.active_object.type == 'MESH'
+    def execute(self, context):
+        mesh = context.active_object
+        try:
+            if mesh.data.users > 1: raise ValueError('Make the mesh data single-user before annotating a region')
+            regions.protect(mesh, regions.selected_vertices(mesh), self.enabled)
+        except (ValueError, RuntimeError) as exc: self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
+        self.report({'INFO'}, 'Protection updated; deform weights unchanged')
+        return {'FINISHED'}
+
+class LC_OT_mark_region(Operator):
+    bl_idname = 'local_character.mark_region'
+    bl_label = 'Mark Selected Region'
+    bl_options = {'REGISTER', 'UNDO'}
+    @classmethod
+    def poll(cls, context): return context.mode == 'OBJECT' and context.active_object and context.active_object.type == 'MESH'
+    def execute(self, context):
+        settings = context.scene.lc_settings; mesh = context.active_object
+        try:
+            rig, _ = skinning.selection(context)
+            if mesh.data.users > 1: raise ValueError('Make the mesh data single-user before annotating a region')
+            if settings.region_kind == 'RIGID' and (settings.region_bone not in rig.data.bones or not rig.data.bones[settings.region_bone].use_deform):
+                raise ValueError('Choose an accepted deform attachment bone')
+            regions.mark(mesh, regions.selected_vertices(mesh), settings.region_kind, settings.region_bone,
+                '' if settings.region_digit == 'NONE' else settings.region_digit)
+        except (ValueError, RuntimeError) as exc: self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
+        self.report({'INFO'}, 'Region marked; next refinement applies it on copies')
+        return {'FINISHED'}
+
+class LC_OT_clear_region(Operator):
+    bl_idname = 'local_character.clear_region'
+    bl_label = 'Clear Selected Policies'
+    bl_options = {'REGISTER', 'UNDO'}
+    @classmethod
+    def poll(cls, context): return LC_OT_mark_region.poll(context)
+    def execute(self, context):
+        try:
+            mesh = context.active_object
+            if mesh.data.users > 1: raise ValueError('Make mesh data single-user before changing policies')
+            regions.clear(mesh, regions.selected_vertices(mesh))
+        except (ValueError, RuntimeError) as exc: self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
+        return {'FINISHED'}
+
+
+class LC_OT_refine(WorkerModal, Operator):
+    bl_idname = 'local_character.refine_regions'
+    bl_label = 'Refine to New Copy'
+    bl_options = {'REGISTER'}
+    status_property = 'region_status'
+    job_property = 'region_job'
+    apply_operator = 'apply_region_job'
+    @classmethod
+    def poll(cls, context): return context.mode == 'OBJECT' and not skinning._jobs
+    def execute(self, context):
+        settings = context.scene.lc_settings
+        try:
+            rig, meshes = skinning.selection(context)
+            self._folder = regional_jobs.prepare(context, rig, meshes, method=settings.refine_method,
+                iterations=settings.refine_iterations, strength=settings.refine_strength,
+                selected_only=settings.refine_selected, join_seams=settings.refine_seams)
+            regional_jobs.start(self._folder)
+        except (ValueError, OSError, RuntimeError) as exc: self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
+        return self.begin(context)
+
+
+class LC_OT_apply_region(Operator):
+    bl_idname = 'local_character.apply_region_job'
+    bl_label = 'Create Copy from Finished Refinement'
+    bl_options = {'REGISTER', 'UNDO'}
+    @classmethod
+    def poll(cls, context): return context.mode == 'OBJECT' and not skinning._jobs and bool(context.scene.lc_settings.region_job)
+    def execute(self, context):
+        settings = context.scene.lc_settings
+        try:
+            (collection, rig, meshes), report = regional_jobs.apply(context, settings.region_job)
+            for obj in context.selected_objects: obj.select_set(False)
+            for obj in [rig, *meshes]: obj.select_set(True)
+            context.view_layer.objects.active = rig
+            settings.region_report = json.dumps(report)
+        except (ValueError, OSError, RuntimeError, KeyError) as exc:
+            settings.region_status = str(exc); self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
+        settings.region_status = 'Review copies created; original weights preserved'
+        self.report({'INFO'}, f'Created {collection.name}; protected weights preserved')
         return {'FINISHED'}
 
 class LC_PT_main(Panel):
@@ -213,8 +329,36 @@ class LC_PT_main(Panel):
             for line in textwrap.wrap(settings.skin_status, width=42): box.label(text=line)
         if settings.skin_job: box.operator('local_character.apply_skin_job')
         box.label(text="Joint placement and generated motion: next phase")
+        box = layout.box(); box.label(text='Regional correction', icon='GROUP_VERTEX')
+        box.label(text='Select vertices in Edit Mode; return to Object Mode')
+        row = box.row(align=True)
+        row.operator('local_character.protect_region', text='Protect').enabled = True
+        row.operator('local_character.protect_region', text='Unprotect').enabled = False
+        box.prop(settings, 'region_kind')
+        if settings.region_kind == 'RIGID':
+            try:
+                rig, _ = skinning.selection(context)
+                box.prop_search(settings, 'region_bone', rig.data, 'bones')
+            except ValueError: box.prop(settings, 'region_bone')
+        else: box.prop(settings, 'region_digit')
+        box.operator('local_character.mark_region')
+        box.operator('local_character.clear_region')
+        box.prop(settings, 'refine_method'); box.prop(settings, 'refine_selected')
+        box.prop(settings, 'refine_seams'); box.prop(settings, 'refine_iterations'); box.prop(settings, 'refine_strength')
+        box.operator('local_character.refine_regions')
+        if settings.region_status:
+            import textwrap
+            for line in textwrap.wrap(settings.region_status, width=42): box.label(text=line)
+        if settings.region_job: box.operator('local_character.apply_region_job')
+        if settings.region_report:
+            try:
+                for report in json.loads(settings.region_report):
+                    box.label(text=f"{report['mesh']}: {report['rigid_vertices']} rigid, {report['protected_vertices']} protected")
+                    if report['seam_constraint_conflicts']: box.label(text='Conflicting seam constraints need review', icon='ERROR')
+            except (ValueError, KeyError): pass
 
-CLASSES = (LC_Settings, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin, LC_PT_main)
+CLASSES = (LC_Settings, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+           LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region, LC_PT_main)
 def register():
     for cls in CLASSES: bpy.utils.register_class(cls)
     bpy.types.Scene.lc_settings = PointerProperty(type=LC_Settings)

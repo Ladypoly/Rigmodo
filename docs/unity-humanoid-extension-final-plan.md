@@ -287,3 +287,8 @@ The primary validation editor is the installed Unity `6000.3.21f1`. Add `2022.3.
 ## Supporting evidence
 
 The inspected scene snapshot supplies the concrete hierarchy and rest-pose facts. The earlier [project research](./local-ai-rigging-and-skinning-research.md) and [adaptive skinning design](./adaptive-local-skinning-design.md) supply model/dependency findings and geometric mechanisms. Unity references above establish importer, Avatar, root-motion and twist APIs. Architecture, default profiles, module counts, milestones and validation gates are design decisions made for this project.
+
+
+## Regional continuation 0.4.0
+
+Cancellable surface/digit/seam refinement, exact rigid attachment policies, artist protection across AI rebuilds, source-revision checks and private real-avatar/Unity acceptance now pass. See regional-refinement.md and regional-acceptance-2026-10-03.json. Joint evidence fixes the visually failed weight-only digit routing trial. The feature is enabled in the live Blender session with its original reference preserved. Volume candidates, geometric binding, placement, twists and Kimodo motion remain outstanding. The user authorized proceeding directly through those stages; do not stop at this checkpoint. Kimodo native build/download is in progress in an isolated cache; no original Kimodo checkout changes.

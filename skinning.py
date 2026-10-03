@@ -46,6 +46,8 @@ def selection(context):
 def _digest(rig, meshes):
     digest = hashlib.sha256()
     digest.update(str(rig.as_pointer()).encode())
+    digest.update(json.dumps([(c.name, c.type, c.mute) for c in rig.constraints]).encode())
+    digest.update(json.dumps([(b.name, [(c.name, c.type, c.mute) for c in b.constraints]) for b in rig.pose.bones]).encode())
     for row in rig.matrix_world: digest.update(struct.pack('<4d', *row))
     for bone in rig.data.bones:
         digest.update(json.dumps((bone.name, bone.parent.name if bone.parent else None, bone.use_deform)).encode())
@@ -53,10 +55,13 @@ def _digest(rig, meshes):
         digest.update(struct.pack('<3d', *bone.tail_local))
     for mesh in meshes:
         digest.update(str(mesh.as_pointer()).encode())
+        digest.update(json.dumps((mesh.parent_type, [(c.name, c.type, c.mute) for c in mesh.constraints])).encode())
+        digest.update(str(mesh.get('lc_region_policies', '[]')).encode())
         digest.update(json.dumps([(g.name, g.lock_weight) for g in mesh.vertex_groups]).encode())
         digest.update(json.dumps([(m.type, m.show_viewport, m.show_render,
                                    m.object.name if m.type == 'ARMATURE' and m.object else None,
-                                   m.vertex_group if m.type == 'ARMATURE' else None)
+                                   (m.vertex_group, m.use_bone_envelopes, m.use_vertex_groups, m.use_deform_preserve_volume)
+                                   if m.type == 'ARMATURE' else None)
                                   for m in mesh.modifiers]).encode())
         for row in mesh.matrix_world: digest.update(struct.pack('<4d', *row))
         for vertex in mesh.data.vertices:
@@ -66,6 +71,7 @@ def _digest(rig, meshes):
         for polygon in mesh.data.polygons:
             digest.update(struct.pack('<I', len(polygon.vertices)))
             digest.update(struct.pack('<' + 'I' * len(polygon.vertices), *polygon.vertices))
+        for edge in mesh.data.edges: digest.update(struct.pack('<2I', *edge.vertices))
         if mesh.data.shape_keys:
             for key in mesh.data.shape_keys.key_blocks:
                 for vertex in key.data: digest.update(struct.pack('<3f', *vertex.co))
@@ -261,6 +267,27 @@ def apply(context, folder):
         raise ValueError('Source mesh or accepted joints changed during inference; prepare a new job')
     if any(o.get('lc_skin_job') == request['job_id'] for o in context.scene.objects):
         raise ValueError('A weighted copy from this job already exists; undo/remove it before reapplying')
+    # Artist protection is authoritative across new AI proposals. Inference
+    # still sees placeholder weights; constraints are applied after validation.
+    from .regions import dense_weights, group_mask, PROTECTED
+    from .weight_math import constrained_weights
+    import numpy as np
+    names = [j['name'] for j in request['joints']]
+    protected_count = 0
+    for mesh, span in zip(meshes, request['meshes']):
+        protected = group_mask(mesh, PROTECTED)
+        locked = np.array([bool(mesh.vertex_groups.get(name) and mesh.vertex_groups[name].lock_weight) for name in names])
+        if protected.any() or locked.any():
+            original = dense_weights(mesh, names)
+            if protected.any() and np.max(np.abs(original[protected].sum(axis=1) - 1)) > 1e-4:
+                raise ValueError('Protected vertices need normalized accepted weights before AI binding')
+            matrix = np.zeros(original.shape, dtype=np.float32)
+            for n, row in enumerate(rows[span['start']:span['start'] + span['count']]):
+                for i, weight in row: matrix[n, i] = weight
+            result = constrained_weights(matrix, original, locked, protected)
+            for n, row in enumerate(result):
+                rows[span['start'] + n] = [(int(i), float(row[i])) for i in np.flatnonzero(row > 0)]
+            protected_count += int(protected.sum())
     collection = bpy.data.collections.new('Local Character AI Skin')
     created, copied_data = [], []
     try:
@@ -279,9 +306,11 @@ def apply(context, folder):
             modifiers = [m for m in mesh.modifiers if m.type == 'ARMATURE']
             if not modifiers: modifiers = [mesh.modifiers.new('Local Character Skin', 'ARMATURE')]
             for modifier in modifiers: modifier.object = copied_rig
+            locks = {g.name: g.lock_weight for g in mesh.vertex_groups}
             for group in list(mesh.vertex_groups):
                 if group.name in rig.data.bones: mesh.vertex_groups.remove(group)
             groups = {i: mesh.vertex_groups.new(name=j['name']) for i, j in enumerate(request['joints'])}
+            for group in groups.values(): group.lock_weight = locks.get(group.name, False)
             for vertex in range(span['count']):
                 for i, weight in rows[span['start'] + vertex]: groups[i].add([vertex], weight, 'REPLACE')
             mesh['lc_skin_job'] = request['job_id']
@@ -289,6 +318,7 @@ def apply(context, folder):
         copied_rig['lc_skin_job'] = request['job_id']
         copied_rig['lc_skin_provider_revision'] = request['provider_revision']
         copied_rig['lc_skin_model_revision'] = request['model_revision']
+        copied_rig['lc_protected_vertices'] = protected_count
         context.scene.collection.children.link(collection)
     except Exception:
         for obj in created: bpy.data.objects.remove(obj, do_unlink=True)

@@ -1,6 +1,6 @@
-# Local Character — foundation 0.3.0
+# Local Character — foundation 0.4.0
 
-Independent Blender 5.2 extension for a local AI character workflow. This build creates an editable Mixamo-style humanoid, proposes learned skin weights for an accepted rig, and exports characters and selected animations to Unity. AI joint placement, adaptive refinement, optional twists and Kimodo motion remain pending.
+Independent Blender 5.2 extension for a local AI character workflow. This build creates an editable Mixamo-style humanoid, proposes learned skin weights, supports focused regional correction, and exports characters and selected animations to Unity. AI joint placement, volume alternatives, optional twists and Kimodo motion are in development.
 
 Enable **Local Character** in Blender Preferences → Add-ons. Open the **Local Character** tab in the 3D View sidebar.
 
@@ -20,7 +20,17 @@ Select an accepted armature and the meshes to bind. Existing weights are optiona
 
 The adapter preserves accepted joints and original vertex IDs, including UV seam splits. It applies only validated weights to Blender copies, preserving UVs, materials and shape keys. Original geometry/joint/weight edits during inference invalidate the result. Finished jobs can be reapplied in the same Blender session after undo/removal of their previous copies. Jobs and worker logs remain under `%LOCALAPPDATA%/LocalCharacter/jobs`; the last job path is available in scene settings. Loading a file into a new Blender process invalidates its old source pointers; prepare a fresh job.
 
-Default worker/models are already installed locally for this development session. The ZIP contains no checkpoints or native binaries. [Provider setup and evidence](docs/skin-tokens-provider.md) describe the pinned F16 models, isolated Windows build, reproducible helper and current limits. In private fixed-rig tests, 52/67 joints on 7,234 vertices took about 65/84 seconds. Body results passed the reviewed diagnostic poses; finger-tip artifacts remain. This is one avatar, not a broad quality benchmark. No automatic rigid/digit/seam/voxel routing is available yet.
+Default worker/models are already installed locally for this development session. The ZIP contains no checkpoints or native binaries. [Provider setup and evidence](docs/skin-tokens-provider.md) describe the pinned F16 models, isolated Windows build, reproducible helper and current limits. In private fixed-rig tests, 52/67 joints on 7,234 vertices took about 65/84 seconds. Body results passed the reviewed diagnostic poses; finger-tip artifacts remain. This is one avatar, not a broad quality benchmark.
+
+## Regional correction
+
+Select an accepted weighted character and use **Refine to New Copy**. **Auto regions** preserves body weights, identifies finger scope from accepted weights and nearby rest-joint chains, excludes other digits, then diffuses along actual surface edges. **Surface heat** expands the editable scope. Both use Blender's bundled NumPy in a separate cancellable CPU process; Escape cancels. This is an anchored graph heat refinement, not a claim of implementing every published surface harmonic solver.
+
+Verified matching boundary edges can link UV-style seam duplicates temporarily. Opposite winding, compatible face normals and matching digit identities are required. Geometry and attributes remain unchanged. Distance alone never connects surfaces. Ambiguous or conflicting seams need review; disable seam linking when the geometry's movement semantics disagree with the heuristic.
+
+For rings and mechanical plates, select vertices in Edit Mode, return to Object Mode, choose **Rigid attachment**, pick the accepted bone, then **Mark Selected Region**. Refinement binds these vertices exactly to that bone. Conflicting locked weights block this assignment. This requires an explicit attachment choice: semantic rigidity cannot be inferred reliably from proximity alone. Surface policies and explicit digit masks provide overrides; **Clear Selected Policies** removes them from selected vertices.
+
+**Protect** freezes selected vertex rows exactly, including across subsequent AI proposals. Blender's vertex-group weight locks freeze that bone's existing influences. Protected rows must already be normalized; constraints take priority over automatic refinement and export pruning still occurs on copies. Original edits during a worker job invalidate application. Correction masks and policies stay on source/project copies. Refinement currently needs valid existing weights; unbound geometric baselines and voxel candidates are still pending.
 
 Use an unconstrained deform rig, Object Mode, positive transforms and resolved visible non-armature modifiers on working copies. The initial path supports one deform root and 1–256 deform bones. Structural nondeform parents stay in the Blender rig but are excluded from neural conditioning. Armature modifier masks and envelopes require explicit preparation. CPU mode exists but has not been benchmarked.
 

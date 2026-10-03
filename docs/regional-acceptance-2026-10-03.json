@@ -1,0 +1,493 @@
+{
+  "version": "0.4.0",
+  "controlled": {
+    "passed": true,
+    "source_preserved": true,
+    "digit_exclusion": true,
+    "close_surfaces_disconnected": true,
+    "verified_seams_equal": true,
+    "opposing_contacts_disconnected": true,
+    "locked_and_protected_exact": true,
+    "rigid_ring_and_plate_distance_preserved": true,
+    "conflicting_constraints_rejected": true,
+    "reports": [
+      {
+        "topological_edges": 12,
+        "verified_seam_edges": 1,
+        "ambiguous_seam_edges": 0,
+        "mesh": "SeamAndCloseDigits",
+        "method": "AUTO",
+        "digit_vertices": 12,
+        "joint_evidence_relabels": 0,
+        "rigid_vertices": 0,
+        "protected_vertices": 0,
+        "locked_bones": 0,
+        "body_policy": "preserve_AI",
+        "iterations": 16,
+        "editable_vertices": 12,
+        "seam_constraint_conflicts": 0,
+        "maximum_weight_change": 0.32440632581710815
+      },
+      {
+        "topological_edges": 4,
+        "verified_seam_edges": 0,
+        "ambiguous_seam_edges": 0,
+        "mesh": "ProtectedAndLocked",
+        "method": "AUTO",
+        "digit_vertices": 4,
+        "joint_evidence_relabels": 0,
+        "rigid_vertices": 0,
+        "protected_vertices": 1,
+        "locked_bones": 1,
+        "body_policy": "preserve_AI",
+        "iterations": 16,
+        "editable_vertices": 3,
+        "seam_constraint_conflicts": 0,
+        "maximum_weight_change": 0.3534882068634033
+      },
+      {
+        "topological_edges": 24,
+        "verified_seam_edges": 0,
+        "ambiguous_seam_edges": 0,
+        "mesh": "RigidRing",
+        "method": "AUTO",
+        "digit_vertices": 16,
+        "joint_evidence_relabels": 0,
+        "rigid_vertices": 16,
+        "protected_vertices": 0,
+        "locked_bones": 0,
+        "body_policy": "preserve_AI",
+        "iterations": 16,
+        "editable_vertices": 0,
+        "seam_constraint_conflicts": 0,
+        "maximum_weight_change": 0.6000000238418579
+      },
+      {
+        "topological_edges": 4,
+        "verified_seam_edges": 0,
+        "ambiguous_seam_edges": 0,
+        "mesh": "RobotPlate",
+        "method": "AUTO",
+        "digit_vertices": 0,
+        "joint_evidence_relabels": 0,
+        "rigid_vertices": 4,
+        "protected_vertices": 0,
+        "locked_bones": 0,
+        "body_policy": "preserve_AI",
+        "iterations": 16,
+        "editable_vertices": 0,
+        "seam_constraint_conflicts": 0,
+        "maximum_weight_change": 0.5
+      }
+    ],
+    "isolated_worker": true,
+    "stale_artist_edits_rejected": true,
+    "corrupt_constraints_rejected": true,
+    "cancellation_passed": true,
+    "public_apply_operator": true,
+    "duplicate_apply_rejected": true
+  },
+  "avatar": {
+    "passed": true,
+    "source_preserved": true,
+    "unlabeled_body_weights_exact": true,
+    "reports": [
+      {
+        "topological_edges": 9532,
+        "verified_seam_edges": 522,
+        "ambiguous_seam_edges": 0,
+        "mesh": "Wolf3D_Body_AI_Skin",
+        "method": "AUTO",
+        "digit_vertices": 1456,
+        "joint_evidence_relabels": 133,
+        "rigid_vertices": 0,
+        "protected_vertices": 0,
+        "locked_bones": 0,
+        "body_policy": "preserve_AI",
+        "iterations": 12,
+        "editable_vertices": 1456,
+        "seam_constraint_conflicts": 0,
+        "maximum_weight_change": 0.5668402314186096
+      },
+      {
+        "topological_edges": 9224,
+        "verified_seam_edges": 242,
+        "ambiguous_seam_edges": 0,
+        "mesh": "Wolf3D_Head_AI_Skin",
+        "method": "AUTO",
+        "digit_vertices": 0,
+        "joint_evidence_relabels": 0,
+        "rigid_vertices": 0,
+        "protected_vertices": 0,
+        "locked_bones": 0,
+        "body_policy": "preserve_AI",
+        "iterations": 12,
+        "editable_vertices": 0,
+        "seam_constraint_conflicts": 0,
+        "maximum_weight_change": 0.0
+      }
+    ],
+    "diagnostics": [
+      {
+        "pose": "index",
+        "method": "AI",
+        "reference_difference_mean_m": 0.0004813509306715629,
+        "reference_difference_max_m": 0.04974028445760729
+      },
+      {
+        "pose": "index",
+        "method": "regional",
+        "reference_difference_mean_m": 2.769667653209525e-05,
+        "reference_difference_max_m": 0.014961558020846259
+      },
+      {
+        "pose": "grip",
+        "method": "AI",
+        "reference_difference_mean_m": 0.00026882081966722864,
+        "reference_difference_max_m": 0.03571193976455993
+      },
+      {
+        "pose": "grip",
+        "method": "regional",
+        "reference_difference_mean_m": 2.2605588724849085e-05,
+        "reference_difference_max_m": 0.005903231076918114
+      },
+      {
+        "pose": "forearm",
+        "method": "AI",
+        "reference_difference_mean_m": 9.632557325922511e-05,
+        "reference_difference_max_m": 0.014143711619580482
+      },
+      {
+        "pose": "forearm",
+        "method": "regional",
+        "reference_difference_mean_m": 9.58025212490631e-05,
+        "reference_difference_max_m": 0.014143711619580482
+      }
+    ]
+  },
+  "AI_protected": {
+    "status": "pass",
+    "provider_revision": "46dbfecda3d9c2dcd87301c9f1127e1f437ed0ed",
+    "model_revision": "2c55d38ffe01871c6956103926cc4a40bd7acc8a",
+    "job": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-protected\\jobs\\skin-1ntpeob4",
+    "bundle": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-protected\\ShaneAISkin",
+    "vertices": 7234,
+    "joints": 52,
+    "source_preserved": true,
+    "accepted_joints_preserved": true,
+    "materials_morphs_preserved": true,
+    "maximum_influences": 4,
+    "preflight": {
+      "schema_version": 1,
+      "rig": "Armature_AI_Skin",
+      "profile": "HUMANOID",
+      "bones": 67,
+      "mapping": [
+        {
+          "bone": "Hips",
+          "human": "Hips"
+        },
+        {
+          "bone": "Spine",
+          "human": "Spine"
+        },
+        {
+          "bone": "Spine1",
+          "human": "Chest"
+        },
+        {
+          "bone": "Spine2",
+          "human": "UpperChest"
+        },
+        {
+          "bone": "Neck",
+          "human": "Neck"
+        },
+        {
+          "bone": "Head",
+          "human": "Head"
+        },
+        {
+          "bone": "LeftEye",
+          "human": "LeftEye"
+        },
+        {
+          "bone": "RightEye",
+          "human": "RightEye"
+        },
+        {
+          "bone": "LeftShoulder",
+          "human": "LeftShoulder"
+        },
+        {
+          "bone": "LeftArm",
+          "human": "LeftUpperArm"
+        },
+        {
+          "bone": "LeftForeArm",
+          "human": "LeftLowerArm"
+        },
+        {
+          "bone": "LeftHand",
+          "human": "LeftHand"
+        },
+        {
+          "bone": "LeftHandThumb1",
+          "human": "LeftThumbProximal"
+        },
+        {
+          "bone": "LeftHandThumb2",
+          "human": "LeftThumbIntermediate"
+        },
+        {
+          "bone": "LeftHandThumb3",
+          "human": "LeftThumbDistal"
+        },
+        {
+          "bone": "LeftHandIndex1",
+          "human": "LeftIndexProximal"
+        },
+        {
+          "bone": "LeftHandIndex2",
+          "human": "LeftIndexIntermediate"
+        },
+        {
+          "bone": "LeftHandIndex3",
+          "human": "LeftIndexDistal"
+        },
+        {
+          "bone": "LeftHandMiddle1",
+          "human": "LeftMiddleProximal"
+        },
+        {
+          "bone": "LeftHandMiddle2",
+          "human": "LeftMiddleIntermediate"
+        },
+        {
+          "bone": "LeftHandMiddle3",
+          "human": "LeftMiddleDistal"
+        },
+        {
+          "bone": "LeftHandRing1",
+          "human": "LeftRingProximal"
+        },
+        {
+          "bone": "LeftHandRing2",
+          "human": "LeftRingIntermediate"
+        },
+        {
+          "bone": "LeftHandRing3",
+          "human": "LeftRingDistal"
+        },
+        {
+          "bone": "LeftHandPinky1",
+          "human": "LeftLittleProximal"
+        },
+        {
+          "bone": "LeftHandPinky2",
+          "human": "LeftLittleIntermediate"
+        },
+        {
+          "bone": "LeftHandPinky3",
+          "human": "LeftLittleDistal"
+        },
+        {
+          "bone": "RightShoulder",
+          "human": "RightShoulder"
+        },
+        {
+          "bone": "RightArm",
+          "human": "RightUpperArm"
+        },
+        {
+          "bone": "RightForeArm",
+          "human": "RightLowerArm"
+        },
+        {
+          "bone": "RightHand",
+          "human": "RightHand"
+        },
+        {
+          "bone": "RightHandThumb1",
+          "human": "RightThumbProximal"
+        },
+        {
+          "bone": "RightHandThumb2",
+          "human": "RightThumbIntermediate"
+        },
+        {
+          "bone": "RightHandThumb3",
+          "human": "RightThumbDistal"
+        },
+        {
+          "bone": "RightHandIndex1",
+          "human": "RightIndexProximal"
+        },
+        {
+          "bone": "RightHandIndex2",
+          "human": "RightIndexIntermediate"
+        },
+        {
+          "bone": "RightHandIndex3",
+          "human": "RightIndexDistal"
+        },
+        {
+          "bone": "RightHandMiddle1",
+          "human": "RightMiddleProximal"
+        },
+        {
+          "bone": "RightHandMiddle2",
+          "human": "RightMiddleIntermediate"
+        },
+        {
+          "bone": "RightHandMiddle3",
+          "human": "RightMiddleDistal"
+        },
+        {
+          "bone": "RightHandRing1",
+          "human": "RightRingProximal"
+        },
+        {
+          "bone": "RightHandRing2",
+          "human": "RightRingIntermediate"
+        },
+        {
+          "bone": "RightHandRing3",
+          "human": "RightRingDistal"
+        },
+        {
+          "bone": "RightHandPinky1",
+          "human": "RightLittleProximal"
+        },
+        {
+          "bone": "RightHandPinky2",
+          "human": "RightLittleIntermediate"
+        },
+        {
+          "bone": "RightHandPinky3",
+          "human": "RightLittleDistal"
+        },
+        {
+          "bone": "LeftUpLeg",
+          "human": "LeftUpperLeg"
+        },
+        {
+          "bone": "LeftLeg",
+          "human": "LeftLowerLeg"
+        },
+        {
+          "bone": "LeftFoot",
+          "human": "LeftFoot"
+        },
+        {
+          "bone": "LeftToeBase",
+          "human": "LeftToes"
+        },
+        {
+          "bone": "RightUpLeg",
+          "human": "RightUpperLeg"
+        },
+        {
+          "bone": "RightLeg",
+          "human": "RightLowerLeg"
+        },
+        {
+          "bone": "RightFoot",
+          "human": "RightFoot"
+        },
+        {
+          "bone": "RightToeBase",
+          "human": "RightToes"
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Wolf3D_Body_AI_Skin",
+          "vertices": 3608,
+          "polygons": 5956,
+          "shape_keys": 0,
+          "unweighted": 0,
+          "invalid": 0,
+          "over_four": 29,
+          "below_export_floor": 3200
+        },
+        {
+          "name": "Wolf3D_Head_AI_Skin",
+          "vertices": 3626,
+          "polygons": 5638,
+          "shape_keys": 3,
+          "unweighted": 0,
+          "invalid": 0,
+          "over_four": 0,
+          "below_export_floor": 6282
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        "Export will add an unweighted structural Root on a temporary copy",
+        "Wolf3D_Body_AI_Skin: export copy will prune 29 rows to four weights and normalize 0 rows; deformation needs review",
+        "Wolf3D_Body_AI_Skin: 3200 influences below Unity's tested 0.001 floor will be pruned on the export copy; review deformation",
+        "Wolf3D_Head_AI_Skin: 6282 influences below Unity's tested 0.001 floor will be pruned on the export copy; review deformation"
+      ],
+      "ready": true
+    },
+    "inference": {
+      "schema_version": 1,
+      "status": "complete",
+      "reused_result": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-ai-skin-core52-dfs\\jobs\\skin-r9hei3ni"
+    },
+    "quality_diagnostics": [
+      {
+        "pose": "forearm",
+        "reference_difference_mean_m": 9.6325698873833e-05,
+        "reference_difference_max_m": 0.014143738884374353,
+        "finite": true
+      },
+      {
+        "pose": "index",
+        "reference_difference_mean_m": 0.00044972186806375265,
+        "reference_difference_max_m": 0.049740340628700336,
+        "finite": true
+      },
+      {
+        "pose": "knee",
+        "reference_difference_mean_m": 8.693068012014759e-05,
+        "reference_difference_max_m": 0.02712818255009937,
+        "finite": true
+      }
+    ],
+    "protected_and_locked_preserved": true,
+    "stale_geometry_rejected": true,
+    "stale_weights_rejected": true,
+    "stale_joints_rejected": true,
+    "corrupt_weights_rejected": true,
+    "cancellation_passed": true,
+    "duplicate_application_rejected": true,
+    "public_apply_operator": true
+  },
+  "unity": {
+    "passed": true,
+    "user_scenes_preserved": true,
+    "vertices_preserved": true,
+    "binds_preserved": true,
+    "unity_version": "6000.3.21f1",
+    "error": "",
+    "generic_lbs_error_meters": 1.6953478052528226e-06,
+    "initial_min_bone_weight": 0.0010000000474974513,
+    "configured_min_bone_weight": 0.0010000000474974513,
+    "minimum_full_api_weight": 0.0010006780503317714,
+    "reloaded_min_bone_weight": 0.0010000000474974513,
+    "avatar": {
+      "asset": "Assets/Fixtures/ShaneAISkin/ShaneAISkin.fbx",
+      "unity_version": "6000.3.21f1",
+      "skeleton_signature": "d9a76c4e0a969466bd569792ec0edbce425a81346bede7b4995569fd56133cea",
+      "valid_avatar": true,
+      "human_avatar": true,
+      "mapped_bones": 54,
+      "skinned_meshes": 2,
+      "blendshapes": 3,
+      "height_meters": 1.8720372915267944
+    }
+  }
+}

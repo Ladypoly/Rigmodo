@@ -14,7 +14,7 @@ import bpy
 extension = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('local_character', extension / '__init__.py', submodule_search_locations=[str(extension)])
 addon = importlib.util.module_from_spec(spec); sys.modules[spec.name] = addon; spec.loader.exec_module(addon)
-from local_character import skinning, preflight, exporter, skeleton
+from local_character import skinning, preflight, exporter, skeleton, regions
 arguments = sys.argv[sys.argv.index('--') + 1:]
 output = Path(arguments[0]).resolve(); output.mkdir(parents=True, exist_ok=True)
 source = Path(r'R:\BLENDER\BANTER_Avatars\Shane.glb')
@@ -26,6 +26,10 @@ rig = next(o for o in bpy.context.scene.objects if o.type == 'ARMATURE')
 if '--core-skeleton' in arguments:
     for bone in rig.data.bones: bone.use_deform = bone.name in skeleton.HUMAN_MAPPING
 meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH' and any(m.type == 'ARMATURE' and m.object == rig for m in o.modifiers)]
+if '--protected' in arguments:
+    for mesh in meshes:
+        regions.protect(mesh, list(range(min(12,len(mesh.data.vertices)))))
+        mesh.vertex_groups['LeftHandIndex1'].lock_weight=True
 for obj in bpy.context.scene.objects: obj.select_set(obj in meshes or obj == rig)
 bpy.context.view_layer.objects.active = rig
 before = skinning._digest(rig, meshes)
@@ -113,6 +117,14 @@ else:
     assert skinning._digest(rig, meshes) == before, 'Applying proposal changed original geometry/rig'
     assert weights == [[[g.group, g.weight] for g in v.groups] for mesh in meshes for v in mesh.data.vertices], 'Applying proposal changed source weights'
     assert len(copies) == len(meshes)
+    if '--protected' in arguments:
+        import numpy as np
+        names=[j['name'] for j in request['joints']]
+        for original,copied in zip(meshes,copies):
+            a,b=regions.dense_weights(original,names),regions.dense_weights(copied,names)
+            assert np.array_equal(a[:12],b[:12]),'AI overwrote protected rows'
+            assert np.array_equal(a[:,names.index('LeftHandIndex1')],b[:,names.index('LeftHandIndex1')]),'AI overwrote locked influence'
+            assert copied.vertex_groups['LeftHandIndex1'].lock_weight
     try:
         skinning.apply(bpy.context, jobs)
         raise AssertionError('Duplicate application accepted')
@@ -166,6 +178,7 @@ else:
                'source_preserved': True, 'accepted_joints_preserved': True, 'materials_morphs_preserved': True,
                'maximum_influences': max(map(len, rows)), 'preflight': report}
     summary.update(inference=inference_state, quality_diagnostics=quality,
+                   protected_and_locked_preserved='--protected' in arguments,
                    stale_geometry_rejected=True, stale_weights_rejected=True,
                    stale_joints_rejected=True, corrupt_weights_rejected=True,
                    cancellation_passed=True, duplicate_application_rejected=True,
