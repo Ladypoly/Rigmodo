@@ -57,11 +57,10 @@ namespace LocalCharacter.Editor
             if (importer == null) throw new InvalidDataException("Asset is not a model import");
             var model = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
             if (model == null) throw new InvalidDataException("Import the FBX before configuring it");
-            var clone = UnityEngine.Object.Instantiate(model);
-            clone.name = model.name; clone.hideFlags = HideFlags.HideAndDontSave;
             CalibrationNode[] calibration;
-            try
+            using (var preview = new ModelPreview(model))
             {
+                var clone = preview.Root;
                 var transforms = clone.GetComponentsInChildren<Transform>(true);
                 var duplicate = transforms.GroupBy(t => t.name).FirstOrDefault(g => g.Count() > 1);
                 if (duplicate != null) throw new InvalidDataException("Ambiguous transform name: " + duplicate.Key);
@@ -110,7 +109,6 @@ namespace LocalCharacter.Editor
                 else throw new InvalidDataException("Unknown export profile");
                 calibration = transforms.Select(t => new CalibrationNode { name = t.name, position = t.localPosition, rotation = t.localRotation, scale = t.localScale }).ToArray();
             }
-            finally { UnityEngine.Object.DestroyImmediate(clone); }
             importer.globalScale = 1;
             importer.useFileScale = true;
             importer.optimizeGameObjects = false;

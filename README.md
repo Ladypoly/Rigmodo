@@ -16,9 +16,11 @@ Export uses temporary copies in a separate scene. It retains the imported bone h
 
 ## Unity companion
 
-Copy `unity/Editor/LocalCharacterImporter.cs` into a Unity project's `Assets/LocalCharacter/Editor` directory. Copy the complete exported bundle into Assets. Select its FBX, then choose **Assets → Local Character → Configure Selected Export for Unity**. The explicit command verifies the FBX hash and manifest, applies human mappings, calibrates a disposable skeleton copy, imports four-influence weights and writes a validation/calibration report. It does not automatically reconfigure unrelated assets or overwrite your choices on every reimport. Re-run the command only when you intend to apply the export profile again.
+Copy all C# files in `unity/Editor` into a Unity project's `Assets/LocalCharacter/Editor` directory. Copy the complete exported bundle into Assets. Select its FBX, then choose **Assets → Local Character → Configure Selected Export for Unity**. The explicit command verifies the FBX hash and manifest, applies human mappings, calibrates a disposable skeleton copy in an isolated preview scene, imports four-influence weights and writes a validation/calibration report. It does not automatically reconfigure unrelated assets or overwrite your choices on every reimport. Re-run the command only when you intend to apply the export profile again.
 
 Unity 6.3 LTS is the primary target. Avatar validity alone does not establish good deformation, a correct T-pose, motion retargeting or runtime root-motion behavior; these require the acceptance tests recorded in the build status.
+
+The same import/deformation checks also passed in the user's live Unity 6000.4.3f1 URP project. `ModelPreview.cs` must be installed alongside the importer: it keeps calibration copies out of your open scenes. The optional live test harness in `tests/` has explicit Tools-menu commands and never invokes the batch exit path in an interactive Editor. See build status for the private validation folder and preview scene.
 
 ## Development
 

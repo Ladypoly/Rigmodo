@@ -1,0 +1,10 @@
+{
+  "project": "R:\\UNITY\\Banter\\SQ-CreatorSDK",
+  "hashes": {
+    "Assets/Scenes/SampleScene.unity": "29e88f459c69e8d96f651818c72fd3b3d8925bad86ec3893987b9f1767803db7",
+    "Packages/manifest.json": "902faba255f506e9ff434fa6f0b5423a64d39415f0af6dcb7a97439a452245de",
+    "Packages/packages-lock.json": "8fe3562d2d761726baf8d16535d095b9e54a481054629256ac6193237b762345",
+    "ProjectSettings/GraphicsSettings.asset": "6736f33dc62c35b0e7a88e275242080bc7a1d94c91154d18fceb332b661a6bce",
+    "ProjectSettings/EditorBuildSettings.asset": "4740340a7cc0d557969009851de2d3fd85cb077a612e43a9e37b6b1a366040c9"
+  }
+}

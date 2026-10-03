@@ -13,7 +13,7 @@
 
 ## Evidence
 
-The final complete runner passed in `C:\Users\Elin\AppData\Local\Temp\local-character-acceptance-9qp7nbvg`. A compact copy of its report is [acceptance results](acceptance-results-2026-10-03.json). Versions: Blender 5.2.0 LTS and Unity 6000.3.21f1.
+The latest complete runner passed in `C:\Users\Elin\AppData\Local\Temp\local-character-acceptance-hce04b9d` after the live-editor isolation changes. A compact copy of its report is [acceptance results](acceptance-results-2026-10-03.json). Versions: Blender 5.2.0 LTS and Unity 6000.3.21f1.
 
 | Case | Blender/FBX result | Unity result |
 | --- | --- | --- |
@@ -26,6 +26,18 @@ The final complete runner passed in `C:\Users\Elin\AppData\Local\Temp\local-char
 Numerical deformation comparison uses a 50-degree forearm rotation on the two generated fixtures, with Blender evaluated LBS as the independent reference and Unity Generic `BakeMesh` as the actual output. A bidirectional point-cloud distance accommodates FBX vertex splitting and reordering. Worst distance is below 0.6 micrometers. This narrow diagnostic verifies this rotation, both proportions, scale and coordinate conversion; it is not a full animation or skin-quality benchmark. The original comparison failure was caused by a missing handedness reflection/sign in the test frame; explicit frame conversion fixed it without changing exporter transforms or relaxing tolerance.
 
 Blender's extension manifest validation passes. The enabled panel was visually inspected in the live session. Packaged archive contents are checked to exclude Git, test fixtures, documentation, private model binaries and the separately distributed Unity companion.
+
+## Live Unity project verification
+
+The user additionally authorized testing in their open MCP-connected project. Creator Works MCP selected `R:\UNITY\Banter\SQ-CreatorSDK`, running Unity `6000.4.3f1` with URP 17.4.0. The previous default MCP project was stale; the active project selection is session-local and did not rewrite the launcher configuration.
+
+All three existing exported fixtures were imported into the new `Assets/LocalCharacterValidation` folder. The live acceptance command passed Avatar, bind, blendshape, meter-scale, muscle-pose and Generic LBS checks with the same error bounds as Unity 6.3. Imported materials reported supported `Universal Render Pipeline/Lit` shaders. See [live acceptance results](acceptance-live-unity-2026-10-03.json).
+
+Calibration and pose/deformation checks now use `ModelPreview`, which instantiates into disposable Editor preview scenes. The batch entry point refuses to quit a non-batch Editor. Live validation compares open-scene handles, active state, dirty flags and root counts before/after. `SampleScene` had unsaved changes after the project's asset/script refresh; those changes were neither saved nor discarded during validation. Its original scene file, package inventory and monitored graphics/build settings match their pre-test hashes.
+
+A separately saved `Assets/LocalCharacterValidation/Scenes/LocalCharacterPreview.unity` and three prefabs provide visible inspection fixtures. The preview is open additively; `SampleScene` remains loaded with its unsaved changes and 32 roots. Preview rendering chooses a layer unused by other open scenes, without changing layer definitions or other scene objects. The camera faces the avatars and was inspected through an actual MCP Game-camera capture. Private screenshots and model binaries remain outside version control/distribution.
+
+No Unity project settings, build-scene list or package dependencies were edited. Only the dedicated validation asset folder was added; its Editor assembly is isolated from runtime builds. These checks broaden editor/pipeline coverage, but still do not establish full animation-clip playback or AI binding quality.
 
 ## Remaining work
 

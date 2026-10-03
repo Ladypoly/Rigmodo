@@ -38,6 +38,8 @@ The complete acceptance runner passed in `C:\Users\Elin\AppData\Local\Temp\local
 
 No AI checkpoint download/inference, new mesh binding, seam/rigid/voxel solve, clip export, twist driver or Kimodo integration exists. Milestone 1 remains open for selected clips/external animation and broader quality checks. Source Mesh2Motion application code is unchanged; its checkout remains on `main` at reference commit `79f3f61`, with untracked research documents.
 
+Additional live acceptance passed through Creator Works MCP in `R:\UNITY\Banter\SQ-CreatorSDK` (Unity 6000.4.3f1, URP 17.4.0). The new `Assets/LocalCharacterValidation` contains the companion, isolated Editor test assembly, three imported fixtures, reports, prefabs and `Scenes/LocalCharacterPreview.unity`. The preview is open additively; the user's dirty SampleScene remains loaded with 32 roots. Original scene/package/graphics/build-setting hashes are unchanged. Unity calibration now uses `ModelPreview.cs` in disposable preview scenes; ship it with the importer. Fresh Unity 6.3 regression also passes in `local-character-acceptance-hce04b9d`. Extension build status and `docs/acceptance-live-unity-2026-10-03.json` record live evidence; private models/screenshots are not distributed.
+
 Model memory/latency figures in research are upstream evidence, not measurements on this machine. Original MIA's full checkpoint/backbone terms and native inference quality/Windows operation remain engineering gates. No additional user preference is required to start the foundation.
 
 ## First implementation sequence

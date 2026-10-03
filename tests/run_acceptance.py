@@ -19,7 +19,8 @@ subprocess.run([args.blender,'--background','--factory-startup','--disable-autoe
 blender_results=json.loads((fixtures/'blender-results.json').read_text())
 assert all(c['status']=='pass' for c in blender_results)
 editor=project/'Assets/LocalCharacter/Editor';editor.mkdir(parents=True)
-shutil.copyfile(root/'unity/Editor/LocalCharacterImporter.cs',editor/'LocalCharacterImporter.cs')
+for file in (root/'unity/Editor').glob('*.cs'):
+    shutil.copyfile(file,editor/file.name)
 shutil.copyfile(root/'tests/UnityAcceptance.cs',editor/'UnityAcceptance.cs')
 for name in ('SyntheticT','SyntheticA','ShanePreserved'):
     shutil.copytree(fixtures/name,project/'Assets/Fixtures'/name)

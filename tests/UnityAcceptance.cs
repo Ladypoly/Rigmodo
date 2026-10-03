@@ -23,13 +23,23 @@ namespace LocalCharacter.Tests
         [Serializable] public class Results { public string unity_version; public List<Result> cases = new List<Result>(); }
         public static void Run()
         {
+            if (!Application.isBatchMode) throw new InvalidOperationException("Run is a batch entry point; use Evaluate for the live Editor");
+            var results = Evaluate("Assets/Fixtures");
+            string output = Path.Combine(Directory.GetParent(Application.dataPath).FullName,"unity-results.json");
+            File.WriteAllText(output,JsonUtility.ToJson(results,true));
+            Debug.Log("LOCAL_CHARACTER_UNITY_ACCEPTANCE " + output);
+            EditorApplication.Exit(results.cases.All(c=>c.passed)?0:1);
+        }
+
+        public static Results Evaluate(string fixtureRoot)
+        {
             var results = new Results { unity_version = Application.unityVersion };
             foreach (string name in new[] { "SyntheticT", "SyntheticA", "ShanePreserved" })
             {
                 var result = new Result { name = name };
                 try
                 {
-                    string path = $"Assets/Fixtures/{name}/{name}.fbx";
+                    string path = $"{fixtureRoot.TrimEnd('/')}/{name}/{name}.fbx";
                     var importer = (ModelImporter)AssetImporter.GetAtPath(path);
                     importer.animationType = ModelImporterAnimationType.Generic;
                     importer.optimizeGameObjects = false;
@@ -62,10 +72,9 @@ namespace LocalCharacter.Tests
                         float expectedHeight = name == "SyntheticT" ? 1.75f : 1.4f;
                         if (Mathf.Abs(result.validation.height_meters-expectedHeight)>.08f) throw new Exception("Meter scale/orientation mismatch: " + result.validation.height_meters);
                     }
-                    var instance=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
-                    instance.hideFlags=HideFlags.HideAndDontSave;
-                    try
+                    using (var preview=new ModelPreview(AssetDatabase.LoadAssetAtPath<GameObject>(path)))
                     {
+                        var instance=preview.Root;
                         var animator=instance.GetComponent<Animator>();
                         if (animator==null || animator.avatar==null) throw new Exception("No configured Animator/Avatar");
                         Transform hand=animator.GetBoneTransform(HumanBodyBones.LeftHand);
@@ -81,26 +90,21 @@ namespace LocalCharacter.Tests
                             if (!result.humanoid_pose_applied) throw new Exception("Humanoid pose did not move the mapped hand");
                         }
                     }
-                    finally { UnityEngine.Object.DestroyImmediate(instance); }
                     result.passed = true;
                 }
                 catch (Exception ex) { result.error = ex.ToString(); Debug.LogError(ex); }
                 results.cases.Add(result);
             }
-            string output = Path.Combine(Directory.GetParent(Application.dataPath).FullName,"unity-results.json");
-            File.WriteAllText(output,JsonUtility.ToJson(results,true));
-            Debug.Log("LOCAL_CHARACTER_UNITY_ACCEPTANCE " + output);
-            EditorApplication.Exit(results.cases.All(c=>c.passed)?0:1);
+            return results;
         }
 
         static float CompareGeneric(string path)
         {
             string reference=Path.Combine(Path.GetDirectoryName(path),"generic-lbs-reference-flat.json");
             var data=JsonUtility.FromJson<FlatReference>(File.ReadAllText(reference));
-            var clone=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
-            clone.hideFlags=HideFlags.HideAndDontSave;
-            try
+            using (var preview=new ModelPreview(AssetDatabase.LoadAssetAtPath<GameObject>(path)))
             {
+                var clone=preview.Root;
                 var bones=clone.GetComponentsInChildren<Transform>(true).ToDictionary(t=>t.name);
                 Vector3 hips=bones["Hips"].position;
                 Vector3 up=(bones["Head"].position-hips).normalized;
@@ -132,7 +136,6 @@ namespace LocalCharacter.Tests
                 if(error>1e-5f) throw new Exception("Generic LBS differs from Blender by " + error + " m");
                 return error;
             }
-            finally { UnityEngine.Object.DestroyImmediate(clone); }
         }
         [Serializable] public class FlatReference { public float angle; public Vector3[] points; }
     }
