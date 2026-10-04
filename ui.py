@@ -3,7 +3,7 @@
 import json,textwrap
 import bpy
 from bpy.types import Operator
-from . import configuration,skinning,placement,motion_jobs,install_jobs,deformation_qa,landmarks
+from . import configuration,skinning,placement,motion_jobs,install_jobs,deformation_qa,landmarks,hands
 
 def message(layout,text,icon='NONE'):
     for i,line in enumerate(textwrap.wrap(text,width=38)):layout.label(text=line,icon=icon if i==0 else 'NONE')
@@ -94,9 +94,9 @@ class LC_OT_pose_editor(Operator):
 def draw(layout,context):
     s=context.scene.lc_settings;resolved=configuration.settings(context)
     layout.use_property_split=False
-    if landmarks._sessions:
-        layout.label(text='Landmark Editor',icon='ORIENTATION_VIEW')
-        message(layout,'Follow the prompts in the viewport. Click to place markers; drag to adjust.')
+    if landmarks._sessions or hands._sessions:
+        layout.label(text='Hand Guide Editor' if hands._sessions else 'Landmark Editor',icon='ORIENTATION_VIEW')
+        message(layout,'Drag tips or knuckles; orbit to adjust depth. Tab switches hands.' if hands._sessions else 'Follow the prompts in the viewport. Click to place markers; drag to adjust.')
         layout.separator();layout.label(text='Enter: accept   |   Esc: cancel')
         return
     row=layout.row(align=True);row.prop(s,'ui_step',expand=True)
@@ -136,6 +136,13 @@ def draw(layout,context):
         if body:
             message(body,'Adjust generated joints in Edit Mode.')
             body.operator('local_character.edit_joints')
+            row=body.row(align=True);row.enabled=bool(rig) and context.mode=='OBJECT' and not skinning._jobs
+            row.operator('local_character.refine_hands');row.operator('local_character.edit_hand_guides',text='Hand Guides')
+            if rig:
+                try:
+                    review=[r['side']+' '+r['finger'] for r in json.loads(rig.get('lc_hand_report','[]')) if r.get('requires_review')]
+                    if review:message(body,'Inspect: '+', '.join(review)+'. Use hand guides when needed.',icon='INFO')
+                except (ValueError,KeyError):pass
             row=body.row(align=True);row.operator('local_character.lock_joints',text='Lock').enabled=True;row.operator('local_character.lock_joints',text='Unlock').enabled=False
             body.prop(s,'fit_bounds')
             if not s.fit_bounds:body.prop(s,'height')

@@ -5,7 +5,7 @@ import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,ui
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui
 
 class LC_Settings(PropertyGroup):
     height: FloatProperty(name="Height (m)", default=1.75, min=.1, max=10)
@@ -97,6 +97,7 @@ class LC_Settings(PropertyGroup):
     workflow_skin_only: BoolProperty(default=False,options={'HIDDEN'})
     landmark_data: StringProperty(default='')
     landmark_symmetry: BoolProperty(name='Mirror left and right',default=True)
+    hand_guide_data: StringProperty(default='',options={'HIDDEN'})
     ui_weight_bone: StringProperty(name='Bone',update=ui.choose_weight_bone)
 
 for _side in ('Left','Right'):
@@ -410,7 +411,7 @@ class LC_OT_place(WorkerModal,Operator):
     apply_operator='apply_placement_job'
     use_landmarks: BoolProperty(default=False,options={'HIDDEN'})
     @classmethod
-    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs and not hands._sessions and not landmarks._sessions
     def execute(self,context):
         try:
             rig,meshes=placement.selected(context)
@@ -440,10 +441,36 @@ class LC_OT_apply_placement(Operator):
             context.view_layer.objects.active=rig
         except (ValueError,OSError,RuntimeError,KeyError) as exc:
             settings.placement_status=str(exc);self.report({'ERROR'},str(exc));return {'CANCELLED'}
-        settings.placement_status='Joint proposal created. Review feet, shoulders and fingers; edit joints before AI binding'
-        settings.ui_step='SKIN'
-        self.report({'INFO'},f'Created {collection.name}: 52 proposed joints and Root')
+        review=[r['side']+' '+r['finger'] for r in result.get('hand_report',[]) if r.get('requires_review')]
+        if source.get('hands_only'):
+            settings.placement_status='Hands refined; body joints preserved. Inspect fingers, then skin again.'
+            settings.ui_step='RIG'
+        else:
+            settings.placement_status='Rig created. Review joints before skinning.'
+            settings.ui_step='SKIN'
+        if review:settings.placement_status+=' Hand guides recommended: '+', '.join(review)+'.'
+        self.report({'INFO'},f'Created {collection.name}; originals preserved')
         return {'FINISHED'}
+
+
+class LC_OT_refine_hands(WorkerModal,Operator):
+    bl_idname='local_character.refine_hands'
+    bl_label='Refine Hands'
+    bl_description='Predict fingers using accepted wrists, then fit clear closed sections; preserve all body joints on a review copy'
+    bl_options={'REGISTER'}
+    status_property='placement_status'
+    job_property='placement_job'
+    apply_operator='apply_placement_job'
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs and not hands._sessions and not landmarks._sessions
+    def execute(self,context):
+        try:
+            rig,meshes=hands.character(context);settings=configuration.settings(context)
+            self._folder=placement.prepare(context,meshes,rig,provider=__import__('pathlib').Path(bpy.path.abspath(settings.placement_python)).parent.parent.parent,
+                hands_only=True,finger_guides=hands.saved_guides(context,rig,meshes))
+            placement.start(self._folder,bpy.path.abspath(settings.placement_python))
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return self.begin(context)
 
 
 class LC_OT_lock_joints(Operator):
@@ -671,9 +698,9 @@ class LC_PT_main(Panel):
     bl_category = "Local Character"
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_Preferences, *ui.CLASSES, *landmarks.CLASSES, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (LC_Settings, LC_Preferences, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
-           LC_OT_place,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
+           LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
 def register():
     for cls in CLASSES: bpy.utils.register_class(cls)
@@ -681,6 +708,7 @@ def register():
 
 def unregister():
     landmarks.cleanup()
+    hands.cleanup()
     for run in list(workflow._runs.values()):run.cancel()
     skinning.cancel_all()
     del bpy.types.Scene.lc_settings

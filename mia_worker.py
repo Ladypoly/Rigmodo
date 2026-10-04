@@ -123,6 +123,43 @@ def load_model(PCAE, cache, name, **options):
     return model.cuda().eval()
 
 
+def guided_decoder(model,names,request,center,scale,hips,rotation,fine_scale):
+    """Owned inference adapter: constrain each accepted parent before children.
+
+    Unchanged pretrained parameters; upstream source is never edited. Front
+    guides preserve predicted depth. Exact artist locks constrain both ends.
+    """
+    front=request.get('front_guides',{});locks=request.get('joint_constraints',{});guides=request.get('finger_guides',{})
+    if not front and not locks and not guides:return
+    head=model.joints_head
+    def forward(self,feat,out_gt=None):
+        batch,count,_=feat.shape
+        out=torch.zeros((batch,count,self.out_dim),dtype=feat.dtype,device=feat.device)
+        rot=torch.as_tensor(rotation,dtype=feat.dtype,device=feat.device)
+        hip=torch.as_tensor(hips,dtype=feat.dtype,device=feat.device)
+        ctr=torch.as_tensor(center,dtype=feat.dtype,device=feat.device)
+        for mask in self.tree_levels_mask:
+            if not bool(mask.any()):continue
+            predicted=self._forward(feat,out)
+            out[mask.expand(batch,-1)]=predicted[mask.expand(batch,-1)]
+            for i,name in enumerate(names):
+                if not bool(mask[0,i] if mask.ndim==2 else mask[i]):continue
+                tip=name[:-1]+('Tip' if name.endswith('3') else str(int(name[-1])+1)) if 'Hand' in name and name[-1:] in '123' else None
+                if name not in front and name not in locks and name not in guides and tip not in guides:continue
+                world=((out[:,i].reshape(batch,2,3)/fine_scale)@rot+hip)/scale+ctr
+                if name in locks:
+                    world[:]=torch.as_tensor([locks[name]['head'],locks[name]['tail']],dtype=feat.dtype,device=feat.device)
+                elif name in front:
+                    point=torch.as_tensor(front[name],dtype=feat.dtype,device=feat.device)
+                    delta=point[:2]-world[:,0,:2];world[:,:,:2]+=delta[:,None,:]
+                if name not in locks:
+                    if name in guides:world[:,0]=torch.as_tensor(guides[name],dtype=feat.dtype,device=feat.device)
+                    if tip in guides:world[:,1]=torch.as_tensor(guides[tip],dtype=feat.dtype,device=feat.device)
+                out[:,i]=(((world-ctr)*scale-hip)@rot.T*fine_scale).reshape(batch,6)
+        return out
+    head.forward=types.MethodType(forward,head)
+
+
 def run(folder):
     folder=Path(folder).resolve();request=json.loads((folder/'request.json').read_text())
     if request['provider']!='mia_original_landmarks' or request['schema_version']!=1:raise ValueError('Unknown placement protocol')
@@ -154,6 +191,16 @@ def run(folder):
         canonical=(vertices-center)*scale;canonical=(canonical-hips)@rotation.T
         whole=sample_surface(canonical,triangles,16384,rng)
         centers=(coarse[[names.index('LeftHand'),names.index('RightHand')],3:]-hips)@rotation.T
+        for i,side in enumerate(('Left','Right')):
+            name=side+'Hand';constraint=request.get('joint_constraints',{}).get(name)
+            if constraint:
+                palm=(np.asarray(constraint['head'])+np.asarray(constraint['tail']))/2
+                centers[i]=((palm-center)*scale-hips)@rotation.T
+            elif name in request.get('front_guides',{}):
+                wrist=coarse[names.index(name),:3]/scale+center
+                palm=coarse[names.index(name),3:]/scale+center
+                delta=np.asarray(request['front_guides'][name])[:2]-wrist[:2];palm[:2]+=delta
+                centers[i]=((palm-center)*scale-hips)@rotation.T
         radius=.15*float(canonical.max()-canonical.min())
         hands=[sample_box_surface(canonical,triangles,hand,radius,8192,rng) for hand in centers]
         points=np.concatenate([whole,*hands]).astype(np.float32)
@@ -163,6 +210,7 @@ def run(folder):
         fine_scale=1/float(np.abs(points).max())
         points*=fine_scale
         model=load_model(PCAE,cache,'joints.pth',hierarchical_ratio=.5,kinematic_tree=tree,joints_attn_causal=True)
+        guided_decoder(model,names,request,center,scale,hips,rotation,fine_scale)
         predicted=model(torch.from_numpy(points[None]).cuda()).joints[0].cpu().numpy()
         predicted=(predicted.reshape((52,2,3))/fine_scale)@rotation+hips
         predicted=predicted/scale+center
@@ -174,6 +222,17 @@ def run(folder):
             fps_backend='independent_numpy_farthest_point',reference_equivalence='not_yet_measured')
         result['normalization']='centered_coarse_then_hips_origin_fine_unit_box'
         result['hand_sampling']='area_weighted_exact_triangle_box_clipping'
+        result['guided_parent_prediction']=bool(request.get('front_guides') or request.get('joint_constraints') or request.get('finger_guides'))
+        if request.get('hand_fit',False):
+            fit_started=time.monotonic()
+            spec=importlib.util.spec_from_file_location('lc_hand_geometry',Path(__file__).with_name('hand_geometry.py'))
+            geometry=importlib.util.module_from_spec(spec);spec.loader.exec_module(geometry)
+            fitted_heads,fitted_tails,report=geometry.refine(vertices,triangles,names,predicted[:,0],predicted[:,1],
+                request.get('locked_digits',[]),request.get('finger_guides',{}))
+            result['neural_heads']=result['heads'];result['neural_tails']=result['tails']
+            result['heads']=fitted_heads.tolist();result['tails']=fitted_tails.tolist();result['hand_report']=report
+            result['geometry_seconds']=time.monotonic()-fit_started
+        result['elapsed_seconds']=time.monotonic()-started
     (folder/'output.json').write_text(json.dumps(result,indent=2,allow_nan=False));print('LOCAL_CHARACTER_MIA_PROPOSED',result['elapsed_seconds'],flush=True)
 
 

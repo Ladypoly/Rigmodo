@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "version": "0.7.0",
+  "real_editor_invoked": true,
+  "overlay_draws": true,
+  "hand_switch": true,
+  "finger_choice": true,
+  "drag_and_undo": true,
+  "cancel_restores_view": true,
+  "source_unchanged": true
+}

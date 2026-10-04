@@ -14,7 +14,8 @@ extension=artifacts/f'local_character-{version}.zip'
 with zipfile.ZipFile(extension) as archive:
     names=set(archive.namelist())
     assert {'__init__.py','workflow.py','deformation_qa.py','provider_install.py','provider-release-lock.json','mia-runtime-lock.json','NOTICE','LICENSE','soma30.json'}<=names
-    if version=='0.6.0':assert {'configuration.py','landmarks.py','ui.py'}<=names
+    if version in {'0.6.0','0.7.0'}:assert {'configuration.py','landmarks.py','ui.py'}<=names
+    if version=='0.7.0':assert {'hands.py','hand_geometry.py'}<=names
     assert not any(n.startswith(('tests/','tools/','docs/','artifacts/','unity/','.git/')) for n in names)
     assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl'} for n in names)
     for name in names:
@@ -39,6 +40,15 @@ if version=='0.6.0':
     sources.update(baseline='local-character-acceptance-3bp3b080/summary.json',
         ui_and_landmarks='local-character-ui-release/results.json',automatic_skinning='local-character-auto-skin-ui/results.json',
         extracted_release='local-character-archive-ui-release/results.json')
+if version=='0.7.0':
+    sources.update(baseline='local-character-acceptance-3bp3b080/summary.json',
+        ui_and_landmarks='local-character-hand-ui/results.json',
+        hand_geometry='local-character-hand-development/geometry-results.json',
+        hand_placement='local-character-hand-acceptance/results.json',
+        ordinary_placement='local-character-hand-shane/results.json',
+        hand_skinning='local-character-hand-skin/results.json',
+        extracted_release='local-character-hand-archive-final-release/results.json',
+        hand_unity='local-character-ai-unity-c1iyvx3t/summary.json')
 for name,path in sources.items():
     file=temporary/path
     if file.is_file():evidence[name]=json.loads(file.read_text())
@@ -53,6 +63,12 @@ if version=='0.6.0':
     evidence['live_reload']=json.loads((root/'docs/ui-live-reload-2026-10-04.json').read_text())
     evidence['landmark_editor']=json.loads((root/'docs/ui-editor-acceptance-2026-10-04.json').read_text())
     assert evidence['live_reload']['version']==version and evidence['landmark_editor']['passed']
+if version=='0.7.0':
+    for key in ('ui_and_landmarks','hand_geometry','hand_placement','ordinary_placement','hand_skinning','extracted_release','hand_unity'):assert evidence[key]['passed']
+    assert evidence['extracted_release']['version']==version
+    for key,file in (('live_reload','hand-live-reload'),('hand_editor','hand-editor-acceptance'),('live_hand_copy','hand-live-copy')):
+        evidence[key]=json.loads((root/f'docs/{file}-2026-10-04.json').read_text())
+        assert evidence[key]['passed'] and evidence[key]['version']==version
 evidence['live_companion']=json.loads((root/'docs/live-companion-2026-10-03.json').read_text())
 assert evidence['live_companion']['compilation_passed'] and evidence['live_companion']['open_scene_state_preserved']
 baseline=json.loads((root/'docs/live-project-baseline.json').read_text())
@@ -64,7 +80,8 @@ for file in (extension,companion,artifacts/'local_character-windows-providers.zi
     checksums[file.name]=dict(bytes=file.stat().st_size,sha256=digest)
 record=dict(version=version,extension_zip_validated=True,source_modules_compile=True,private_assets_excluded=True,
     artifacts=checksums,evidence=evidence,hardware_limit='RTX 4090 24 GB tested; sampled global device usage is not a physical 16 GB proof')
-release_date='2026-10-04' if version=='0.6.0' else '2026-10-03'
-(root/f'docs/release-verification-{release_date}.json').write_text(json.dumps(record,indent=2)+'\n')
+release_date='2026-10-04' if version in {'0.6.0','0.7.0'} else '2026-10-03'
+release_name=f'release-verification-{version}-{release_date}' if version=='0.7.0' else f'release-verification-{release_date}'
+(root/f'docs/{release_name}.json').write_text(json.dumps(record,indent=2)+'\n')
 (artifacts/f'local_character-{version}-checksums.json').write_text(json.dumps(checksums,indent=2)+'\n')
 print('RELEASE_PACKAGED',json.dumps(checksums),flush=True)

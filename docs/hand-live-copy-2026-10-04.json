@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "version": "0.7.0",
+  "operator_workflow_completed": true,
+  "source_unchanged": true,
+  "body_matrix_max_error": 0.0,
+  "automatic_fits": 4,
+  "digits_for_review": [
+    "Left Thumb",
+    "Left Index",
+    "Left Middle",
+    "Right Thumb",
+    "Right Middle",
+    "Right Pinky"
+  ],
+  "selected_copy": "LC_Humanoid_Hands",
+  "source_hidden": true,
+  "job": "C:\\Users\\Elin\\AppData\\Local\\LocalCharacter\\jobs\\joints-b_hmvbu6",
+  "chains_connected": true,
+  "final_adapter_reloaded": true
+}

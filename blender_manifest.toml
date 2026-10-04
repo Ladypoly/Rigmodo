@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "local_character"
-version = "0.6.0"
+version = "0.7.0"
 name = "Local Character"
 tagline = "Local AI rigging, skinning, motion and Unity character exports"
 maintainer = "Local Character contributors"

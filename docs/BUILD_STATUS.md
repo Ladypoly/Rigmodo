@@ -1,8 +1,14 @@
-# Local Character 0.6.0: implemented scope and evidence
+# Local Character 0.7.0: implemented scope and evidence
 
 4 October 2026. Independent repository at the user-authorized Blender extension path, branch `codex/foundation`. Mesh2Motion application code is unchanged. See [README](../README.md) and [final architecture](unity-humanoid-extension-final-plan.md). The working release includes the complete local humanoid path: geometry-only placement → learned binding → regional refinement → optional twists → local motion → Unity bundle.
 
 ## Simplified workflow release
+
+0.7.0 adds parent-conditioned MIA prediction, conservative closed-section finger fitting and an orbitable hand-guide editor under Rig options. Refine Hands clones the accepted rig and changes only digit rest joints. Real GPU tests on a private capture of the user's current avatar preserve source data, body rest matrices, exact locked joints and paint; edited guides constrain all three dimensions. Duplicate application, stale guide changes and modified job constraints fail before allocating objects. On this difficult glove mesh, four automatic finger corrections have distal-section support; six digits remain flagged for manual review. This is a practical improvement, not a claim of anatomical ground truth or universal automatic hand fitting.
+
+Closed cylindrical digits, open sections, competing concentric accessory shells, chain continuity, exact locks and exact guides have separate geometric acceptance. Current compact release evidence is `release-verification-0.7.0-2026-10-04.json`. The UI release records below remain historical evidence for 0.6.0.
+
+An independent bare-hand Shane placement run passed in 3.38 seconds. Its new proposal also passed actual SkinTokens binding (50.83 seconds), AUTO refinement, FBX export and a fresh Unity 6.3 import/skin comparison. The final extracted extension ZIP passed actual conditional MIA inference, copying and guide/stale/lock guards. These structural and geometric checks do not establish anatomical accuracy for every hand pose. Live MIA fitting took about four seconds and reserved roughly 0.91 GiB of CUDA allocator memory on RTX 4090; this is not total process/device memory.
 
 0.6.0 replaces the expanded control dashboard with four quiet tabs: Rig, Skin, Motion, Export. Rig offers Automatic or Landmarks; the front editor guides five clicks, mirrors pairs, supports dragging/undo/cancel and restores the prior view. Eight joint anchors constrain front X/Z while retaining learned depth. Runtime paths, setup, device/search/solver defaults, source visibility and recovery moved into actual extension Preferences with one-time legacy migration.
 

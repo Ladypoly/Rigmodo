@@ -38,7 +38,9 @@ class LC_OT_landmark_editor(Operator):
     bl_description='Front-view editor: click pelvis, head base, elbow, wrist and knee; mirrored pairs are automatic'
     bl_options={'UNDO'}
     @classmethod
-    def poll(cls,context):return context.mode=='OBJECT' and context.area and context.area.type=='VIEW_3D' and not skinning._jobs and not _sessions
+    def poll(cls,context):
+        from . import hands
+        return context.mode=='OBJECT' and context.area and context.area.type=='VIEW_3D' and not skinning._jobs and not _sessions and not hands._sessions
     def invoke(self,context,event):
         try:
             _,self.meshes=placement.selected(context)

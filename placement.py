@@ -12,7 +12,7 @@ import uuid
 import bpy
 import numpy as np
 from mathutils import Matrix,Vector
-from . import skeleton,skinning
+from . import skeleton,skinning,hand_geometry
 
 PIN='8fb51382ff6da556cdb95cc03a48200603f3a493'
 SOURCE_HASHES={'model.py':'c8b920a35e2fcee9efcb6efeae89ed555dbd4a7ff763479f612aea214c2625da',
@@ -35,7 +35,7 @@ def selected(context):
     if not meshes:raise ValueError('Select upright humanoid geometry for joint placement')
     return rig,meshes
 
-def prepare(context,meshes,rig=None,parent=None,seed=0,provider=None,landmarks=None):
+def prepare(context,meshes,rig=None,parent=None,seed=0,provider=None,landmarks=None,hands_only=False,finger_guides=None):
     if context.mode!='OBJECT':raise ValueError('Return to Object Mode before joint placement')
     if len(set(meshes))!=len(meshes) or any(o.type!='MESH' for o in meshes):raise ValueError('Choose distinct character meshes')
     skinning.ensure_unique_character_meshes(meshes)
@@ -44,8 +44,12 @@ def prepare(context,meshes,rig=None,parent=None,seed=0,provider=None,landmarks=N
         raise ValueError('Use geometry without object animation or drivers for a joint proposal')
     expected={j.name for j in skeleton.template() if j.deform}
     preserve=bool(rig and (rig.get('lc_placement') or rig.get('lc_skinning')))
-    if preserve and {b.name for b in rig.data.bones if b.use_deform}-expected:
+    if preserve and not hands_only and {b.name for b in rig.data.bones if b.use_deform}-expected:
         raise ValueError('Reuse accepted joints on rigs with extra deform bones; a core joint proposal would discard their paint')
+    if hands_only:
+        if not rig:raise ValueError('Select the accepted rig and its character meshes')
+        from .hands import check_rig
+        check_rig(rig)
     scale=context.scene.unit_settings.scale_length
     if not math.isfinite(scale) or scale<=0:raise ValueError('Scene scale must be positive')
     points=[];triangles=[]
@@ -67,18 +71,30 @@ def prepare(context,meshes,rig=None,parent=None,seed=0,provider=None,landmarks=N
     request=dict(schema_version=1,provider='mia_original_landmarks',provider_revision=PIN,provider_cache=str(Path(provider or cache()).resolve()),
         seed=seed,source_hashes=SOURCE_HASHES,input_sha256=sha(folder/'input.npz'),
         parents={j.name:j.parent for j in skeleton.template() if j.deform})
-    (folder/'request.json').write_text(json.dumps(request,indent=2))
     locks={b.name:dict(head=list(rig.matrix_world@b.head_local),tail=list(rig.matrix_world@b.tail_local))
            for b in rig.data.bones if b.get('lc_joint_locked')} if rig else {}
     source=dict(job_id=str(uuid.uuid4()),scene_unit_scale=scale,source_digest=skinning._digest(rig,meshes),
         rig=rig.name if rig else None,rig_pointer=str(rig.as_pointer()) if rig else None,
-        meshes=[dict(name=o.name,pointer=str(o.as_pointer())) for o in meshes],locks=locks,preserve_weights=preserve)
+        meshes=[dict(name=o.name,pointer=str(o.as_pointer())) for o in meshes],locks=locks,preserve_weights=preserve,hands_only=hands_only)
     if landmarks:
         from .landmarks import validate
         source['landmarks']=validate(landmarks,meshes)
         for name,point in landmarks['points'].items():
             if name in locks and any(abs(locks[name]['head'][i]-point[i])>1e-6 for i in (0,2)):
                 raise ValueError('Unlock '+name+' before changing its landmark')
+    convert=lambda p:[p[0]*scale,p[2]*scale,-p[1]*scale]
+    request['front_guides']={n:convert(p) for n,p in source.get('landmarks',{}).get('points',{}).items()}
+    constraints={skeleton.canonical_name(n):{k:convert(v[k]) for k in ('head','tail')} for n,v in locks.items()}
+    if hands_only:
+        constraints.update({skeleton.canonical_name(b.name):{k:convert(rig.matrix_world@getattr(b,k+'_local')) for k in ('head','tail')}
+            for b in rig.data.bones if skeleton.canonical_name(b.name) in expected and not hand_geometry.digit(skeleton.canonical_name(b.name))})
+    request.update(joint_constraints=constraints,locked_digits=[n for n in constraints if hand_geometry.digit(n)],hand_fit=True)
+    if finger_guides:
+        from .hands import validate_guides
+        source['finger_guides']=validate_guides(finger_guides,rig,meshes)
+        request['finger_guides']={n:convert(p) for n,p in finger_guides['points'].items()}
+    (folder/'request.json').write_text(json.dumps(request,indent=2,allow_nan=False))
+    source['request_sha256']=sha(folder/'request.json')
     (folder/'source.json').write_text(json.dumps(source,indent=2))
     skinning._state(folder,'prepared');return folder
 
@@ -120,6 +136,7 @@ def apply(context,folder):
     folder=Path(folder).resolve()
     if context.mode!='OBJECT' or skinning.poll(folder)['status'] not in {'complete','applied'}:raise ValueError('Placement job is not ready')
     source=json.loads((folder/'source.json').read_text());request=json.loads((folder/'request.json').read_text())
+    if source.get('request_sha256') and source['request_sha256']!=sha(folder/'request.json'):raise ValueError('Placement constraints changed after preparation')
     if sha(folder/'input.npz')!=request['input_sha256'] or sha(folder/'output.json')!=json.loads((folder/'result.json').read_text())['output_sha256']:
         raise ValueError('Placement input or result changed')
     result=_output(folder);rig=bpy.data.objects.get(source['rig']) if source['rig'] else None
@@ -135,7 +152,14 @@ def apply(context,folder):
         from .landmarks import validate
         validate(source['landmarks'],meshes)
         if json.loads(context.scene.lc_settings.landmark_data or '{}')!=source['landmarks']:raise ValueError('Landmarks changed during inference; generate the rig again')
+    if source.get('finger_guides'):
+        from .hands import validate_guides
+        validate_guides(source['finger_guides'],rig,meshes)
+        if json.loads(context.scene.lc_settings.hand_guide_data or '{}')!=source['finger_guides']:raise ValueError('Hand guides changed during inference; refine hands again')
     if any(o.get('lc_placement_job')==source['job_id'] for o in context.scene.objects):raise ValueError('Placement job already applied')
+    if source.get('hands_only'):
+        from .hands import apply_copy
+        return apply_copy(context,folder,source,result,rig,meshes)
     scale=source['scene_unit_scale'];convert=lambda p:Vector((p[0]/scale,-p[2]/scale,p[1]/scale))
     heads={n:convert(p) for n,p in zip(result['names'],result['heads'])}
     tails={n:convert(p) for n,p in zip(result['names'],result['tails'])}
@@ -180,6 +204,7 @@ def apply(context,folder):
         new['lc_placement']='mia_original_joint_proposal';new['lc_placement_job']=source['job_id']
         if source.get('preserve_weights'):new['lc_skinning']=rig.get('lc_skinning','accepted_weights')
         new['lc_joint_review']='Review ankle depth, toe direction, hip width, shoulders and fingers before accepting joints'
+        new['lc_hand_report']=json.dumps(result.get('hand_report',[]))
         skinning._state(folder,'applied',collection=collection.name)
     except Exception:
         for obj in [*copies,*([new] if new else [])]:
