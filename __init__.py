@@ -5,7 +5,7 @@ import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes
 
 class LC_Settings(PropertyGroup):
     height: FloatProperty(name="Height (m)", default=1.75, min=.1, max=10)
@@ -58,6 +58,8 @@ class LC_Settings(PropertyGroup):
     motion_steps: IntProperty(name='Sampling steps', default=100, min=10, max=200)
     motion_seed: IntProperty(name='Seed', default=101, min=0, max=2147483647)
     motion_in_place: BoolProperty(name='In place', default=False, description='Remove ground travel while preserving hip sway and jump height')
+    motion_use_keyframes: BoolProperty(name='Use key poses',default=False,description='Let the local model generate motion through captured poses on this character')
+    motion_start_frame: IntProperty(name='Start frame',default=1,min=-100000,max=100000,description='First timeline frame of the generated clip; length is sampled at 30 fps')
     motion_contacts: BoolProperty(name='Correct foot contacts',default=True,description='Bake local leg IK for detected contacts; review ground height and reachable foot positions')
     motion_heading: BoolProperty(name='Extract turning to Root',default=True,description='Move the source hip’s changing ground heading into Root while preserving the body’s world pose')
     motion_loop_blend: IntProperty(name='Loop blend frames',default=8,min=2,max=120)
@@ -503,7 +505,7 @@ class LC_OT_motion(WorkerModal, Operator):
         try:
             rig=motion_jobs.selected_rig(context)
             self._folder=motion_jobs.prepare(context,rig,settings.motion_prompt,settings.motion_frames,
-                settings.motion_steps,settings.motion_seed,settings.motion_in_place)
+                settings.motion_steps,settings.motion_seed,settings.motion_in_place,keyframes=settings.motion_use_keyframes,start_frame=settings.motion_start_frame)
             motion_jobs.start(self._folder,bpy.path.abspath(settings.motion_provider))
         except (ValueError,OSError,RuntimeError,KeyError) as exc: self.report({'ERROR'},str(exc)); return {'CANCELLED'}
         return self.begin(context)
@@ -698,7 +700,7 @@ class LC_PT_main(Panel):
     bl_category = "Local Character"
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_Preferences, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (LC_Settings, LC_Preferences, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)

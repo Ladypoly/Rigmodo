@@ -48,6 +48,11 @@ class Run:
                 if not accepted and skeleton.REQUIRED<=mapping.keys():
                     raise ValueError('Imported humanoid cannot be reused: '+str(validation_error)+'. Prepare an unconstrained working copy, or explicitly disable Reuse accepted joints for a fresh proposal') from validation_error
         if self.options.get('skin_only') and not accepted:raise ValueError('Generate or select an accepted humanoid rig first; geometric binding is available under Advanced skinning')
+        if self.options.get('motion') and self.options.get('motion_use_keyframes'):
+            from . import motion_keyframes
+            if self.options.get('loop'):raise ValueError('Disable automatic loop finishing when using key poses; finish loops on a separate Action copy')
+            if not accepted or add_root or self.options.get('twists'):raise ValueError('Generate/skin the final rig first, then capture key poses in Motion')
+            motion_keyframes.prepare(context,self.rig,self.options['motion_frames'],self.options['motion_start_frame'],self.options['motion_in_place'])
         self.pending=(['root'] if add_root else []) if accepted else ['placement']
         self.pending+=['skin'] if self.options.get('rebind',True) or not accepted else []
         self.pending+=['refine']
@@ -81,7 +86,8 @@ class Run:
         elif self.stage=='motion':
             select(context,self.rig,self.meshes)
             self.folder=motion_jobs.prepare(context,self.rig,options['motion_prompt'],options['motion_frames'],
-                options['motion_steps'],options['motion_seed'],options['motion_in_place'],parent=self.record)
+                options['motion_steps'],options['motion_seed'],options['motion_in_place'],parent=self.record,
+                keyframes=options.get('motion_use_keyframes',False),start_frame=options.get('motion_start_frame',1))
             motion_jobs.start(self.folder,options['motion_provider'])
         elif self.stage=='twists':
             collection,self.rig,self.meshes=twists.add(context,self.rig,self.meshes)
@@ -158,7 +164,7 @@ class Run:
 def options(settings,skin_only=False):
     keys=('placement_python','skin_executable','skin_models','skin_device','skin_beams','refine_iterations','refine_strength',
           'refine_seams','motion_prompt','motion_frames','motion_steps','motion_seed','motion_in_place','motion_provider',
-          'motion_hand_curl','motion_contacts','motion_heading','motion_loop_blend','export_directory','character_name','profile')
+          'motion_hand_curl','motion_contacts','motion_heading','motion_loop_blend','motion_use_keyframes','motion_start_frame','export_directory','character_name','profile')
     values={key:getattr(settings,key) for key in keys}
     from . import hand_pose
     values['hands']=hand_pose.settings(settings) if settings.hand_controls else None

@@ -88,7 +88,7 @@ namespace LocalCharacter.Tests
                                         Vector3[] controls={hips,hips+left,hips+forward,hips+up};
                                         for(int bi=0;bi<renderer.bones.Length;bi++)
                                         {
-                                            var probe=sample.bones.FirstOrDefault(b=>b.name==renderer.bones[bi].name);if(probe==null)continue;
+                                            var probe=sample.bones.FirstOrDefault(b=>b.name==renderer.bones[bi].name);if(probe==null)throw new Exception("Missing skin bone probe: "+renderer.bones[bi].name);
                                             var skin=renderer.bones[bi].localToWorldMatrix*renderer.sharedMesh.bindposes[bi]*renderer.transform.worldToLocalMatrix;
                                             for(int p=0;p<4;p++)
                                             {
@@ -130,7 +130,7 @@ namespace LocalCharacter.Tests
                                 var shoulderLeft=animator.GetBoneTransform(HumanBodyBones.LeftShoulder);var shoulderRight=animator.GetBoneTransform(HumanBodyBones.RightShoulder);
                                 var bodyStart=shoulderLeft.position-shoulderRight.position;var rootStart=root.transform.forward;
                                 float hipStart=hips.position.y;
-                                for(int f=0;f<72;f++){graph.Evaluate(1f/24);if(twists!=null)twists.Evaluate();result.hip_rise_m=Mathf.Max(result.hip_rise_m,hips.position.y-hipStart);result.actor_rise_m=Mathf.Max(result.actor_rise_m,root.transform.position.y-start.y);}
+                                for(int f=1;f<reference.trajectory.Length;f++){graph.Evaluate(reference.trajectory[f].time-reference.trajectory[f-1].time);if(twists!=null)twists.Evaluate();result.hip_rise_m=Mathf.Max(result.hip_rise_m,hips.position.y-hipStart);result.actor_rise_m=Mathf.Max(result.actor_rise_m,root.transform.position.y-start.y);}
                                 result.root_travel_m=(root.transform.position-start).magnitude;
                                 result.human_root_delta=root.transform.position-start;
                                 result.hand_motion_m=(hand.position-hips.position-handStart).magnitude;

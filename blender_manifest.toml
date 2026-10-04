@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "local_character"
-version = "0.7.0"
+version = "0.8.0"
 name = "Local Character"
 tagline = "Local AI rigging, skinning, motion and Unity character exports"
 maintainer = "Local Character contributors"
@@ -14,4 +14,4 @@ platforms = ["windows-x64"]
 files = "Read local AI weights and write character proposals and exports"
 network = "Download pinned models and runtimes during provider setup"
 [build]
-paths_exclude_pattern = [".*", "__pycache__/", "tests/", "tools/", "docs/", "unity/", "artifacts/", "*.zip", "*.log"]
+paths_exclude_pattern = [".*", "__pycache__/", "tests/", "tools/", "native/", "docs/", "unity/", "artifacts/", "*.zip", "*.log"]

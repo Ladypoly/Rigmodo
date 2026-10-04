@@ -1,0 +1,28 @@
+{
+  "mode": "OBJECT",
+  "frame": 71,
+  "subframe": 0.0,
+  "selection": [
+    "LC_Humanoid_AI_Skin_Motion_Motion",
+    "Avatar_Joints.001_AI_Skin_Motion_Motion"
+  ],
+  "active": "LC_Humanoid_AI_Skin_Motion_Motion",
+  "actions": [
+    {
+      "name": "Generated Motion",
+      "users": 2
+    },
+    {
+      "name": "Generated Motion.001",
+      "users": 2
+    }
+  ],
+  "jobs": [],
+  "keyposes": null,
+  "source_digest": "80a32c92893160c168ddf16518df239be11cac1afe80a69896d39be66e4769e1",
+  "action_hashes": {
+    "Generated Motion": "5282efd03f10b8d9236f29a484c7d1c9d93d8c878687627e67d9c7148bd7e075",
+    "Generated Motion.001": "09522e294e6807b76b91e58bd232c11720cd03fd1d41f999f9208f10f397ed41"
+  },
+  "pose_sha256": "4d048ee5d635600593b00dbb64ee4d5106673280340994d93ec4a1b9106e5b95"
+}

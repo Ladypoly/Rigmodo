@@ -14,21 +14,21 @@ namespace LocalCharacter.Tests
         [Serializable] public class Vertex {public Vector3 position;public string[] bones;public float[] weights;}
         [Serializable] public class MeshReference {public string name;public Vertex[] vertices;}
         [Serializable] public class Reference {public MeshReference[] meshes;}
-        [Serializable] public class Result {public string mesh;public float maximum_weight_error,maximum_weight_sum_error,maximum_bind_position_error;public int compared;}
+        [Serializable] public class Result {public string mesh,renderer_quality,project_skin_weights;public float maximum_weight_error,maximum_weight_sum_error,maximum_bind_position_error;public int compared;}
         [Serializable] public class Report {public Result[] results;}
         public static void Run()
         {
             var results=new List<Result>();
-            string directory="Assets/Fixtures/ActualGeneric";
+            string directory=Directory.Exists("Assets/Fixtures/ActualGeneric")?"Assets/Fixtures/ActualGeneric":Directory.GetDirectories("Assets/Fixtures").Single(d=>d.EndsWith("GENERIC"));
             var reference=JsonUtility.FromJson<Reference>(File.ReadAllText(directory+"/weight-reference.json"));
-            using(var preview=new ModelPreview(AssetDatabase.LoadAssetAtPath<GameObject>(directory+"/ActualGeneric.fbx")))
+            using(var preview=new ModelPreview(AssetDatabase.LoadAssetAtPath<GameObject>(directory+"/"+Path.GetFileName(directory)+".fbx")))
             {
                 var bones=preview.Root.GetComponentsInChildren<Transform>(true).ToDictionary(t=>t.name);
                 Vector3 hips=bones["Hips"].position,up=(bones["Head"].position-hips).normalized,left=(bones["LeftArm"].position-bones["RightArm"].position).normalized;
                 Vector3 forward=-Vector3.Cross(left,up).normalized;
                 foreach(var renderer in preview.Root.GetComponentsInChildren<SkinnedMeshRenderer>())
                 {
-                    var result=new Result{mesh=renderer.name};results.Add(result);
+                    var result=new Result{mesh=renderer.name,renderer_quality=renderer.quality.ToString(),project_skin_weights=QualitySettings.skinWeights.ToString()};results.Add(result);
                     var entries=reference.meshes.SelectMany(m=>m.vertices).ToArray();
                     var vertices=renderer.sharedMesh.vertices;var weights=renderer.sharedMesh.boneWeights;
                     for(int i=0;i<vertices.Length;i++)

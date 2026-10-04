@@ -11,6 +11,10 @@ External inference code, native binaries, model checkpoints and Python
 dependencies are installed separately in the LocalCharacter provider cache.
 Their individual license texts and notices remain with those components.
 kimodo.cpp uses ggml, copyright the ggml authors.
+The independently authored Local Character key-pose entry point is Apache-2.0
+licensed and distributed with corresponding source/notices in the native ZIP.
+It exposes the pinned port's existing conditioned sampler; upstream sources
+and the original unconstrained executable remain unchanged.
 
 Kimodo's text encoder is based on Meta Llama 3: Built with Meta Llama 3.
 Its weights are subject to the Meta Llama 3 Community License and acceptable

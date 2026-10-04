@@ -1,6 +1,6 @@
 # Local Character: final architecture and implemented humanoid scope
 
-Decision/evidence date: 4 October 2026. Blender 5.2 LTS, Windows x64, Unity 6.3 LTS (`6000.3.21f1`), NVIDIA 16–24 GB target. Implemented release: **0.7.0**. Independent extension repository; Mesh2Motion application code remains unchanged. See [README](../README.md) for operation and [build status](BUILD_STATUS.md) for measured acceptance and limits.
+Decision/evidence date: 4 October 2026. Blender 5.2 LTS, Windows x64, Unity 6.3 LTS (`6000.3.21f1`), NVIDIA 16–24 GB target. Implemented release: **0.8.0**. Independent extension repository; Mesh2Motion application code remains unchanged. See [README](../README.md) for operation and [build status](BUILD_STATUS.md) for measured acceptance and limits.
 
 ## Workflow and focused editing
 
@@ -55,6 +55,8 @@ Eyes/jaw/socket modules are artist-placed at the 3D cursor on new character copi
 ## Motion and export
 
 Pinned Kimodo/SOMA-30 native inference uses local F32 motion and Q8 text weights. Accepted A/T rest calibration, neck collapse, quaternion continuity and keyed basis scale/location produce editable Actions at scene FPS. Generation is deterministic for recorded parameters but does not promise arbitrary prompt semantics. No generated fingers; open/relaxed/fist/point/grip plus individual curl controls supply editable local-axis poses.
+
+Motion can use up to 32 captured artist poses inside a requested timeline interval. The owned native key-pose entry point exposes the pinned conditioned sampler; full-body positions, root/heading and hand/foot orientations condition inference. Output keeps the model's intervening movement, applies only short anchor residual corrections and restores exact snapshots. Unsupported finger/helper channels interpolate artist poses. Captures are stored per rig, bound to accepted rest joints/unit scale and hashed with the job's feature arrays. Source Action editing and timeline FPS changes are handled explicitly. Loop finishing remains a separate Action operation because it can change authored anchors.
 
 Root stores first-relative planar travel and optional heading, enabled by default. Hips stores vertical sway/jump height. In-place removes planar travel. Flat-ground contact correction uses analytic two-bone IK and bounded pelvis lowering; unreachable contacts are reported. Loop finishing copies the Action and blends the endpoint, preserving Root travel. It is not a contact-phase/velocity-aware cycle optimizer.
 

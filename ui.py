@@ -5,6 +5,8 @@ import bpy
 from bpy.types import Operator
 from . import configuration,skinning,placement,motion_jobs,install_jobs,deformation_qa,landmarks,hands
 
+_pose_mesh_scope={}
+
 def message(layout,text,icon='NONE'):
     for i,line in enumerate(textwrap.wrap(text,width=38)):layout.label(text=line,icon=icon if i==0 else 'NONE')
 
@@ -49,7 +51,18 @@ class LC_OT_select_character(Operator):
 class LC_OT_object_mode(Operator):
     bl_idname='local_character.object_mode'
     bl_label='Back to Object Mode'
-    def execute(self,context):bpy.ops.object.mode_set(mode='OBJECT');return {'FINISHED'}
+    def execute(self,context):
+        rig=context.active_object if context.mode=='POSE' else None
+        bpy.ops.object.mode_set(mode='OBJECT')
+        if rig and context.scene.lc_settings.ui_step=='MOTION':
+            meshes=[]
+            for name,pointer in _pose_mesh_scope.pop(rig.as_pointer(),[]):
+                obj=bpy.data.objects.get(name)
+                if obj and obj.as_pointer()==pointer and obj.name in context.view_layer.objects and obj.visible_get():meshes.append(obj)
+            if meshes:
+                from .workflow import select
+                select(context,rig,meshes)
+        return {'FINISHED'}
 
 class LC_OT_weight_editor(Operator):
     bl_idname='local_character.weight_editor'
@@ -85,6 +98,8 @@ class LC_OT_pose_editor(Operator):
     def execute(self,context):
         try:
             rig=motion_jobs.selected_rig(context)
+            meshes=[o for o in context.selected_objects if o.type=='MESH' and any(m.type=='ARMATURE' and m.object==rig for m in o.modifiers)]
+            if meshes:_pose_mesh_scope[rig.as_pointer()]=[(o.name,o.as_pointer()) for o in meshes]
             if context.mode!='OBJECT':bpy.ops.object.mode_set(mode='OBJECT')
             for obj in context.selected_objects:obj.select_set(False)
             rig.select_set(True);context.view_layer.objects.active=rig;bpy.ops.object.mode_set(mode='POSE')
@@ -117,7 +132,7 @@ def draw(layout,context):
         message(layout,'Paint on the surface. Use Blender’s brush toolbar for Paint and Blur.')
         layout.operator('local_character.test_pose',text='Test Deformation',icon='POSE_HLT')
         layout.operator('local_character.object_mode',text='Finish Weight Editing',icon='CHECKMARK');return
-    if context.mode!='OBJECT':layout.operator('local_character.object_mode')
+    if context.mode!='OBJECT':layout.operator('local_character.object_mode',text='Finish Pose Editing' if context.mode=='POSE' and s.ui_step=='MOTION' else 'Back to Object Mode')
     available=install_jobs.inventory(resolved)
     provider={'RIG':'Joint placement','SKIN':'AI skinning','MOTION':'Generated motion'}.get(s.ui_step)
     if provider and not available[provider]:message(layout,'Local models need setup. Open Extension Settings.',icon='INFO')
@@ -190,6 +205,26 @@ def draw(layout,context):
     elif s.ui_step=='MOTION':
         layout.prop(s,'motion_prompt',text='Motion');layout.prop(s,'motion_frames',text='Length (frames)')
         layout.prop(s,'motion_in_place')
+        layout.prop(s,'motion_use_keyframes')
+        if s.motion_use_keyframes:
+            from . import motion_keyframes
+            box=layout.box();box.prop(s,'motion_start_frame')
+            fps=context.scene.render.fps/context.scene.render.fps_base
+            box.label(text=f'Clip ends at frame {s.motion_start_frame+(s.motion_frames-1)*fps/30:g}')
+            message(box,'Pose your character at a timeline frame, then capture it. Repeat for the poses you want.')
+            row=box.row(align=True);row.enabled=bool(rig) and not skinning._jobs
+            row.operator('local_character.test_pose',text='Edit Pose',icon='POSE_HLT')
+            row.operator('local_character.capture_key_pose',text='Capture Pose',icon='KEY_HLT')
+            if rig:
+                try:
+                    for pose in motion_keyframes.data(rig)['poses']:
+                        row=box.row(align=True);row.enabled=not skinning._jobs
+                        row.operator('local_character.key_pose',text=f"Frame {pose['frame']:g}",icon='POSE_HLT').frame=pose['frame']
+                        op=row.operator('local_character.key_pose',text='',icon='X');op.frame=pose['frame'];op.remove=True
+                    if motion_keyframes.data(rig)['poses']:
+                        row=box.row();row.enabled=not skinning._jobs
+                        row.operator('local_character.key_pose',text='Clear Poses').clear=True
+                except (ValueError,KeyError):message(box,'Key poses need to be recaptured.',icon='ERROR')
         row=layout.row();row.scale_y=1.45;row.enabled=bool(rig and meshes) and context.mode=='OBJECT' and not skinning._jobs
         row.operator('local_character.generate_motion',text='Generate Motion',icon='ACTION')
         if rig and rig.animation_data and rig.animation_data.action:layout.operator('local_character.preview_motion',text='Preview Motion',icon='PREVIEW_RANGE')

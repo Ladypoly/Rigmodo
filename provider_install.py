@@ -75,7 +75,19 @@ def extract(archive,cache,lock):
                 # Keep their extra fields when the pinned binary inventory agrees.
                 if destination.name=='build-manifest.json':
                     existing=json.loads(destination.read_text());incoming=json.loads(package.read(entry))
-                    if existing.get('binaries')==incoming.get('binaries') and existing.get('source_revision',existing.get('provider_revision'))==incoming.get('source_revision',incoming.get('provider_revision')):continue
+                    same_source=existing.get('source_revision',existing.get('provider_revision'))==incoming.get('source_revision',incoming.get('provider_revision'))
+                    if same_source and existing.get('binaries')==incoming.get('binaries'):continue
+                    # 0.8 only adds an independent entry point to the unchanged
+                    # 0.7 Kimodo runtime. Verify every existing executable/DLL
+                    # before updating its inventory; retain compiler metadata.
+                    previous={k:v for k,v in incoming.get('binaries',{}).items() if k!='kmd-keyframes.exe'}
+                    if same_source and relative.parts[0]=='kimodo-5679ff1' and not existing.get('keyframe_adapter') and existing.get('binaries')==previous and incoming.get('keyframe_adapter',{}).get('version')==1:
+                        for name,digest in previous.items():
+                            path=destination.parent/'bin'/name
+                            if sha(path)!=digest:raise ValueError('Existing native runtime changed: '+name)
+                        existing.update(binaries=incoming['binaries'],keyframe_adapter=incoming['keyframe_adapter'])
+                        temporary=destination.with_suffix('.install');temporary.write_text(json.dumps(existing,indent=2));os.replace(temporary,destination)
+                        continue
                 raise ValueError('Existing provider file has edits; choose a clean cache: '+str(destination))
             destination.parent.mkdir(parents=True,exist_ok=True);temporary=destination.with_suffix(destination.suffix+'.install')
             with package.open(entry) as source,temporary.open('wb') as target:shutil.copyfileobj(source,target,1024**2)

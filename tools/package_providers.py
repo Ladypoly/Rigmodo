@@ -11,7 +11,8 @@ artifact=root/'artifacts/local_character-windows-providers.zip';artifact.parent.
 def sha(path):
     with path.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
 mia=cache/'mia-original';licenses=mia/'licenses';licenses.mkdir(exist_ok=True)
-api=json.load(urllib.request.urlopen('https://api.github.com/repos/1zb/3DShape2VecSet/commits/master',timeout=30));shape_pin=api['sha']
+previous_lock=json.loads((root/'provider-release-lock.json').read_text())
+shape_pin=previous_lock['shape2vec_source_revision']
 with urllib.request.urlopen(f'https://raw.githubusercontent.com/1zb/3DShape2VecSet/{shape_pin}/LICENSE',timeout=30) as response:
     (licenses/'3DShape2VecSet.MIT.txt').write_bytes(response.read())
 with urllib.request.urlopen('https://huggingface.co/jasongzy/Make-It-Animatable/resolve/ca0daf6cb164f939e77bf32667513fc7558d5f98/README.md',timeout=30) as response:

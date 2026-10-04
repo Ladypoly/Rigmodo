@@ -57,7 +57,7 @@ def _contacts(poses,mapping,world,masks,frame,pins,stats):
             poses[child.name].translation=inherited.translation
 
 
-def bake(context, rig, root, rotations, in_place=False, hand_curl=0., label='Generated Motion',contacts=False,heading=False,hands=None):
+def bake(context, rig, root, rotations, in_place=False, hand_curl=0., label='Generated Motion',contacts=False,heading=False,hands=None,start_frame=1,root_origin=None):
     """Use anatomical rest-direction calibration, never assign source local quaternions directly."""
     mapping=motion_jobs.validate_rig(context,rig)
     if not 0 <= hand_curl <= 1: raise ValueError('Hand curl must be 0–1')
@@ -71,6 +71,7 @@ def bake(context, rig, root, rotations, in_place=False, hand_curl=0., label='Gen
     source_leg=sum(Vector(motion_data.OFFSETS[motion_data.NAMES.index('Left'+part)]).length for part in ('Shin','Foot'))
     target_leg=sum(((world@mapping['Left'+part].tail_local)-(world@mapping['Left'+part].head_local)).length for part in ('UpLeg','Leg'))
     scale=target_leg/source_leg
+    origin=root[0] if root_origin is None else root_origin
     source_frames={}; calibration={}
     for canonical,bone in mapping.items():
         if canonical not in motion_data.MAPPING: continue
@@ -93,8 +94,8 @@ def bake(context, rig, root, rotations, in_place=False, hand_curl=0., label='Gen
     masks=motion_data.contact_masks(root,rotations) if contacts else None
     pins={};contact_stats=dict(contact_frames=0,unreachable_contact_frames=0,max_ankle_correction_m=0.,maximum_pelvis_lowering_m=0.)
     for frame in range(len(root)):
-        keyframe=1+frame*frame_rate/30
-        horizontal=conversion@Vector((root[frame,0]-root[0,0],0,root[frame,2]-root[0,2]))*scale
+        keyframe=start_frame+frame*frame_rate/30
+        horizontal=conversion@Vector((root[frame,0]-origin[0],0,root[frame,2]-origin[2]))*scale
         if in_place: horizontal=Vector((0,0,0))
         vertical=Vector((0,0,(root[frame,1]-.988)*scale))
         poses={}
@@ -175,7 +176,12 @@ def apply(context, folder, hand_curl=0.,contacts=False,heading=False,hands=None)
             for modifier in mesh.modifiers:
                 if modifier.type=='ARMATURE': modifier.object=rig
         context.scene.collection.children.link(collection)
-        action=bake(context,rig,root,rotations,request['in_place'],hand_curl,contacts=contacts,heading=heading,hands=hands)
+        keys=motion_jobs.check_inputs(__import__('pathlib').Path(folder),request)
+        action=bake(context,rig,root,rotations,request['in_place'],hand_curl,contacts=contacts,heading=heading,hands=hands,
+            start_frame=keys['start_frame'] if keys else 1,root_origin=(0,0,0) if keys else None)
+        if keys:
+            from . import motion_keyframes
+            motion_keyframes.overlay(context,rig,keys)
         rig['lc_motion_job']=request['job_id']; rig['lc_motion_diagnostics']=json.dumps(result['diagnostics'])
         rig['lc_motion_prompt']=(__import__('pathlib').Path(folder)/'prompt.txt').read_text(encoding='utf-8')
         rig['lc_motion_provider']='kimodo_soma30'
@@ -188,5 +194,5 @@ def apply(context, folder, hand_curl=0.,contacts=False,heading=False,hands=None)
                 (bpy.data.armatures if isinstance(block,bpy.types.Armature) else bpy.data.meshes).remove(block)
         if orphan_action and orphan_action.users==0: bpy.data.actions.remove(orphan_action)
         bpy.data.collections.remove(collection); raise
-    context.scene.frame_set(context.scene.frame_current)
+    context.scene.frame_set(context.scene.frame_current,subframe=context.scene.frame_subframe)
     return collection,rig,objects[1:],action,result['diagnostics']

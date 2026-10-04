@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "version": "0.8.0",
+  "source_actions_pose_rest_and_weights_preserved": true,
+  "settings_and_preferences_preserved": true,
+  "selection_and_timeline_preserved": true,
+  "key_pose_operators_registered": true,
+  "capture_operator": "LOCAL_CHARACTER_OT_capture_key_pose",
+  "pose_editor_selection_recovery_loaded": true,
+  "use_key_poses_enabled": false,
+  "active": "LC_Humanoid_AI_Skin_Motion_Motion"
+}

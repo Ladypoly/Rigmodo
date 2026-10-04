@@ -5,11 +5,14 @@ from mathutils import Vector
 import numpy as np
 
 def write(rig,meshes,bundle):
+    fps=bpy.context.scene.render.fps/bpy.context.scene.render.fps_base
     hips=rig.matrix_world@rig.data.bones['Hips'].head_local
     up=(rig.matrix_world@rig.data.bones['Head'].head_local-hips).normalized()
     left=(rig.matrix_world@rig.data.bones['LeftArm'].head_local-rig.matrix_world@rig.data.bones['RightArm'].head_local).normalized()
     forward=left.cross(up).normalized();samples=[];start=None
     weight_reference=[];precision_budget=0.;orthogonality=0.
+    surface_vertices={mesh.name:{i for polygon in mesh.data.polygons for i in polygon.vertices} for mesh in meshes}
+    omitted={mesh.name:len(mesh.data.vertices)-len(surface_vertices[mesh.name]) for mesh in meshes}
     defects={}
     for bone in rig.data.bones:
         matrix=np.array((rig.matrix_world@bone.matrix_local).to_3x3(),dtype=np.float64)
@@ -41,6 +44,9 @@ def write(rig,meshes,bundle):
         for mesh in meshes:
             evaluated=mesh.evaluated_get(bpy.context.evaluated_depsgraph_get())
             for v in evaluated.data.vertices:
+                # FBX/Unity render triangle vertices, not isolated Blender
+                # points. Report that scope instead of testing invisible data.
+                if v.index not in surface_vertices[mesh.name]:continue
                 delta=evaluated.matrix_world@v.co-hips
                 points.append(dict(zip(('x','y','z'),(delta.dot(left),delta.dot(forward),delta.dot(up)))))
         probes=[]
@@ -52,12 +58,13 @@ def write(rig,meshes,bundle):
                 delta=matrix@control-hips
                 transformed.append(dict(x=delta.dot(left),y=delta.dot(forward),z=delta.dot(up)))
             probes.append(dict(name=bone.name,points=transformed))
-        samples.append(dict(time=(frame-1)/24,points=points,bones=probes))
+        samples.append(dict(time=(frame-1)/fps,points=points,bones=probes))
     trajectory=[]
     for frame in range(1,74):
         bpy.context.scene.frame_set(frame);bpy.context.view_layer.update()
         delta=rig.matrix_world@rig.pose.bones['Root'].head-start
-        trajectory.append(dict(time=(frame-1)/24,position=dict(x=-delta.x,y=delta.z,z=-delta.y)))
+        trajectory.append(dict(time=(frame-1)/fps,position=dict(x=-delta.x,y=delta.z,z=-delta.y)))
     if precision_budget>.0005:raise ValueError('Rest-frame precision budget exceeds 0.5 mm; inspect the accepted skeleton')
     (bundle/'animation-reference.json').write_text(json.dumps(dict(samples=samples,root_travel=(root-start).length,trajectory=trajectory,
-        rig_rest_precision_budget_m=precision_budget,maximum_rest_rotation_anisotropy=orthogonality)))
+        rig_rest_precision_budget_m=precision_budget,maximum_rest_rotation_anisotropy=orthogonality,
+        surface_scope='vertices_used_by_polygons',non_surface_vertices_omitted=omitted)))
