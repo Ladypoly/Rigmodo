@@ -82,11 +82,20 @@ def _digest(rig, meshes):
     return digest.hexdigest()
 
 
+def ensure_unique_character_meshes(meshes):
+    sources={}
+    for mesh in meshes:
+        source=mesh.get('lc_source_mesh',mesh.name)
+        if source in sources:raise ValueError('Both '+sources[source]+' and '+mesh.name+' are copies of the same avatar. Select only the current version')
+        sources[source]=mesh.name
+
+
 def prepare(context, rig, meshes, parent=None, device='vulkan', beams=10):
     if context.mode != 'OBJECT': raise ValueError('Switch to Object Mode before AI skinning')
     if device not in {'vulkan', 'cpu'} or not 1 <= beams <= 10: raise ValueError('Unsupported inference settings')
     if len(meshes) != len(set(meshes)) or any(o.type != 'MESH' for o in meshes) or not meshes:
         raise ValueError('Expected distinct mesh objects')
+    ensure_unique_character_meshes(meshes)
     if rig.type != 'ARMATURE': raise ValueError('Choose an accepted armature')
     if rig.get('lc_twists'):raise ValueError('AI binding currently uses the core rig. Bind and refine the core, then add the optional twists')
     if rig.constraints or any(b.constraints for b in rig.pose.bones):
@@ -378,6 +387,7 @@ def apply(context, folder):
             for vertex in range(span['count']):
                 for i, weight in rows[span['start'] + vertex]: groups[i].add([vertex], weight, 'REPLACE')
             mesh['lc_skin_job'] = request['job_id']
+            mesh['lc_source_mesh']=source.get('lc_source_mesh',source.name)
         copied_rig['lc_skinning'] = 'skin_tokens_cpp_f16'
         copied_rig['lc_skin_job'] = request['job_id']
         copied_rig['lc_skin_provider_revision'] = request['provider_revision']

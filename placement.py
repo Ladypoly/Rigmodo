@@ -35,9 +35,10 @@ def selected(context):
     if not meshes:raise ValueError('Select upright humanoid geometry for joint placement')
     return rig,meshes
 
-def prepare(context,meshes,rig=None,parent=None,seed=0,provider=None):
+def prepare(context,meshes,rig=None,parent=None,seed=0,provider=None,landmarks=None):
     if context.mode!='OBJECT':raise ValueError('Return to Object Mode before joint placement')
     if len(set(meshes))!=len(meshes) or any(o.type!='MESH' for o in meshes):raise ValueError('Choose distinct character meshes')
+    skinning.ensure_unique_character_meshes(meshes)
     if rig and rig.name not in context.scene.objects:raise ValueError('Return to the source character scene')
     if any(o.animation_data and (o.animation_data.action or o.animation_data.drivers or o.animation_data.nla_tracks) for o in meshes):
         raise ValueError('Use geometry without object animation or drivers for a joint proposal')
@@ -72,6 +73,12 @@ def prepare(context,meshes,rig=None,parent=None,seed=0,provider=None):
     source=dict(job_id=str(uuid.uuid4()),scene_unit_scale=scale,source_digest=skinning._digest(rig,meshes),
         rig=rig.name if rig else None,rig_pointer=str(rig.as_pointer()) if rig else None,
         meshes=[dict(name=o.name,pointer=str(o.as_pointer())) for o in meshes],locks=locks,preserve_weights=preserve)
+    if landmarks:
+        from .landmarks import validate
+        source['landmarks']=validate(landmarks,meshes)
+        for name,point in landmarks['points'].items():
+            if name in locks and any(abs(locks[name]['head'][i]-point[i])>1e-6 for i in (0,2)):
+                raise ValueError('Unlock '+name+' before changing its landmark')
     (folder/'source.json').write_text(json.dumps(source,indent=2))
     skinning._state(folder,'prepared');return folder
 
@@ -124,11 +131,18 @@ def apply(context,folder):
         raise ValueError('Source geometry or corrected joints changed during placement')
     if rig and source['locks']!={b.name:dict(head=list(rig.matrix_world@b.head_local),tail=list(rig.matrix_world@b.tail_local)) for b in rig.data.bones if b.get('lc_joint_locked')}:
         raise ValueError('Joint locks changed during placement')
+    if source.get('landmarks'):
+        from .landmarks import validate
+        validate(source['landmarks'],meshes)
+        if json.loads(context.scene.lc_settings.landmark_data or '{}')!=source['landmarks']:raise ValueError('Landmarks changed during inference; generate the rig again')
     if any(o.get('lc_placement_job')==source['job_id'] for o in context.scene.objects):raise ValueError('Placement job already applied')
     scale=source['scene_unit_scale'];convert=lambda p:Vector((p[0]/scale,-p[2]/scale,p[1]/scale))
     heads={n:convert(p) for n,p in zip(result['names'],result['heads'])}
     tails={n:convert(p) for n,p in zip(result['names'],result['tails'])}
     locks={skeleton.canonical_name(n):value for n,value in source['locks'].items()}
+    if source.get('landmarks'):
+        from .landmarks import constrain
+        constrain(heads,tails,source['landmarks'],locks)
     for n,value in locks.items():
         if n in heads:heads[n]=Vector(value['head']);tails[n]=Vector(value['tail'])
     for parent,child in [('Hips','Spine'),('Spine','Spine1'),('Spine1','Spine2'),('Spine2','Neck'),('Neck','Head')]+[
@@ -159,8 +173,10 @@ def apply(context,folder):
                 for group in list(mesh.vertex_groups):
                     if group.name in old_bones or skeleton.canonical_name(group.name) in heads:mesh.vertex_groups.remove(group)
             mesh['lc_placement_job']=source['job_id']
+            mesh['lc_source_mesh']=original.get('lc_source_mesh',original.name)
         for name in locks:
             if name in new.data.bones:new.data.bones[name]['lc_joint_locked']=True
+        for name in source.get('landmarks',{}).get('points',{}):new.data.bones[name]['lc_joint_locked']=True
         new['lc_placement']='mia_original_joint_proposal';new['lc_placement_job']=source['job_id']
         if source.get('preserve_weights'):new['lc_skinning']=rig.get('lc_skinning','accepted_weights')
         new['lc_joint_review']='Review ankle depth, toe direction, hip width, shoulders and fingers before accepting joints'

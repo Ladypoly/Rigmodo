@@ -26,5 +26,5 @@ weights=regions.dense_weights(meshes[0],[b.name for b in target.data.bones if b.
 assert abs(weights.sum(axis=1)-1).max()<1e-5
 report=deformation_qa.inspect(target,meshes);assert report and report[0]['probes']
 result=dict(passed=True,release_archive=str(archive),extracted_worker_binding=True,source_preserved=True,deformation_guard_available=True,
-    provider_inventory_available=True,vertices=len(mesh.data.vertices),bones=len(target.data.bones))
+    provider_inventory_available=True,vertices=len(mesh.data.vertices),bones=len(target.data.bones),version=addon.exporter.VERSION)
 (output/'results.json').write_text(json.dumps(result,indent=2));print('ARCHIVE_ACCEPTANCE',json.dumps(result),flush=True)

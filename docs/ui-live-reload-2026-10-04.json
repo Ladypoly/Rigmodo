@@ -1,0 +1,21 @@
+{
+  "enabled": [
+    true,
+    true
+  ],
+  "version": "0.6.0",
+  "source_scene_preserved": true,
+  "preferences_registered": true,
+  "providers": {
+    "Joint placement": true,
+    "AI skinning": true,
+    "Generated motion": true
+  },
+  "objects": 1,
+  "selection_preserved": true,
+  "no_active_jobs": true,
+  "no_editor_sessions": true,
+  "settings_button_opens_preferences": true,
+  "temporary_preferences_window_closed": true,
+  "preferences_saved": true
+}

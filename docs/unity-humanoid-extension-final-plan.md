@@ -1,12 +1,20 @@
 # Local Character: final architecture and implemented humanoid scope
 
-Decision/evidence date: 3 October 2026. Blender 5.2 LTS, Windows x64, Unity 6.3 LTS (`6000.3.21f1`), NVIDIA 16–24 GB target. Implemented release: **0.5.0**. Independent extension repository; Mesh2Motion application code remains unchanged. See [README](../README.md) for operation and [build status](BUILD_STATUS.md) for measured acceptance and limits.
+Decision/evidence date: 4 October 2026. Blender 5.2 LTS, Windows x64, Unity 6.3 LTS (`6000.3.21f1`), NVIDIA 16–24 GB target. Implemented release: **0.6.0**. Independent extension repository; Mesh2Motion application code remains unchanged. See [README](../README.md) for operation and [build status](BUILD_STATUS.md) for measured acceptance and limits.
+
+## Workflow and focused editing
+
+Four sidebar tabs follow Rig → Skin → Motion → Export. Each exposes one primary operation and relevant artist controls. Technical setup, provider paths, inference and solver defaults, source hiding and recovery are extension Preferences. Legacy scene configuration migrates once, after which global Preferences take priority.
+
+Rig offers fully automatic placement or a dedicated front-view landmark mode. Five click groups locate pelvis, head base, elbows, wrists and knees; symmetry gives eight anchors, or both sides can be placed independently. Markers drag, Backspace undoes, Enter accepts and Esc cancels. View/display settings are restored and no guide geometry is created. Captured geometry digest and guide snapshots guard against stale results. Anchors constrain joint X/Z, retain learned Y depth and lock the guided bones. Unguided/finger joints remain learned predictions requiring anatomical review.
+
+Skin Avatar preserves accepted joints and runs learned binding → AUTO regional correction → deformation guard. Advanced skinning reveals surface/volume alternatives, selected-region rules and correction. Native Edit/Pose/Weight Paint modes provide fine control; the focused weight panel supplies bone/brush controls and deformation testing. The implemented custom viewport is the front landmark editor; a complete RetopoFlow-style brush/workspace suite is a future refinement, not a dependency of this workflow.
 
 ## Skeleton and placement
 
 Default: 52 Mixamo-style body/finger deform bones plus an unweighted `Root` above `Hips`. Body: Hips, Spine, Spine1, Spine2, Neck, Head. Each side: Shoulder → Arm → ForeArm → Hand, five three-joint fingers, and UpLeg → Leg → Foot → ToeBase. `Pinky` maps to Unity's `Little` identity. Names are unprefixed; imported semantic identities accept namespace prefixes. Generated motion requires structural Root named `Root` without a prefix.
 
-The inspected live reference has 67 deform bones, including fourth finger/end bones and two eyes, with arms in an approximately 59.37° A-bind pose. It remains untouched; [reference snapshot](reference/blender-humanoid-armature-2026-10-03.json) records it. Newly generated defaults omit terminal extras; existing weighted rigs retain their hierarchy in the imported-rig export path. No private reference coordinates are distributed as a template.
+The previously inspected live reference had 67 deform bones, including fourth finger/end bones and two eyes, with arms in an approximately 59.37° A-bind pose. [Reference snapshot](reference/blender-humanoid-armature-2026-10-03.json) records it; extension checks preserved it. The user subsequently changed the live scene. Newly generated defaults omit terminal extras; existing weighted rigs retain their hierarchy in the imported-rig export path. No private reference coordinates are distributed as a template.
 
 Original MIA proposes fixed semantic heads/tails from mesh geometry only. Its verified model code runs outside Blender in isolated Python 3.11/CUDA. Both normalization stages and exact clipped-triangle hand sampling are retained. Independent CPU farthest-point sampling avoids a compiler-dependent CUDA extension; numerical equivalence to the original kernel is unmeasured. The owned parametric skeleton is the editable manual alternative. Upright orientation and separated A/T limbs are input assumptions, not automatic guarantees.
 

@@ -1,6 +1,23 @@
-# Local Character 0.5.0: implemented scope and evidence
+# Local Character 0.6.0: implemented scope and evidence
 
-3 October 2026. Independent repository at the user-authorized Blender extension path, branch `codex/foundation`. Mesh2Motion application code is unchanged. See [README](../README.md) and [final architecture](unity-humanoid-extension-final-plan.md). The working release includes the complete local humanoid path: geometry-only placement → learned binding → regional refinement → optional twists → local motion → Unity bundle.
+4 October 2026. Independent repository at the user-authorized Blender extension path, branch `codex/foundation`. Mesh2Motion application code is unchanged. See [README](../README.md) and [final architecture](unity-humanoid-extension-final-plan.md). The working release includes the complete local humanoid path: geometry-only placement → learned binding → regional refinement → optional twists → local motion → Unity bundle.
+
+## Simplified workflow release
+
+0.6.0 replaces the expanded control dashboard with four quiet tabs: Rig, Skin, Motion, Export. Rig offers Automatic or Landmarks; the front editor guides five clicks, mirrors pairs, supports dragging/undo/cancel and restores the prior view. Eight joint anchors constrain front X/Z while retaining learned depth. Runtime paths, setup, device/search/solver defaults, source visibility and recovery moved into actual extension Preferences with one-time legacy migration.
+
+Skin Avatar runs learned binding, AUTO regional correction and deformation probes as one action, without rerigging, motion or export. Advanced skinning reveals geometric alternatives and region tools. The focused weight panel uses Blender's native painting mode, with a ready Paint brush, bone choice, weight/strength/size and Pose Mode testing. Full custom brush/workspace replacement is outside this UI release. Original/derived duplicates are rejected; successful individual steps hide originals according to Preferences while keeping their geometry intact.
+
+| New check | Result |
+| --- | --- |
+| Preferences and all workflow/settings draws | Real installed RNA registration/migration and all tabs pass; no runtime fields in workflow panel |
+| Guided placement application | Cached actual MIA output; eight front anchors exact, AI depth retained, locks set; stale guides rejected before object allocation |
+| Live front editor | Five click groups, eight mirrored points, drag/undo, cancel, restored view/display and removed handlers; user avatar unchanged |
+| Native editors | Actual weight mode/essential Paint brush, bone-group change, joint editing, pose testing and character-selection helper pass on private Shane geometry |
+| Automatic Skin Avatar | Actual SkinTokens → AUTO → deformation guard, **69.71 s** on RTX 4090; accepted joints/source exact; no placement/motion/export; workflow options retained |
+| Baseline regression | Blender/Unity suite all pass: `local-character-acceptance-3bp3b080` |
+
+Compact current evidence is in `release-verification-2026-10-04.json`; the 0.5.0 record remains in `release-verification-2026-10-03.json`. The following provider/geometry/motion acceptance remains applicable from that earlier release unless a newer check is identified.
 
 ## Implemented
 
@@ -10,7 +27,7 @@
 - Optional two-helper forearm twists, matching Blender/Unity evaluation, baked Generic helpers, separate Humanoid playback prefab; artist-placed eyes/jaw/nondeform sockets.
 - Kimodo/SOMA-30 local motion, A/T calibration, per-hand/finger controls, heading/planar Root travel, vertical Hips motion, in-place mode, flat-ground contacts, editable endpoint loop blending.
 - Selected-Action/slot export and Unity Humanoid/Generic companion. Generated Humanoid `.anim` has explicit Root curves to preserve travel. Source frames, poses, Actions, geometry, paint, materials and morphs are preserved.
-- Simple Build Character workflow with individual correction controls, phase records, undo-owned copy creation, stale-result guards, hidden owned workers, cancellation and independent provider setup.
+- Rig/Skin/Motion/Export workflow and landmark editor, global Preferences, individual correction controls and optional complete orchestration, phase records, undo-owned copy creation, stale-result guards, hidden owned workers, cancellation and independent provider setup.
 - Failure-derived deformation probes stop automation before motion/export, retain correction copies and offer readonly rechecks/expert override. Imported-joint reuse adds missing Root without replacing accepted anatomy, including unbound meshes awaiting AI skinning.
 - Separate Windows native/source archive and checkpoint/runtime locks. Heavy provider verification is off Blender's UI thread; native EXE/DLL inventory and hashes match the packaged release.
 
@@ -55,4 +72,4 @@ Native-port versus official-reference inference parity and MIA CPU-FPS kernel eq
 
 Code/model licenses remain distinct. Blender extension GPL; independent Unity companion MIT; provider source and model notices retained. Kimodo text weights use Meta Llama 3 terms and SOMA weights use NVIDIA's Open Model License. The full weight stack is not unrestricted OSI open source. No proprietary ARP/VHD code, private avatars or checkpoint payloads are distributed.
 
-Release packaging, extension validation, isolated regression and live reload checks are recorded in `release-verification-2026-10-03.json` once complete.
+Release packaging, extension validation, isolated regression and live reload checks are recorded in `release-verification-2026-10-04.json`.

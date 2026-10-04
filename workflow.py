@@ -47,6 +47,7 @@ class Run:
                     add_root=accepted
                 if not accepted and skeleton.REQUIRED<=mapping.keys():
                     raise ValueError('Imported humanoid cannot be reused: '+str(validation_error)+'. Prepare an unconstrained working copy, or explicitly disable Reuse accepted joints for a fresh proposal') from validation_error
+        if self.options.get('skin_only') and not accepted:raise ValueError('Generate or select an accepted humanoid rig first; geometric binding is available under Advanced skinning')
         self.pending=(['root'] if add_root else []) if accepted else ['placement']
         self.pending+=['skin'] if self.options.get('rebind',True) or not accepted else []
         self.pending+=['refine']
@@ -154,7 +155,7 @@ class Run:
         # Completed phases remain available for correction or resumption.
 
 
-def options(settings):
+def options(settings,skin_only=False):
     keys=('placement_python','skin_executable','skin_models','skin_device','skin_beams','refine_iterations','refine_strength',
           'refine_seams','motion_prompt','motion_frames','motion_steps','motion_seed','motion_in_place','motion_provider',
           'motion_hand_curl','motion_contacts','motion_heading','motion_loop_blend','export_directory','character_name','profile')
@@ -164,4 +165,5 @@ def options(settings):
     for key in ('placement_python','skin_executable','skin_models','motion_provider'):values[key]=bpy.path.abspath(values[key])
     values.update(reuse_joints=settings.workflow_reuse_joints,rebind=settings.workflow_rebind,motion=settings.workflow_motion,
                   export=settings.workflow_export,loop=settings.workflow_loop,hide_sources=settings.workflow_hide_sources,twists=settings.workflow_twists,rigid_parts=settings.workflow_rigid,allow_strain=settings.workflow_allow_strain)
+    if skin_only:values.update(skin_only=True,reuse_joints=True,rebind=True,motion=False,export=False,loop=False,twists=False)
     return values

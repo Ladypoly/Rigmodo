@@ -14,10 +14,12 @@ extension=artifacts/f'local_character-{version}.zip'
 with zipfile.ZipFile(extension) as archive:
     names=set(archive.namelist())
     assert {'__init__.py','workflow.py','deformation_qa.py','provider_install.py','provider-release-lock.json','mia-runtime-lock.json','NOTICE','LICENSE','soma30.json'}<=names
+    if version=='0.6.0':assert {'configuration.py','landmarks.py','ui.py'}<=names
     assert not any(n.startswith(('tests/','tools/','docs/','artifacts/','unity/','.git/')) for n in names)
     assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl'} for n in names)
     for name in names:
         if name.endswith('.py'):compile(archive.read(name),name,'exec')
+        if name.endswith('.py') or name=='blender_manifest.toml':assert archive.read(name)==(root/name).read_bytes(),name
 with zipfile.ZipFile(companion) as archive:
     assert {'LICENSE','README.md','Editor/LocalCharacter.Editor.asmdef','Runtime/LocalCharacter.Runtime.asmdef','Runtime/LocalCharacterTwists.cs'}<=set(archive.namelist())
 temporary=Path(os.environ['LOCALAPPDATA'])/'Temp'
@@ -33,6 +35,10 @@ sources={'fresh_install':'local-character-install-veal6fz8/results.json','fresh_
     'extracted_release':'local-character-archive-release/results.json',
     'unity_hazmat':'local-character-motion-unity-vdo054if/motion-results.json',
     'imported_camera_recovery':'local-character-camera-recovery/results.json','unity_camera_recovery':'local-character-motion-unity-vzas0bzq/motion-results.json'}
+if version=='0.6.0':
+    sources.update(baseline='local-character-acceptance-3bp3b080/summary.json',
+        ui_and_landmarks='local-character-ui-release/results.json',automatic_skinning='local-character-auto-skin-ui/results.json',
+        extracted_release='local-character-archive-ui-release/results.json')
 for name,path in sources.items():
     file=temporary/path
     if file.is_file():evidence[name]=json.loads(file.read_text())
@@ -41,6 +47,12 @@ assert evidence['hazmat_release']['visual_review_passed']
 assert not evidence['rpm_visual_failure']['passed'] and evidence['rpm_visual_failure']['structural_checks_passed']
 profile=json.loads((temporary/'local-character-one-click/resource-profile.json').read_text());profile.pop('samples',None);evidence['resource_profile']=profile
 evidence['live_reload']=json.loads((root/'docs/live-reload-2026-10-03.json').read_text())
+if version=='0.6.0':
+    for key in ('ui_and_landmarks','automatic_skinning'):assert evidence[key]['passed']
+    assert evidence['automatic_skinning']['version']==version
+    evidence['live_reload']=json.loads((root/'docs/ui-live-reload-2026-10-04.json').read_text())
+    evidence['landmark_editor']=json.loads((root/'docs/ui-editor-acceptance-2026-10-04.json').read_text())
+    assert evidence['live_reload']['version']==version and evidence['landmark_editor']['passed']
 evidence['live_companion']=json.loads((root/'docs/live-companion-2026-10-03.json').read_text())
 assert evidence['live_companion']['compilation_passed'] and evidence['live_companion']['open_scene_state_preserved']
 baseline=json.loads((root/'docs/live-project-baseline.json').read_text())
@@ -52,6 +64,7 @@ for file in (extension,companion,artifacts/'local_character-windows-providers.zi
     checksums[file.name]=dict(bytes=file.stat().st_size,sha256=digest)
 record=dict(version=version,extension_zip_validated=True,source_modules_compile=True,private_assets_excluded=True,
     artifacts=checksums,evidence=evidence,hardware_limit='RTX 4090 24 GB tested; sampled global device usage is not a physical 16 GB proof')
-(root/'docs/release-verification-2026-10-03.json').write_text(json.dumps(record,indent=2)+'\n')
+release_date='2026-10-04' if version=='0.6.0' else '2026-10-03'
+(root/f'docs/release-verification-{release_date}.json').write_text(json.dumps(record,indent=2)+'\n')
 (artifacts/f'local_character-{version}-checksums.json').write_text(json.dumps(checksums,indent=2)+'\n')
 print('RELEASE_PACKAGED',json.dumps(checksums),flush=True)

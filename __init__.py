@@ -3,9 +3,9 @@
 import json
 import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
-from bpy.types import Operator, Panel, PropertyGroup
+from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,ui
 
 class LC_Settings(PropertyGroup):
     height: FloatProperty(name="Height (m)", default=1.75, min=.1, max=10)
@@ -90,10 +90,27 @@ class LC_Settings(PropertyGroup):
     setup_status: StringProperty(default='')
     setup_job: StringProperty(default='')
     show_controls: BoolProperty(name='Joint, skinning and export controls',default=False)
+    ui_step: EnumProperty(name='Step',items=[('RIG','Rig','Create or adjust joints'),('SKIN','Skin','Bind and refine weights'),('MOTION','Motion','Generate and preview animation'),('EXPORT','Export','Export to Unity')],default='RIG')
+    ui_rig_mode: EnumProperty(name='Rigging',items=[('AUTO','Automatic','Infer joints from geometry'),('ASSISTED','Landmarks','Guide joints in a front-view editor')],default='AUTO')
+    ui_skin_advanced: BoolProperty(name='Advanced skinning',default=False)
+    ui_skin_method: EnumProperty(name='Binding',items=[('AI','AI','Use learned skinning'),('GEODESIC','Surface','Bind along surface edges'),('VOXEL','Volume','Closed-volume heat with surface fallback')],default='AI')
+    workflow_skin_only: BoolProperty(default=False,options={'HIDDEN'})
+    landmark_data: StringProperty(default='')
+    landmark_symmetry: BoolProperty(name='Mirror left and right',default=True)
+    ui_weight_bone: StringProperty(name='Bone',update=ui.choose_weight_bone)
 
 for _side in ('Left','Right'):
     for _finger in skeleton.FINGERS:
         LC_Settings.__annotations__['hand_'+_side.lower()+'_'+_finger.lower()]=FloatProperty(name=_finger+' curl',default=0,min=0,max=1)
+
+
+class LC_Preferences(AddonPreferences):
+    bl_idname=__package__
+    settings_migrated: BoolProperty(default=False,options={'HIDDEN'})
+    page: EnumProperty(name='Settings',items=[('SETUP','Setup','Local provider installation'),('DEFAULTS','Defaults','Runtime and solver defaults'),('RECOVERY','Recovery','Finished jobs and expert workflow options')],default='SETUP')
+    def draw(self,context):ui.draw_preferences(self.layout,context,self)
+
+LC_Preferences.__annotations__.update({key:LC_Settings.__annotations__[key] for key in configuration.KEYS})
 
 
 class LC_OT_optional_bone(Operator):
@@ -256,7 +273,8 @@ class LC_OT_skin(WorkerModal, Operator):
     @classmethod
     def poll(cls, context): return context.mode == 'OBJECT' and not skinning._jobs
     def execute(self, context):
-        settings = context.scene.lc_settings
+        settings = configuration.settings(context)
+        settings.workflow_skin_only=False
         try:
             rig, meshes = skinning.selection(context)
             self._folder = skinning.prepare(context, rig, meshes, device=settings.skin_device, beams=settings.skin_beams)
@@ -274,7 +292,10 @@ class LC_OT_apply_skin(Operator):
     def execute(self, context):
         settings = context.scene.lc_settings
         try:
+            request=json.loads((__import__('pathlib').Path(settings.skin_job)/'request.json').read_text())
+            source_objects=[bpy.data.objects.get(request['rig']),*[bpy.data.objects.get(m['name']) for m in request['meshes']]]
             collection, rig, meshes = skinning.apply(context, settings.skin_job)
+            configuration.hide_sources(context,source_objects)
             for obj in context.selected_objects: obj.select_set(False)
             for obj in [rig, *meshes]: obj.select_set(True)
             context.view_layer.objects.active = rig
@@ -342,13 +363,14 @@ class LC_OT_refine(WorkerModal, Operator):
     status_property = 'region_status'
     job_property = 'region_job'
     apply_operator = 'apply_region_job'
+    binding_method: StringProperty(default='',options={'HIDDEN'})
     @classmethod
     def poll(cls, context): return context.mode == 'OBJECT' and not skinning._jobs
     def execute(self, context):
-        settings = context.scene.lc_settings
+        settings = configuration.settings(context)
         try:
             rig, meshes = skinning.selection(context)
-            self._folder = regional_jobs.prepare(context, rig, meshes, method=settings.refine_method,
+            self._folder = regional_jobs.prepare(context, rig, meshes, method=self.binding_method or settings.refine_method,
                 iterations=settings.refine_iterations, strength=settings.refine_strength,
                 selected_only=settings.refine_selected, join_seams=settings.refine_seams,voxel_resolution=settings.voxel_resolution)
             regional_jobs.start(self._folder)
@@ -365,7 +387,10 @@ class LC_OT_apply_region(Operator):
     def execute(self, context):
         settings = context.scene.lc_settings
         try:
+            request=json.loads((__import__('pathlib').Path(settings.region_job)/'request.json').read_text())
+            source_objects=[bpy.data.objects.get(request['rig']),*[bpy.data.objects.get(m['name']) for m in request['meshes']]]
             (collection, rig, meshes), report = regional_jobs.apply(context, settings.region_job)
+            configuration.hide_sources(context,source_objects)
             for obj in context.selected_objects: obj.select_set(False)
             for obj in [rig, *meshes]: obj.select_set(True)
             context.view_layer.objects.active = rig
@@ -383,13 +408,16 @@ class LC_OT_place(WorkerModal,Operator):
     status_property='placement_status'
     job_property='placement_job'
     apply_operator='apply_placement_job'
+    use_landmarks: BoolProperty(default=False,options={'HIDDEN'})
     @classmethod
     def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
     def execute(self,context):
         try:
             rig,meshes=placement.selected(context)
-            self._folder=placement.prepare(context,meshes,rig)
-            placement.start(self._folder,context.scene.lc_settings.placement_python)
+            settings=configuration.settings(context)
+            guides=landmarks.validate(json.loads(settings.landmark_data),meshes) if self.use_landmarks else None
+            self._folder=placement.prepare(context,meshes,rig,provider=__import__('pathlib').Path(bpy.path.abspath(settings.placement_python)).parent.parent.parent,landmarks=guides)
+            placement.start(self._folder,bpy.path.abspath(settings.placement_python))
         except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
         return self.begin(context)
 
@@ -403,13 +431,17 @@ class LC_OT_apply_placement(Operator):
     def execute(self,context):
         settings=context.scene.lc_settings
         try:
+            source=json.loads((__import__('pathlib').Path(settings.placement_job)/'source.json').read_text())
+            source_objects=[bpy.data.objects.get(source['rig']) if source['rig'] else None,*[bpy.data.objects.get(m['name']) for m in source['meshes']]]
             collection,rig,meshes,result=placement.apply(context,settings.placement_job)
+            configuration.hide_sources(context,source_objects)
             for obj in context.selected_objects:obj.select_set(False)
             for obj in [rig,*meshes]:obj.select_set(True)
             context.view_layer.objects.active=rig
         except (ValueError,OSError,RuntimeError,KeyError) as exc:
             settings.placement_status=str(exc);self.report({'ERROR'},str(exc));return {'CANCELLED'}
         settings.placement_status='Joint proposal created. Review feet, shoulders and fingers; edit joints before AI binding'
+        settings.ui_step='SKIN'
         self.report({'INFO'},f'Created {collection.name}: 52 proposed joints and Root')
         return {'FINISHED'}
 
@@ -440,12 +472,12 @@ class LC_OT_motion(WorkerModal, Operator):
     @classmethod
     def poll(cls, context): return context.mode=='OBJECT' and not skinning._jobs
     def execute(self, context):
-        settings=context.scene.lc_settings
+        settings=configuration.settings(context)
         try:
             rig=motion_jobs.selected_rig(context)
             self._folder=motion_jobs.prepare(context,rig,settings.motion_prompt,settings.motion_frames,
                 settings.motion_steps,settings.motion_seed,settings.motion_in_place)
-            motion_jobs.start(self._folder,settings.motion_provider)
+            motion_jobs.start(self._folder,bpy.path.abspath(settings.motion_provider))
         except (ValueError,OSError,RuntimeError,KeyError) as exc: self.report({'ERROR'},str(exc)); return {'CANCELLED'}
         return self.begin(context)
 
@@ -459,14 +491,18 @@ class LC_OT_apply_motion(Operator):
     def execute(self, context):
         settings=context.scene.lc_settings
         try:
+            request=json.loads((__import__('pathlib').Path(settings.motion_job)/'request.json').read_text())
+            source_objects=[bpy.data.objects.get(request['rig']),*[bpy.data.objects.get(m['name']) for m in request['meshes']]]
             collection,rig,meshes,action,report=motion_apply.apply(context,settings.motion_job,settings.motion_hand_curl,settings.motion_contacts,settings.motion_heading,
                 hand_pose.settings(settings) if settings.hand_controls else None)
+            configuration.hide_sources(context,source_objects)
             for obj in context.selected_objects: obj.select_set(False)
             for obj in [rig,*meshes]: obj.select_set(True)
             context.view_layer.objects.active=rig
         except (ValueError,OSError,RuntimeError,KeyError) as exc:
             settings.motion_status=str(exc); self.report({'ERROR'},str(exc)); return {'CANCELLED'}
         settings.motion_status='Editable motion copy created; inspect contacts and export the selected Action'
+        settings.include_action=True
         self.report({'INFO'},f'Created {collection.name}: {report["frames"]} frames at 30 fps')
         return {'FINISHED'}
 
@@ -516,7 +552,9 @@ class LC_OT_install(WorkerModal,Operator):
     @classmethod
     def poll(cls,context):return not skinning._jobs and not workflow._runs
     def execute(self,context):
-        try:self._folder=install_jobs.start(bpy.path.abspath(context.scene.lc_settings.setup_python),bpy.path.abspath(context.scene.lc_settings.setup_archive))
+        try:
+            settings=configuration.settings(context)
+            self._folder=install_jobs.start(bpy.path.abspath(settings.setup_python),bpy.path.abspath(settings.setup_archive))
         except (ValueError,OSError,RuntimeError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
         return self.begin(context)
 
@@ -565,11 +603,14 @@ class LC_OT_build(Operator):
     bl_options={'REGISTER'}
     _timer=None
     _run=None
+    auto_skin: BoolProperty(default=False,options={'HIDDEN'})
     @classmethod
     def poll(cls,context):return context.mode=='OBJECT' and any(o.type=='MESH' for o in context.selected_objects) and not skinning._jobs and not workflow._runs
     def execute(self,context):
         try:
-            self._run=workflow.Run(context,workflow.options(context.scene.lc_settings));self._run.launch(context)
+            settings=configuration.settings(context);values=workflow.options(settings,self.auto_skin)
+            settings.workflow_skin_only=self.auto_skin
+            self._run=workflow.Run(context,values);self._run.launch(context)
             context.scene.lc_settings.workflow_id=self._run.id
             self._timer=context.window_manager.event_timer_add(.5,window=context.window)
             context.window_manager.modal_handler_add(self)
@@ -628,146 +669,9 @@ class LC_PT_main(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Local Character"
-    def draw(self, context):
-        layout = self.layout; settings = context.scene.lc_settings
-        box=layout.box();box.label(text='Model to animation',icon='OUTLINER_OB_ARMATURE')
-        box.label(text='Select one character’s meshes')
-        box.prop(settings,'workflow_reuse_joints');box.prop(settings,'workflow_rebind')
-        box.prop(settings,'workflow_twists')
-        box.prop(settings,'workflow_rigid')
-        box.prop(settings,'workflow_motion')
-        if settings.workflow_motion:
-            box.prop(settings,'motion_prompt');box.prop(settings,'motion_frames');box.prop(settings,'motion_in_place');box.prop(settings,'workflow_loop')
-        box.prop(settings,'workflow_export')
-        if settings.workflow_export:box.prop(settings,'export_directory');box.prop(settings,'character_name')
-        box.operator('local_character.build_character',icon='PLAY')
-        if context.active_object and context.active_object.type=='ARMATURE' and context.active_object.animation_data and context.active_object.animation_data.action:
-            box.operator('local_character.preview_motion',icon='PREVIEW_RANGE')
-        available=install_jobs.inventory(settings)
-        if all(available.values()):box.label(text='Local provider files available',icon='CHECKMARK')
-        else:box.label(text='Provider setup needed; open controls below',icon='INFO')
-        if settings.workflow_status:
-            import textwrap
-            for line in textwrap.wrap(settings.workflow_status,width=42):box.label(text=line)
-        layout.prop(settings,'show_controls')
-        if not settings.show_controls:return
-        box = layout.box(); box.label(text="Editable humanoid", icon="ARMATURE_DATA")
-        box.prop(settings, "fit_bounds")
-        if not settings.fit_bounds: box.prop(settings, "height")
-        box.prop(settings, "arm_angle"); box.prop(settings, "eyes")
-        box.operator("local_character.create_template")
-        box.prop(settings,'placement_python')
-        box.operator('local_character.place_joints',icon='VIEWZOOM')
-        row=box.row(align=True);row.operator('local_character.lock_joints',text='Lock joints').enabled=True
-        row.operator('local_character.lock_joints',text='Unlock').enabled=False
-        if settings.placement_status:
-            import textwrap
-            for line in textwrap.wrap(settings.placement_status,width=42):box.label(text=line)
-        if settings.placement_job:box.operator('local_character.apply_placement_job')
-        box.label(text="Review joints before AI skinning", icon="INFO")
-        box.operator('local_character.add_twists');box.operator('local_character.update_twist_pose')
-        box.label(text='Optional bones: place the 3D cursor first')
-        box.prop(settings,'optional_kind')
-        if settings.optional_kind=='SOCKET':
-            try:box.prop_search(settings,'optional_parent',motion_jobs.selected_rig(context).data,'bones')
-            except ValueError:box.prop(settings,'optional_parent')
-            box.prop(settings,'optional_name')
-        box.operator('local_character.add_optional_bone')
-        box = layout.box(); box.label(text="Existing bound character", icon="MESH_DATA")
-        box.label(text="Select only the meshes to export")
-        box.prop(settings, "profile"); box.operator("local_character.preflight")
-        box.operator('local_character.check_deformation')
-        box.prop(settings,'workflow_allow_strain')
-        if settings.deformation_report:
-            try:
-                severe,warnings=deformation_qa.findings(json.loads(settings.deformation_report))
-                import textwrap
-                for finding in (severe+warnings)[:8]:
-                    for line in textwrap.wrap(finding,width=42):box.label(text=line,icon='ERROR' if severe else 'INFO')
-                if not severe and not warnings:box.label(text='No severe edge strain in tested probes',icon='CHECKMARK')
-            except (ValueError,KeyError):pass
-        if settings.last_report:
-            try:
-                report = json.loads(settings.last_report)
-                for message in report.get("errors", []) + report.get("warnings", []):
-                    column = box.column(align=True)
-                    import textwrap
-                    for line in textwrap.wrap(message, width=42): column.label(text=line)
-                if report.get("ready"): box.label(text="Weight and hierarchy checks passed", icon="CHECKMARK")
-            except (ValueError, TypeError): pass
-        box.prop(settings, "character_name"); box.prop(settings, "export_directory")
-        box.prop(settings, "include_action")
-        if settings.include_action: box.prop(settings, "loop_action")
-        box.operator("local_character.export_unity", icon="EXPORT")
-        if settings.last_export: box.label(text="Last export: " + settings.last_export)
-        box = layout.box(); box.label(text="Local AI providers", icon="INFO")
-        for name,available in install_jobs.inventory(settings).items():box.label(text=name+(': files found' if available else ': setup needed'),icon='CHECKMARK' if available else 'ERROR')
-        box.prop(settings,'setup_python');box.prop(settings,'setup_archive');box.operator('local_character.install_providers')
-        box.label(text='Setup downloads model files; inference is local')
-        if settings.setup_status:
-            import textwrap
-            for line in textwrap.wrap(settings.setup_status,width=42):box.label(text=line)
-        box.label(text="SkinTokens: experimental weight proposal")
-        box.label(text="Select accepted rig and character meshes")
-        box.prop(settings, 'skin_executable'); box.prop(settings, 'skin_models')
-        box.prop(settings, 'skin_device'); box.prop(settings, 'skin_beams')
-        box.operator('local_character.ai_skin', icon='MOD_ARMATURE')
-        if settings.skin_status:
-            import textwrap
-            for line in textwrap.wrap(settings.skin_status, width=42): box.label(text=line)
-        if settings.skin_job: box.operator('local_character.apply_skin_job')
-        box = layout.box(); box.label(text='Regional correction', icon='GROUP_VERTEX')
-        box.label(text='Select vertices in Edit Mode; return to Object Mode')
-        row = box.row(align=True)
-        row.operator('local_character.protect_region', text='Protect').enabled = True
-        row.operator('local_character.protect_region', text='Unprotect').enabled = False
-        box.prop(settings, 'region_kind')
-        if settings.region_kind == 'RIGID':
-            try:
-                rig, _ = skinning.selection(context)
-                box.prop_search(settings, 'region_bone', rig.data, 'bones')
-            except ValueError: box.prop(settings, 'region_bone')
-        else: box.prop(settings, 'region_digit')
-        box.operator('local_character.mark_region')
-        box.operator('local_character.clear_region')
-        box.prop(settings, 'refine_method'); box.prop(settings, 'refine_selected')
-        if settings.refine_method=='VOXEL':box.prop(settings,'voxel_resolution')
-        box.prop(settings, 'refine_seams'); box.prop(settings, 'refine_iterations'); box.prop(settings, 'refine_strength')
-        box.operator('local_character.refine_regions')
-        if settings.region_status:
-            import textwrap
-            for line in textwrap.wrap(settings.region_status, width=42): box.label(text=line)
-        if settings.region_job: box.operator('local_character.apply_region_job')
-        if settings.region_report:
-            try:
-                for report in json.loads(settings.region_report):
-                    box.label(text=f"{report['mesh']}: {report['rigid_vertices']} rigid, {report['protected_vertices']} protected")
-                    if report['seam_constraint_conflicts']: box.label(text='Conflicting seam constraints need review', icon='ERROR')
-                    if 'rigid_components_assigned' in report:
-                        box.label(text=f"{report['rigid_components_assigned']} rigid parts assigned")
-                        box.label(text=f"{report['ambiguous_components_preserved']} ambiguous parts kept")
-                    if report.get('volume_fallback_reason'):
-                        import textwrap
-                        for line in textwrap.wrap('Surface fallback: '+report['volume_fallback_reason'],width=42):box.label(text=line,icon='INFO')
-            except (ValueError, KeyError): pass
-        box=layout.box(); box.label(text='Local generated motion',icon='ACTION')
-        box.prop(settings,'motion_prompt'); box.prop(settings,'motion_frames')
-        box.prop(settings,'motion_in_place'); box.prop(settings,'motion_hand_curl')
-        box.prop(settings,'hand_controls')
-        if settings.hand_controls:
-            box.prop(settings,'hand_side');box.prop(settings,'hand_preset');box.operator('local_character.hand_preset')
-            for finger in skeleton.FINGERS:box.prop(settings,'hand_'+settings.hand_side.lower()+'_'+finger.lower())
-        box.prop(settings,'motion_contacts')
-        box.prop(settings,'motion_heading')
-        box.prop(settings,'motion_seed'); box.prop(settings,'motion_steps'); box.prop(settings,'motion_provider')
-        box.operator('local_character.generate_motion')
-        if settings.motion_status:
-            import textwrap
-            for line in textwrap.wrap(settings.motion_status,width=42): box.label(text=line)
-        if settings.motion_job: box.operator('local_character.apply_motion_job')
-        box.prop(settings,'motion_loop_blend');box.operator('local_character.finish_loop')
+    def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (LC_Settings, LC_Preferences, *ui.CLASSES, *landmarks.CLASSES, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
@@ -776,6 +680,7 @@ def register():
     bpy.types.Scene.lc_settings = PointerProperty(type=LC_Settings)
 
 def unregister():
+    landmarks.cleanup()
     for run in list(workflow._runs.values()):run.cancel()
     skinning.cancel_all()
     del bpy.types.Scene.lc_settings
