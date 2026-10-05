@@ -6,6 +6,8 @@
   "active": "Rigmodo_Rig_Motion",
   "frame": 58,
   "provider_runtime_installed": true,
-  "approved_checkpoints_available": false,
+  "approved_checkpoints_available": true,
+  "configured_provider_ready": true,
+  "authentication": "Ephemeral download only; no saved token or Hugging Face login",
   "scoped_native_drop_adapter": true
 }

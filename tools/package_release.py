@@ -119,7 +119,8 @@ if version=='0.10.0':
 if version=='0.11.0':
     for key in ('image_pose','ui_and_landmarks'):assert evidence[key]['passed']
     assert evidence['image_pose']['extracted']['passed'] and evidence['image_pose']['gui']['passed']
-    assert not evidence['image_pose']['sam_neural_inference_tested']
+    if evidence['image_pose']['sam_neural_inference_tested']:
+        assert evidence['image_pose']['neural']['passed'] and evidence['image_pose']['neural_gui']['passed']
     evidence['live_reload']=evidence['image_pose']['live']
     evidence['unchanged_workflow_baseline_version']='0.10.0'
 evidence['live_companion']=json.loads((root/'docs/live-companion-2026-10-03.json').read_text())

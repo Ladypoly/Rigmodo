@@ -1,13 +1,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Native FileHandler routing, async completion, Undo/Redo and cancellation in isolated GUI.
 
-Uses a simulated worker returning the real MHR fixture. This is not SAM prediction.
+Defaults to a simulated worker returning the real MHR fixture. Pass --neural
+after the output folder to test native drop, production inference and Undo/Redo
+with the separately installed, approved SAM provider.
 """
-import addon_utils,importlib,json,sys,time,traceback
+import addon_utils,importlib,json,shutil,sys,time,traceback
 from pathlib import Path
 import bpy
 assert '--factory-startup' in sys.argv and '--enable-event-simulate' in sys.argv
 out=Path(sys.argv[sys.argv.index('--')+1]);out.mkdir(parents=True,exist_ok=True)
+neural='--neural' in sys.argv[sys.argv.index('--')+2:]
 addon_utils.enable('bl_ext.user_default.local_character',default_set=True)
 addon=importlib.import_module('bl_ext.user_default.local_character');ip=addon.image_pose
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete()
@@ -19,11 +22,15 @@ scene=bpy.context.scene;scene.lc_settings.ui_step='MOTION'
 window=bpy.context.window;area=next(a for a in window.screen.areas if a.type=='VIEW_3D')
 area.spaces.active.show_region_ui=True
 region=next(r for r in area.regions if r.type=='UI')
-provider=out/'provider';provider.mkdir(exist_ok=True)
+provider=ip.cache() if neural else out/'provider';provider.mkdir(exist_ok=True)
 assert (provider/'runtime/Scripts/python.exe').is_file(), 'Test launcher must link the isolated SAM runtime'
-(provider/'installation.json').write_text('{}')
+if not neural:(provider/'installation.json').write_text('{}')
+else:assert (provider/'installation.json').is_file()
 prefs=addon.configuration.preferences(bpy.context);prefs.image_pose_provider=str(provider)
-image=out/'reference.png';im=bpy.data.images.new('Reference',width=8,height=8);im.filepath_raw=str(image);im.file_format='PNG';im.save();bpy.data.images.remove(im)
+if neural:
+    image=out/'reference.jpg';shutil.copyfile(provider/'source/notebook/images/dancing.jpg',image)
+else:
+    image=out/'reference.png';im=bpy.data.images.new('Reference',width=8,height=8);im.filepath_raw=str(image);im.file_format='PNG';im.save();bpy.data.images.remove(im)
 fixture=Path.home()/'AppData/Local/Temp/rigmodo-sam-research/pose-fixture.json'
 worker=out/'simulated_worker.py'
 worker.write_text('''import hashlib,json,sys,time
@@ -36,7 +43,7 @@ pose.update(request_sha256=hashlib.sha256((folder/'request.json').read_bytes()).
 original_launch=ip.launch
 def simulated_launch(folder,command,phase):
     return original_launch(folder,[str(provider/'runtime/Scripts/python.exe'),'-I',str(worker),str(folder),str(fixture)],'Simulated test worker')
-ip.launch=simulated_launch
+if not neural:ip.launch=simulated_launch
 def current():return bpy.data.objects['ImagePose_Interaction_Test']
 def snapshot():return {p.name:[v for row in p.matrix_basis for v in row] for p in current().pose.bones}
 def diff(a,b):return max(abs(x-y) for n in a for x,y in zip(a[n],b[n]))
@@ -48,17 +55,17 @@ def native_drop():
         assert ip.LC_FH_image_pose.poll_drop(bpy.context)
         default_handler=next(c for c in bpy.types.FileHandler.__subclasses__() if c.__name__=='VIEW3D_FH_empty_image')
         assert not default_handler.poll_drop(bpy.context)
-        assert bpy.ops.wm.drop_import_file('EXEC_DEFAULT',directory=str(out)+'/',files=[{'name':'reference.png'}])=={'FINISHED'}
+        assert bpy.ops.wm.drop_import_file('EXEC_DEFAULT',directory=str(out)+'/',files=[{'name':image.name}])=={'FINISHED'}
     assert ip._pending and addon.skinning._jobs
 def finish():
     ip.launch=original_launch
     (out/'error.txt').unlink(missing_ok=True)
     (out/'results.json').write_text(json.dumps(dict(passed=True,version=addon.exporter.VERSION,cases=rows,
-        actual_file_handler_dispatch=True,simulated_worker=True,sam_neural_inference_tested=False),indent=2))
+        actual_file_handler_dispatch=True,simulated_worker=not neural,sam_neural_inference_tested=neural),indent=2))
     bpy.ops.wm.quit_blender()
 def run():
     try:
-        if time.monotonic()-state['start']>35:raise AssertionError('GUI test timed out')
+        if time.monotonic()-state['start']>(90 if neural else 35):raise AssertionError('GUI test timed out')
         phase=state['phase']
         if phase==-1:
             if region.active_panel_category=='Rigmodo':state['phase']=0
@@ -87,6 +94,7 @@ def run():
             assert diff(snapshot(),state['applied'])<1e-6
             rows.append('whole_pose_redo')
             addon.motion_keyframes.capture(bpy.context,current());rows.append('kimodo_capture')
+            if neural:finish();return None
             bpy.context.scene.lc_settings.ui_step='MOTION'
             native_drop();bpy.context.scene.frame_set(2);state['stale']=snapshot();state['phase']=4
         elif phase==4 and ip._pending is None:

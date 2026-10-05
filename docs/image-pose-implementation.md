@@ -6,7 +6,9 @@ one clearly visible person, with the desired body and hands in the image.
 The local worker applies the resulting pose at the captured timeline frame.
 Inspect the result, refine it using Auto Pose, then **Capture Pose** for Kimodo
 or **Insert Pose Key** to author animation. Applying the image alone does not
-insert keys or replace an Action. Undo restores the previous pose.
+insert keys or replace an Action. An existing Action evaluates again on a frame
+change, reload or render, so capture or key the pose before those operations if
+you want to retain it. Undo restores the previous pose.
 
 ## Installation
 
@@ -20,9 +22,12 @@ Hugging Face login when downloads are needed; it does not submit access requests
 accept gated agreements, collect tokens in Blender, or upload images.
 
 The NVIDIA GPU needs a compatible CUDA driver. Python, PyTorch and sources are
-installed separately, with hidden child processes. SAM inference runs in float32
-and uses the portable official TorchScript MHR model. The 16–24 GB target is
-not yet a measured inference guarantee. Source/checkpoint pins and model hashes
+installed separately, with hidden child processes. SAM follows its pinned
+configuration's bfloat16 backbone and uses the portable official TorchScript MHR
+model. On an RTX 4090, the tested full-body/hand request took 13.85 seconds
+including startup and integrity checks, with 3.38 GiB peak Torch allocation.
+Body-only took 12.37 seconds and 3.36 GiB. These are one-image measurements,
+not total device VRAM usage or proof on a physical 16 GB card. Source/checkpoint pins and model hashes
 are in `sam_pose_protocol.py`; source and checkpoint verification runs in the
 worker before loading. DINO source is local and pinned, preventing torch.hub
 from fetching mutable code during inference. Detector, SAM segmentation and
@@ -76,13 +81,22 @@ SAM code/checkpoints use Meta's SAM License, with usage restrictions; they are a
 optional separately licensed provider, not bundled GPL assets or unrestricted
 OSI-open-source models. DINO source/license is retained in its external folder.
 
-Access to the SAM checkpoint was not available during implementation. Numerical
-acceptance uses the actual public Apache-2.0 MHR model with authored parameters,
-including its real calibration, joint names and rotations. GUI acceptance uses a
-clearly identified simulated worker to exercise native file-drop routing,
-asynchronous completion, cancellation and Undo. Neither is a neural prediction
-test. Real image-to-SAM accuracy, inference VRAM and inference time remain to be
-validated with approved model access. See the dated image-pose acceptance receipt.
+Approved pinned checkpoints are installed on this development machine. Real SAM
+inference passes for the upstream dance example in body/hand and body-only modes,
+with 52 valid joint rotations applied to the existing 6,598-vertex avatar.
+Geometry, rest joints, Root placement, object counts and Action assignment stay
+intact. A separate real-inference GUI test passes native file-drop dispatch,
+asynchronous application, whole-pose Undo/Redo and Kimodo capture. Visual review
+matches the example's raised arm, lifted knee and torso lean; occluded fingers and
+exact contacts still need artist review. One demonstration is not a statistical
+pose-accuracy benchmark.
+
+Numerical calibration/transaction acceptance continues to use the public
+Apache-2.0 MHR model with authored parameters. The original GUI cancellation and
+stale-target tests use a clearly identified simulated worker; those receipts do
+not claim neural prediction. See the dated image-pose acceptance receipt for
+separate real and simulated evidence. Downloads used ephemeral authentication;
+no token is stored in Blender, source, job requests or a Hugging Face login.
 
 Primary sources: [SAM source](https://github.com/facebookresearch/sam-3d-body),
 [installation/access](https://github.com/facebookresearch/sam-3d-body/blob/main/INSTALL.md),

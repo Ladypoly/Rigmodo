@@ -37,7 +37,7 @@ The actual fresh-cache three-provider avatar workflow passed on RTX 4090 24 GB i
 
 ## Auto Pose
 
-**Pose from Image:** select the armature and drop a single-person image onto the **Motion** sidebar, or choose an image with its button. Review/refine the pose, then Capture Pose for Kimodo or Insert Pose Key. Configure the optional SAM 3D Body provider in Extension Settings first. Checkpoints require Hugging Face approval and use Meta's separate SAM license. See [setup, pose transfer and validation limits](docs/image-pose-implementation.md).
+**Pose from Image:** select the armature and drop a single-person image onto the **Motion** sidebar, or choose an image with its button. Review/refine the pose, then Capture Pose for Kimodo or Insert Pose Key. Configure the optional SAM 3D Body provider in Extension Settings first. Checkpoints require Hugging Face approval and use Meta's separate SAM license. The provider is installed and real inference validated on this development machine: roughly 12–14 seconds per tested image on RTX 4090, with about 3.4 GiB peak Torch allocation. See [setup, pose transfer and validation limits](docs/image-pose-implementation.md).
 
 In Pose Mode, enable **Auto Pose**, select a body bone and use **G** to move or **R** to rotate. The body follows the target while feet stay planted by default. **X/Y/Z**, repeated local-axis constraints, numeric input and Shift precision are supported. Enter confirms; Esc restores the entire pose; confirmed gestures undo/redo in one step. Blue rings mark pins. Pin hands, feet or pelvis; rotation locking and body-follow options stay under **Pose options**.
 

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Record integration validation without treating MHR fixtures as neural inference."""
+"""Keep fixture/GUI integration evidence separate from real neural inference."""
 import json,os,sys
 from pathlib import Path
 root=Path(__file__).resolve().parents[1];temporary=Path(os.environ['LOCALAPPDATA'])/'Temp'
@@ -16,8 +16,20 @@ assert extracted['extracted_extension'] and source['avatar']['vertices']==6598
 log=(temporary/'rigmodo-sam-research/runtime-check.log').read_text()
 assert 'SAM imports passed 2.7.1+cu128 NVIDIA GeForce RTX 4090' in log
 assert 'Pinned DINO backbone instantiated 840633600' in log
-record=dict(passed=True,version='0.11.0',sam_neural_inference_tested=False,
-    limitation='Approved gated SAM checkpoints unavailable; image prediction, accuracy and VRAM/time not yet measured',
+neural_path=temporary/'rigmodo-image-pose-neural-acceptance/results.json'
+neural_gui_path=temporary/'rigmodo-image-pose-neural-interaction/results.json'
+neural=read(neural_path) if neural_path.is_file() else None
+neural_gui=read(neural_gui_path) if neural_gui_path.is_file() else None
+if neural:
+    assert neural['passed'] and neural['sam_neural_inference_tested'] and len(neural['cases'])==2
+    assert neural_gui and neural_gui['passed'] and neural_gui['sam_neural_inference_tested'] and not neural_gui['simulated_worker']
+    assert {r['hands'] for r in neural['cases']}=={True,False}
+    for case in neural['cases']:
+        assert case['joints']==52 and case['finite_skin_deformation'] and case['same_objects_and_action']
+        case.pop('folder',None)  # Private prediction locations are not release metadata.
+record=dict(passed=True,version='0.11.0',sam_neural_inference_tested=bool(neural),
+    limitation=neural['accuracy_limit'] if neural else 'Approved gated SAM checkpoints unavailable; image prediction, accuracy and VRAM/time not yet measured',
+    neural=neural,neural_gui=neural_gui,
     source=source,extracted=extracted,gui=gui,ui=ui,live=live,
     auto_pose_regression=dict(passed=regression['passed'],cases=len(regression['cases'])),
     runtime=dict(passed=True,isolated_python='3.11',torch='2.7.1+cu128',cuda_gpu='RTX 4090',

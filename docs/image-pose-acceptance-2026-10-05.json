@@ -1,8 +1,70 @@
 {
   "passed": true,
   "version": "0.11.0",
-  "sam_neural_inference_tested": false,
-  "limitation": "Approved gated SAM checkpoints unavailable; image prediction, accuracy and VRAM/time not yet measured",
+  "sam_neural_inference_tested": true,
+  "limitation": "One upstream demonstration image; no statistical pose-accuracy benchmark",
+  "neural": {
+    "passed": true,
+    "version": "0.11.0",
+    "sam_neural_inference_tested": true,
+    "source_revision": "b5c765a0d89d789985e186d396315e7590887b94",
+    "avatar_vertices": 6598,
+    "cases": [
+      {
+        "hands": true,
+        "image_sha256": "0112b0a32ea5860db6a6fc700804751528341a02bf07fed0329a0c2610f905d3",
+        "pose_sha256": "29a68170e6e8b4233e8ffb32a26c1cbe48237e1b79fe71f216c6e7dca12b8f75",
+        "worker_wall_seconds": 13.85193629999958,
+        "diagnostics": {
+          "subject": "One person / full image crop",
+          "hand_refinement": true,
+          "limitations": "Single-image depth and occluded joints are inferred; inspect the pose",
+          "elapsed_seconds": 8.875,
+          "gpu": "NVIDIA GeForce RTX 4090",
+          "peak_vram_bytes": 3634379776
+        },
+        "joints": 52,
+        "arm_direction_error_rad": 0.0,
+        "same_objects_and_action": true,
+        "rest_and_geometry_preserved": true,
+        "finite_skin_deformation": true
+      },
+      {
+        "hands": false,
+        "image_sha256": "0112b0a32ea5860db6a6fc700804751528341a02bf07fed0329a0c2610f905d3",
+        "pose_sha256": "cfd2c3e92da1b625abac27f7f7cb84170b83c2fa4f2da6bab3579ee001b7cf49",
+        "worker_wall_seconds": 12.372463699999571,
+        "diagnostics": {
+          "subject": "One person / full image crop",
+          "hand_refinement": false,
+          "limitations": "Single-image depth and occluded joints are inferred; inspect the pose",
+          "elapsed_seconds": 7.5,
+          "gpu": "NVIDIA GeForce RTX 4090",
+          "peak_vram_bytes": 3610009600
+        },
+        "joints": 52,
+        "arm_direction_error_rad": 0.0,
+        "same_objects_and_action": true,
+        "rest_and_geometry_preserved": true,
+        "finite_skin_deformation": true
+      }
+    ],
+    "accuracy_limit": "One upstream demonstration image; no statistical pose-accuracy benchmark",
+    "memory_limit": "Torch peak allocated bytes; not total GPU usage or proof of fit on physical 16 GB hardware"
+  },
+  "neural_gui": {
+    "passed": true,
+    "version": "0.11.0",
+    "cases": [
+      "native_drop_and_async_apply",
+      "whole_pose_undo",
+      "whole_pose_redo",
+      "kimodo_capture"
+    ],
+    "actual_file_handler_dispatch": true,
+    "simulated_worker": false,
+    "sam_neural_inference_tested": true
+  },
   "source": {
     "passed": true,
     "version": "0.11.0",
@@ -132,7 +194,9 @@
     "active": "Rigmodo_Rig_Motion",
     "frame": 58,
     "provider_runtime_installed": true,
-    "approved_checkpoints_available": false,
+    "approved_checkpoints_available": true,
+    "configured_provider_ready": true,
+    "authentication": "Ephemeral download only; no saved token or Hugging Face login",
     "scoped_native_drop_adapter": true
   },
   "auto_pose_regression": {
