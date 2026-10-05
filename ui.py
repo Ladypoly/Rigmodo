@@ -3,7 +3,7 @@
 import json,textwrap
 import bpy
 from bpy.types import Operator
-from . import configuration,skinning,placement,motion_jobs,install_jobs,deformation_qa,landmarks,hands,character_result
+from . import configuration,skinning,placement,motion_jobs,install_jobs,deformation_qa,landmarks,hands,character_result,processing_visuals
 
 _pose_mesh_scope={}
 
@@ -131,6 +131,7 @@ def draw(layout,context):
         layout.separator();layout.label(text='Enter: accept   |   Esc: cancel')
         return
     row=layout.row(align=True);row.prop(s,'ui_step',expand=True)
+    processing_visuals.draw_panel(layout,context)
     rig,meshes=scope(context)
     row=layout.row(align=True)
     row.label(text=context.active_object.name if context.mode=='POSE' else (meshes[0].name if len(meshes)==1 else f'{len(meshes)} mesh objects') if meshes else 'Select your avatar',icon='ARMATURE_DATA' if context.mode=='POSE' else 'MESH_DATA')
@@ -171,7 +172,7 @@ def draw(layout,context):
         row=layout.row();row.scale_y=1.45;row.enabled=bool(meshes) and context.mode=='OBJECT' and not skinning._jobs
         if s.ui_rig_mode=='ASSISTED':row.enabled=row.enabled and bool(s.landmark_data)
         row.operator('local_character.place_joints',text='Generate Rig',icon='ARMATURE_DATA').use_landmarks=s.ui_rig_mode=='ASSISTED'
-        message(layout,s.placement_status)
+        if not processing_visuals.active(context.scene):message(layout,s.placement_status)
         body=details(layout,'lc_rig_options','Rig options')
         if body:
             message(body,'Adjust generated joints in Edit Mode.')
@@ -197,7 +198,7 @@ def draw(layout,context):
         row=layout.row();row.scale_y=1.45;row.enabled=bool(rig and meshes) and context.mode=='OBJECT' and not skinning._jobs
         if method=='AI':row.operator('local_character.build_character',text='Skin Avatar',icon='MOD_ARMATURE').auto_skin=True
         else:row.operator('local_character.refine_regions',text='Skin Avatar',icon='MOD_ARMATURE').binding_method=method
-        message(layout,(s.workflow_status if s.workflow_skin_only else s.skin_status) if method=='AI' else s.region_status)
+        if not processing_visuals.active(context.scene):message(layout,(s.workflow_status if s.workflow_skin_only else s.skin_status) if method=='AI' else s.region_status)
         layout.prop(s,'ui_skin_advanced')
         if s.ui_skin_advanced:
             layout.prop(s,'ui_skin_method')
@@ -239,7 +240,7 @@ def draw(layout,context):
         row=layout.row();row.scale_y=1.45;row.enabled=bool(rig) and context.mode=='OBJECT' and not skinning._jobs
         row.operator('local_character.generate_motion',text='Generate Motion',icon='ACTION')
         if rig and rig.animation_data and rig.animation_data.action:layout.operator('local_character.preview_motion',text='Preview Motion',icon='PREVIEW_RANGE')
-        message(layout,s.motion_status)
+        if not processing_visuals.active(context.scene):message(layout,s.motion_status)
         body=details(layout,'lc_motion_options','Motion options')
         if body:
             body.prop(s,'motion_contacts');body.prop(s,'motion_heading');body.prop(s,'motion_hand_curl');body.prop(s,'hand_controls')
@@ -248,7 +249,6 @@ def draw(layout,context):
                 from .skeleton import FINGERS
                 for finger in FINGERS:body.prop(s,'hand_'+s.hand_side.lower()+'_'+finger.lower())
             body.prop(s,'motion_loop_blend');body.operator('local_character.finish_loop',text='Blend Loop Endpoint')
-    if s.workflow_status and skinning._jobs:message(layout,s.workflow_status)
 
 def draw_export_tools(layout,context):
     from . import preflight
@@ -277,10 +277,11 @@ def draw_export_tools(layout,context):
 def draw_preferences(layout,context,prefs):
     resolved=configuration.settings(context);s=context.scene.lc_settings
     layout.prop(prefs,'page',expand=True)
+    processing_visuals.draw_panel(layout,context)
     if prefs.page=='SETUP':
         for name,ready in install_jobs.inventory(resolved).items():layout.label(text=name+(': ready' if ready else ': setup needed'),icon='CHECKMARK' if ready else 'ERROR')
         layout.prop(prefs,'setup_python');layout.prop(prefs,'setup_archive');layout.operator('local_character.install_providers')
-        message(layout,s.setup_status)
+        if not processing_visuals.active(context.scene):message(layout,s.setup_status)
         box=layout.box();box.label(text='Provider locations')
         for key in ('placement_python','skin_executable','skin_models','motion_provider'):box.prop(prefs,key)
         box=layout.box();box.label(text='Pose from Image · SAM 3D Body')
@@ -290,8 +291,10 @@ def draw_preferences(layout,context,prefs):
         box.operator('local_character.setup_image_pose');message(box,s.image_pose_status)
         if s.image_pose_job:
             from . import image_pose
-            if image_pose._pending:box.operator('local_character.cancel_image_pose')
+            if image_pose._pending and not processing_visuals.active(context.scene):box.operator('local_character.cancel_image_pose')
     elif prefs.page=='DEFAULTS':
+        box=layout.box();box.label(text='Viewport feedback')
+        box.prop(prefs,'processing_visuals');box.prop(prefs,'processing_reduced_animation')
         box=layout.box();box.label(text='AI inference')
         for key in ('skin_device','skin_beams','motion_steps','motion_seed'):box.prop(prefs,key)
         box.prop(prefs,'image_pose_hands')

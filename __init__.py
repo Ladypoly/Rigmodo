@@ -6,7 +6,7 @@ from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals
 
 class LC_Settings(PropertyGroup):
     image_pose_provider: StringProperty(name='SAM 3D Body runtime',subtype='DIR_PATH',default=str(image_pose.cache()))
@@ -117,6 +117,8 @@ for _side in ('Left','Right'):
 class LC_Preferences(AddonPreferences):
     bl_idname=__package__
     settings_migrated: BoolProperty(default=False,options={'HIDDEN'})
+    processing_visuals: BoolProperty(name='Processing effects',default=True,description='Lightweight viewport-only job animations; no scene objects or pose changes')
+    processing_reduced_animation: BoolProperty(name='Reduced animation',default=False,description='Static processing accents and once-per-second status updates')
     page: EnumProperty(name='Settings',items=[('SETUP','Setup','Local provider installation'),('DEFAULTS','Defaults','Runtime and solver defaults'),('RECOVERY','Recovery','Finished jobs and expert workflow options')],default='SETUP')
     def draw(self,context):ui.draw_preferences(self.layout,context,self)
 
@@ -227,6 +229,7 @@ class LC_OT_export(Operator):
         return {"FINISHED"}
 
 class WorkerModal:
+    _visual = None
     _timer = None
     _folder = None
     _scene = None
@@ -238,10 +241,13 @@ class WorkerModal:
         settings = self._scene.lc_settings
         setattr(settings, self.job_property, str(self._folder))
         setattr(settings, self.status_property, 'Running locally; Escape cancels')
+        kind={'placement_status':'RIG','region_status':'SKIN','motion_status':'MOTION','setup_status':'SETUP'}.get(self.status_property,'SKIN')
+        self._visual=processing_visuals.start(context,kind,self._folder)
         self._timer = context.window_manager.event_timer_add(.5, window=context.window)
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
-    def _finish(self, context):
+    def _finish(self, context, outcome='CANCELLED'):
+        processing_visuals.finish(self._visual,outcome);self._visual=None
         if self._timer: context.window_manager.event_timer_remove(self._timer)
         self._timer = None
         if context.screen:
@@ -250,7 +256,7 @@ class WorkerModal:
         try: settings = self._scene.lc_settings
         except (ReferenceError, AttributeError):
             skinning.cancel(self._folder); self._finish(context); return {'CANCELLED'}
-        if event.type == 'ESC':
+        if event.type == 'ESC' or processing_visuals.cancelled(self._visual):
             skinning.cancel(self._folder); setattr(settings, self.status_property, 'Cancelled; source character preserved')
             self._finish(context); return {'CANCELLED'}
         if event.type != 'TIMER': return {'PASS_THROUGH'}
@@ -267,8 +273,8 @@ class WorkerModal:
             if result != {'FINISHED'}: raise ValueError(getattr(settings, self.status_property))
         except (ValueError, OSError, RuntimeError, KeyError) as exc:
             setattr(settings, self.status_property, str(exc)); self.report({'ERROR'}, str(exc))
-            self._finish(context); return {'CANCELLED'}
-        self._finish(context); return {'FINISHED'}
+            self._finish(context,'FAILED'); return {'CANCELLED'}
+        self._finish(context,'FINISHED'); return {'FINISHED'}
     def cancel(self, context):
         if self._folder: skinning.cancel(self._folder)
         self._finish(context)
@@ -643,6 +649,7 @@ class LC_OT_build(Operator):
     bl_options={'REGISTER'}
     _timer=None
     _run=None
+    _visual=None
     auto_skin: BoolProperty(default=False,options={'HIDDEN'})
     @classmethod
     def poll(cls,context):return context.mode=='OBJECT' and any(o.type=='MESH' for o in context.selected_objects) and not skinning._jobs and not workflow._runs
@@ -651,18 +658,21 @@ class LC_OT_build(Operator):
             settings=configuration.settings(context);values=workflow.options(settings,self.auto_skin,context)
             settings.workflow_skin_only=self.auto_skin
             self._run=workflow.Run(context,values);self._run.launch(context)
+            self._visual=processing_visuals.start(context,'SKIN' if self.auto_skin else 'RIG',run=self._run)
             context.scene.lc_settings.workflow_id=self._run.id
             self._timer=context.window_manager.event_timer_add(.5,window=context.window)
             context.window_manager.modal_handler_add(self)
         except (ValueError,OSError,RuntimeError,KeyError) as exc:
             if self._run:self._run.cancel(str(exc))
+            processing_visuals.finish(self._visual,'FAILED');self._visual=None
             self.report({'ERROR'},str(exc));return {'CANCELLED'}
         return {'RUNNING_MODAL'}
-    def _finish(self,context):
+    def _finish(self,context,outcome='CANCELLED'):
+        processing_visuals.finish(self._visual,outcome);self._visual=None
         if self._timer:context.window_manager.event_timer_remove(self._timer)
         self._timer=None
     def modal(self,context,event):
-        if event.type=='ESC':
+        if event.type=='ESC' or processing_visuals.cancelled(self._visual):
             self._run.cancel();self._run.scene.lc_settings.workflow_status='Cancelled; finished review copies remain available'
             self._finish(context);return {'CANCELLED'}
         if event.type!='TIMER':return {'PASS_THROUGH'}
@@ -678,11 +688,11 @@ class LC_OT_build(Operator):
                     self.report({'WARNING'},self._run.halted);self._finish(context);return {'FINISHED'}
                 if self._run.finished:
                     settings.workflow_status='Character ready for deformation review; editable results selected'
-                    self._finish(context);return {'FINISHED'}
+                    self._finish(context,'FINISHED');return {'FINISHED'}
             if context.screen:
                 for area in context.screen.areas:area.tag_redraw()
         except (ReferenceError,ValueError,OSError,RuntimeError,KeyError) as exc:
-            self._run.cancel(str(exc));self.report({'ERROR'},str(exc));self._finish(context);return {'CANCELLED'}
+            self._run.cancel(str(exc));self.report({'ERROR'},str(exc));self._finish(context,'FAILED');return {'CANCELLED'}
         return {'PASS_THROUGH'}
     def cancel(self,context):
         if self._run:self._run.cancel()
@@ -711,7 +721,7 @@ class LC_PT_main(Panel):
     bl_category = "Rigmodo"
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_Preferences, *auto_pose.CLASSES, *image_pose.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (LC_Settings, LC_Preferences, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
@@ -729,8 +739,10 @@ def register():
     bpy.app.handlers.load_post.append(migrate_workflow_tab)
     auto_pose.register()
     image_pose.register()
+    processing_visuals.register()
 
 def unregister():
+    processing_visuals.unregister()
     if bpy.app.timers.is_registered(migrate_workflow_tab):bpy.app.timers.unregister(migrate_workflow_tab)
     if migrate_workflow_tab in bpy.app.handlers.load_post:bpy.app.handlers.load_post.remove(migrate_workflow_tab)
     image_pose.unregister()

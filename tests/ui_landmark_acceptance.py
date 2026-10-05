@@ -40,6 +40,11 @@ for expanded in (False,True):
 for page in ('SETUP','DEFAULTS','RECOVERY'):
     prefs.page=page;records=[];ui.draw_preferences(Layout(records,True),bpy.context,prefs)
     assert (('operator','local_character.export_unity') in records)==(page=='RECOVERY')
+token=addon.processing_visuals.start(bpy.context,'SKIN')
+records=[];ui.draw(Layout(records,True),bpy.context)
+assert records.count(('operator','local_character.cancel_processing'))==1
+assert not {'processing_visuals','processing_reduced_animation'}&{key for kind,key in records if kind=='prop'}
+addon.processing_visuals.finish(token)
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete()
 bpy.ops.import_scene.gltf(filepath=r'R:\BLENDER\BANTER_Avatars\Shane.glb')
 rig=next(o for o in bpy.context.scene.objects if o.type=='ARMATURE')
@@ -96,5 +101,6 @@ result=dict(passed=True,global_preferences_used=True,legacy_settings_migrated=Tr
     sources_hidden_after_individual_step=True,original_plus_copy_rejected=True,stale_landmarks_rejected=True,cached_actual_mia_used=True,
     native_weight_editor_draws=True,bone_choice_updates_group=True,pose_and_joint_editors_work=True,character_selection_helper_works=True,
     keyposes_use_one_toggle=True,no_capture_recall_clear_buttons=True,three_workflow_tabs=True,
-    export_only_in_preferences=True,legacy_export_tab_migrated=True)
+    export_only_in_preferences=True,legacy_export_tab_migrated=True,shared_progress_has_one_cancel=True,
+    effects_settings_only_in_preferences=True)
 (output/'results.json').write_text(json.dumps(result,indent=2));print('UI_LANDMARK_ACCEPTANCE',json.dumps(result),flush=True)

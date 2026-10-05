@@ -16,11 +16,12 @@ from bpy.types import Operator, FileHandler
 from bpy.app.handlers import persistent
 from bpy_extras.io_utils import ImportHelper
 from mathutils import Matrix, Vector
-from . import auto_pose, configuration, motion_keyframes, motion_jobs, skeleton, skinning, twists, process_tree
+from . import auto_pose, configuration, motion_keyframes, motion_jobs, skeleton, skinning, twists, process_tree, processing_visuals
 from .sam_pose_protocol import SAM_REV, MAPPING, MODELS, sha
 
 EXTENSIONS={'.png','.jpg','.jpeg','.webp','.bmp','.tif','.tiff'}
 _pending=None
+_visual=None
 _native_drop_patch=None
 
 def drop_surface(context):
@@ -182,9 +183,12 @@ def redraw():
             if area.type=='VIEW_3D':area.tag_redraw()
 
 def tick():
-    global _pending
+    global _pending,_visual
     if not _pending:return None
     folder,scene,kind=_pending
+    if processing_visuals.cancelled(_visual):
+        cleanup();scene.lc_settings.image_pose_status='Cancelled; original pose kept';redraw();return None
+    outcome='FAILED'
     try:
         if scene not in list(bpy.data.scenes):raise ValueError('Original scene closed')
         state=skinning.poll(folder)
@@ -197,20 +201,24 @@ def tick():
             if bpy.context.scene!=scene:raise ValueError('Scene changed; original pose was left intact')
             status=bpy.ops.local_character.apply_image_pose(folder=str(folder),async_undo=True)
             if status!={'FINISHED'}:raise ValueError('Pose could not be applied; original pose was left intact')
+        outcome='FINISHED'
     except (ValueError,OSError,KeyError,RuntimeError,ReferenceError) as error:
         skinning.cancel(folder);_pending=None
         if scene in list(bpy.data.scenes):scene.lc_settings.image_pose_status=str(error)
+    processing_visuals.finish(_visual,outcome);_visual=None
     redraw();return None
 
 def begin(context,folder,kind):
-    global _pending
+    global _pending,_visual
     _pending=(folder,context.scene,kind)
+    _visual=processing_visuals.start(context,'SETUP' if kind=='setup' else 'IMAGE',folder)
     context.scene.lc_settings.image_pose_job=str(folder)
     if not bpy.app.timers.is_registered(tick):bpy.app.timers.register(tick,first_interval=.5)
     redraw()
 
 def cleanup():
-    global _pending
+    global _pending,_visual
+    processing_visuals.finish(_visual);_visual=None
     if _pending:
         skinning.cancel(_pending[0]);_pending=None
     if bpy.app.timers.is_registered(tick):bpy.app.timers.unregister(tick)
@@ -330,6 +338,7 @@ class LC_FH_image_pose(FileHandler):
 def draw(layout,context):
     box=layout.box();box.label(text='Pose from Image',icon='IMAGE_DATA')
     if _pending:
+        if processing_visuals.active(context.scene):return
         box.operator('local_character.cancel_image_pose',icon='X')
     else:
         box.operator('local_character.image_pose',text='Choose Image…',icon='FILE_IMAGE')

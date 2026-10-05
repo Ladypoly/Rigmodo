@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "version": "0.13.0",
+  "scene_preserved": true,
+  "objects": 5,
+  "active": "Rigmodo_Rig_Motion",
+  "frame": 803,
+  "action": "Generated Motion",
+  "effects_enabled": true,
+  "reduced_animation": false,
+  "forced_redraw_hz": 8,
+  "idle_has_no_processing_timer_or_handlers": true
+}

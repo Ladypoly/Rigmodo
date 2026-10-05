@@ -107,9 +107,12 @@ def run():
             assert diff(snapshot(),state['stale'])<1e-6
             rows.append('stale_frame_completion_rejected')
             native_drop()
-            state['cancel']=snapshot();assert bpy.ops.local_character.cancel_image_pose()=={'FINISHED'}
+            state['cancel']=snapshot();assert bpy.ops.local_character.cancel_processing()=={'FINISHED'}
+            state['phase']=5
+        elif phase==5 and ip._pending is None:
             assert not ip._pending and not addon.skinning._jobs and diff(snapshot(),state['cancel'])<1e-6
-            rows.append('cancel_preserves_pose');finish();return None
+            assert not addon.processing_visuals.active(bpy.context.scene)
+            rows.append('shared_cancel_preserves_pose');finish();return None
     except Exception:
         with bpy.context.temp_override(window=window):bpy.ops.screen.screenshot(filepath=str(out/'failure.png'))
         (out/'error.txt').write_text(traceback.format_exc());ip.cleanup();bpy.ops.wm.quit_blender();return None

@@ -68,7 +68,7 @@ def start(folder):
             stderr=subprocess.STDOUT, cwd=executable.parent,
             creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
     except Exception: log.close(); raise
-    skinning._jobs[str(folder)] = dict(process=process, log=log, started=time.monotonic())
+    skinning._jobs[str(folder)] = dict(process=process, log=log, started=time.monotonic(),phase='Refining skin weights')
     try: skinning._state(folder, 'running', pid=process.pid)
     except OSError: skinning.cancel(folder); raise
     return process.pid
