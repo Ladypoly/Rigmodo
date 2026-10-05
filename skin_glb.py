@@ -42,7 +42,7 @@ def write_input(path, positions, triangles, joints):
         if children: node['children'] = children
         nodes.append(node)
     nodes.append({"name": "WeightInputMesh", "mesh": 0, "skin": 0})
-    document = {"asset": {"version": "2.0", "generator": "Local Character weight transport"},
+    document = {"asset": {"version": "2.0", "generator": "Rigmodo weight transport"},
                 "buffers": [{"byteLength": len(binary)}], "bufferViews": views, "accessors": accessors,
                 "nodes": nodes, "scenes": [{"nodes": [0, len(joints)]}], "scene": 0,
                 "meshes": [{"primitives": [{"attributes": {"POSITION": position_id, "JOINTS_0": joint_id,

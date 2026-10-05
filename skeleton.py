@@ -98,9 +98,9 @@ def create_armature(context, height=1.75, arm_angle=0, eyes=False, origin=(0, 0,
     specs = template(height, arm_angle, eyes)
     if not all(isfinite(v) for v in origin):
         raise ValueError("Template origin must be finite")
-    data = bpy.data.armatures.new("LC_Humanoid")
-    obj = bpy.data.objects.new("LC_Humanoid", data)
-    collection = bpy.data.collections.new("Local Character")
+    data = bpy.data.armatures.new("Rigmodo_Rig")
+    obj = bpy.data.objects.new("Rigmodo_Rig", data)
+    collection = bpy.data.collections.new("Rigmodo")
     context.scene.collection.children.link(collection)
     collection.objects.link(obj)
     for selected in context.selected_objects:

@@ -9,7 +9,7 @@ from .animation import selected_action
 def loop(context,rig,blend_frames=8):
     selection=selected_action(rig,context.scene)
     original=selection['action'];start=selection['frame_start'];end=selection['frame_end']
-    if not original.get('lc_source_fps'):raise ValueError('Loop finishing currently supports generated Local Character Actions')
+    if not original.get('lc_source_fps'):raise ValueError('Loop finishing currently supports generated Rigmodo Actions')
     if not 2<=blend_frames<end-start:raise ValueError('Loop blend must span at least two frames and be shorter than the clip')
     action=original.copy();action.name=original.name+'_Loop'
     slot=next((s for s in action.slots if s.identifier==selection['slot'].identifier),None)

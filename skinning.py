@@ -361,7 +361,7 @@ def apply(context, folder):
             for n, row in enumerate(result):
                 rows[span['start'] + n] = [(int(i), float(row[i])) for i in np.flatnonzero(row > 0)]
             protected_count += int(protected.sum())
-    collection = bpy.data.collections.new('Local Character AI Skin')
+    collection = bpy.data.collections.new('Rigmodo AI Skin')
     created, copied_data = [], []
     try:
         copied_rig = rig.copy(); copied_rig.data = rig.data.copy()
@@ -377,7 +377,7 @@ def apply(context, folder):
             mesh.matrix_parent_inverse = Matrix.Identity(4); mesh.matrix_world = source.matrix_world.copy()
             collection.objects.link(mesh)
             modifiers = [m for m in mesh.modifiers if m.type == 'ARMATURE']
-            if not modifiers: modifiers = [mesh.modifiers.new('Local Character Skin', 'ARMATURE')]
+            if not modifiers: modifiers = [mesh.modifiers.new('Rigmodo Skin', 'ARMATURE')]
             for modifier in modifiers: modifier.object = copied_rig
             locks = {g.name: g.lock_weight for g in mesh.vertex_groups}
             for group in list(mesh.vertex_groups):

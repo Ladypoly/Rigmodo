@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import uuid
 import bpy
-from . import placement, skinning, regional_jobs, motion_jobs, motion_apply, motion_finish, exporter, skeleton, regions,twists,deformation_qa,weight_copy
+from . import placement, skinning, regional_jobs, motion_jobs, motion_apply, motion_finish, exporter, skeleton, regions,twists,deformation_qa,weight_copy,character_result
 
 _runs={}
 
@@ -145,7 +145,11 @@ class Run:
             destination=exporter.export_bundle(context,self.rig,self.meshes,self.options['export_directory'],
                 self.options['character_name'],self.options['profile'],self.options.get('motion',False),self.options.get('loop',False))
             settings.last_export=str(destination)
-        if self.options.get('hide_sources',True):
+        if self.options.get('skin_only') and not self.options.get('keep_skin_copies',False):
+            self.rig,self.meshes=character_result.skin(context,self.original_rig,self.original_meshes,self.rig,self.meshes,
+                owned=[obj for stage in self.generated for obj in stage])
+            self.generated=[]
+        elif self.options.get('hide_sources',True):
             source=[self.original_rig,*self.original_meshes] if self.original_rig else self.original_meshes[:]
             for obj in source+[o for stage in self.generated[:-1] for o in stage]:
                 if obj.name in context.view_layer.objects:obj.hide_set(True)
@@ -162,7 +166,7 @@ class Run:
 
 
 def options(settings,skin_only=False):
-    keys=('placement_python','skin_executable','skin_models','skin_device','skin_beams','refine_iterations','refine_strength',
+    keys=('keep_skin_copies','placement_python','skin_executable','skin_models','skin_device','skin_beams','refine_iterations','refine_strength',
           'refine_seams','motion_prompt','motion_frames','motion_steps','motion_seed','motion_in_place','motion_provider',
           'motion_hand_curl','motion_contacts','motion_heading','motion_loop_blend','motion_use_keyframes','motion_start_frame','export_directory','character_name','profile')
     values={key:getattr(settings,key) for key in keys}

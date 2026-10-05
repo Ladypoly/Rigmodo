@@ -55,11 +55,20 @@ def validate_rig(context, rig):
     return mapping
 
 
-def prepare(context, rig, prompt, frames=90, steps=100, seed=101, in_place=False, parent=None, keyframes=False, start_frame=1):
-    validate_rig(context, rig)
+def character_meshes(context,rig):
     helpers={b.custom_shape for b in rig.pose.bones if b.custom_shape}
     meshes=[o for o in context.selected_objects if o.type=='MESH' and o not in helpers and any(
         m.type=='ARMATURE' and m.object==rig for m in o.modifiers)]
+    if not meshes:
+        meshes=[o for o in context.view_layer.objects if o.type=='MESH' and o not in helpers and o.visible_get() and any(
+            m.type=='ARMATURE' and m.object==rig for m in o.modifiers)]
+    skinning.ensure_unique_character_meshes(meshes)
+    return meshes
+
+
+def prepare(context, rig, prompt, frames=90, steps=100, seed=101, in_place=False, parent=None, keyframes=False, start_frame=1):
+    validate_rig(context, rig)
+    meshes=character_meshes(context,rig)
     for mesh in meshes:
         if mesh.parent_type!='OBJECT' or mesh.constraints or any(m.type=='ARMATURE' and m.object!=rig for m in mesh.modifiers):
             raise ValueError('Motion review meshes need ordinary parenting and one accepted armature')

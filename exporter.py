@@ -134,7 +134,7 @@ def export_bundle(context, rig, meshes, directory, character_name, profile="HUMA
     if destination.exists():
         raise ValueError(f"Bundle already exists: {destination}. Choose a new name; existing exports are preserved")
     stage = Path(tempfile.mkdtemp(prefix=f".{name}-", dir=parent))
-    scene = bpy.data.scenes.new("Local Character Export")
+    scene = bpy.data.scenes.new("Rigmodo Export")
     original_scene = context.scene
     window = context.window
     original_window_scene = window.scene if window else None

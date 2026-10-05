@@ -14,9 +14,10 @@ extension=artifacts/f'local_character-{version}.zip'
 with zipfile.ZipFile(extension) as archive:
     names=set(archive.namelist())
     assert {'__init__.py','workflow.py','deformation_qa.py','provider_install.py','provider-release-lock.json','mia-runtime-lock.json','NOTICE','LICENSE','soma30.json'}<=names
-    if version in {'0.6.0','0.7.0','0.8.0'}:assert {'configuration.py','landmarks.py','ui.py'}<=names
-    if version in {'0.7.0','0.8.0'}:assert {'hands.py','hand_geometry.py'}<=names
-    if version=='0.8.0':assert 'motion_keyframes.py' in names
+    if version in {'0.6.0','0.7.0','0.8.0','0.9.0'}:assert {'configuration.py','landmarks.py','ui.py'}<=names
+    if version in {'0.7.0','0.8.0','0.9.0'}:assert {'hands.py','hand_geometry.py'}<=names
+    if version in {'0.8.0','0.9.0'}:assert 'motion_keyframes.py' in names
+    if version=='0.9.0':assert 'character_result.py' in names
     assert not any(n.startswith(('tests/','tools/','native/','docs/','artifacts/','unity/','.git/')) for n in names)
     assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl'} for n in names)
     for name in names:
@@ -60,6 +61,11 @@ if version=='0.8.0':
         motion_regression_unity='local-character-motion-unity-qfsjikp7/motion-results.json',
         avatar_keyframe_unity='local-character-motion-unity-lnhslna_/motion-results.json',
         extracted_keyframe_release=str(Path(archive_paths['output'])/'results.json'))
+if version=='0.9.0':
+    sources.update(rigmodo_results='rigmodo-results-acceptance/results.json',rigmodo_actual_skin='rigmodo-auto-skin-acceptance/results.json',
+        ui_and_landmarks='rigmodo-ui-regression/results.json',keyframe_controls='rigmodo-keyframe-regression/results.json',
+        rigmodo_export='rigmodo-export-acceptance/results.json',rigmodo_unity='local-character-motion-unity-ifbo4iqj/motion-results.json',
+        rigmodo_extracted='rigmodo-extracted-acceptance/results.json')
 for name,path in sources.items():
     file=temporary/path
     if file.is_file():evidence[name]=json.loads(file.read_text())
@@ -88,6 +94,13 @@ if version=='0.8.0':
     evidence['provider_upgrade']=json.loads((artifacts/'keyframe-upgrade-results.json').read_text());assert evidence['provider_upgrade']['passed']
     evidence['live_reload']=json.loads((root/'docs/keyframes-live-reload-2026-10-04.json').read_text())
     assert evidence['live_reload']['passed'] and evidence['live_reload']['version']==version
+if version=='0.9.0':
+    for key in ('rigmodo_results','rigmodo_actual_skin','ui_and_landmarks','keyframe_controls','rigmodo_export','rigmodo_extracted'):assert evidence[key]['passed']
+    assert evidence['rigmodo_actual_skin']['version']==version and evidence['rigmodo_actual_skin']['actual_skin_inference']
+    assert evidence['rigmodo_extracted']['extracted_extension']
+    assert all(case['passed'] for case in evidence['rigmodo_unity']['cases'])
+    evidence['live_reload']=json.loads((root/'docs/rigmodo-live-2026-10-05.json').read_text())
+    assert evidence['live_reload']['passed'] and evidence['live_reload']['version']==version
 evidence['live_companion']=json.loads((root/'docs/live-companion-2026-10-03.json').read_text())
 assert evidence['live_companion']['compilation_passed'] and evidence['live_companion']['open_scene_state_preserved']
 baseline=json.loads((root/'docs/live-project-baseline.json').read_text())
@@ -99,8 +112,8 @@ for file in (extension,companion,artifacts/'local_character-windows-providers.zi
     checksums[file.name]=dict(bytes=file.stat().st_size,sha256=digest)
 record=dict(version=version,extension_zip_validated=True,source_modules_compile=True,private_assets_excluded=True,
     artifacts=checksums,evidence=evidence,hardware_limit='RTX 4090 24 GB tested; sampled global device usage is not a physical 16 GB proof')
-release_date='2026-10-04' if version in {'0.6.0','0.7.0','0.8.0'} else '2026-10-03'
-release_name=f'release-verification-{version}-{release_date}' if version in {'0.7.0','0.8.0'} else f'release-verification-{release_date}'
+release_date='2026-10-05' if version=='0.9.0' else '2026-10-04' if version in {'0.6.0','0.7.0','0.8.0'} else '2026-10-03'
+release_name=f'release-verification-{version}-{release_date}' if version in {'0.7.0','0.8.0','0.9.0'} else f'release-verification-{release_date}'
 (root/f'docs/{release_name}.json').write_text(json.dumps(record,indent=2)+'\n')
 (artifacts/f'local_character-{version}-checksums.json').write_text(json.dumps(checksums,indent=2)+'\n')
 print('RELEASE_PACKAGED',json.dumps(checksums),flush=True)

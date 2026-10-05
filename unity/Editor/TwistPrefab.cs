@@ -8,7 +8,7 @@ namespace LocalCharacter.Editor
 {
     public static class TwistPrefab
     {
-        [MenuItem("Assets/Local Character/Create Humanoid Playback Prefab with Twists")]
+        [MenuItem("Assets/Rigmodo/Create Humanoid Playback Prefab with Twists")]
         public static void CreateSelected()
         {
             string path=AssetDatabase.GetAssetPath(Selection.activeObject);
@@ -29,7 +29,7 @@ namespace LocalCharacter.Editor
                     Selection.activeObject=PrefabUtility.SaveAsPrefabAsset(copy,output);
                 }
             }
-            catch(Exception error){Debug.LogError("Local Character: "+error.Message);}
+            catch(Exception error){Debug.LogError("Rigmodo: "+error.Message);}
         }
     }
 }

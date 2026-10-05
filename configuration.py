@@ -2,7 +2,7 @@
 """Global runtime preferences with legacy scene compatibility for old files."""
 KEYS=('placement_python','skin_executable','skin_models','skin_device','skin_beams','motion_provider',
       'motion_steps','motion_seed','refine_iterations','refine_seams','voxel_resolution',
-      'workflow_hide_sources','workflow_allow_strain','setup_python','setup_archive')
+      'workflow_hide_sources','keep_skin_copies','workflow_allow_strain','setup_python','setup_archive')
 
 def preferences(context):
     addon=context.preferences.addons.get(__package__)

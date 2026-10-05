@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "version": "0.9.0",
+  "brand": "Rigmodo",
+  "removed": [
+    "LC_Humanoid",
+    "LC_Humanoid_AI_Skin",
+    "LC_Humanoid_AI_Skin_Refined",
+    "body_mesh",
+    "body_mesh_Joints",
+    "body_mesh_Joints_AI_Skin",
+    "body_mesh_Joints_AI_Skin_Refined"
+  ],
+  "backup": "C:\\Users\\Elin\\AppData\\Local\\Temp\\rigmodo-before-history-cleanup.blend",
+  "character_geometry_weights_joints_pose_action_and_selection_preserved": true,
+  "before_counts": {
+    "objects": 9,
+    "armatures": 4,
+    "meshes": 5
+  },
+  "after_counts": {
+    "objects": 2,
+    "armatures": 1,
+    "meshes": 1
+  },
+  "rig": "Rigmodo_Rig",
+  "meshes": [
+    "body_mesh"
+  ],
+  "keep_skin_copies": false,
+  "collection_names": [
+    "Rigmodo Motion"
+  ],
+  "final_reload_preserved": true,
+  "operator_labels": [
+    "AI Skin Avatar",
+    "Apply Finished Skinning",
+    "Refine Skinning",
+    "Apply Finished Refinement"
+  ]
+}

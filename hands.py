@@ -59,7 +59,7 @@ def apply_copy(context,folder,source,result,rig,meshes):
     mapping={skeleton.canonical_name(b.name):b.name for b in rig.data.bones}
     new=None;collection=None;copies=[];selected=list(context.selected_objects);active=context.active_object
     try:
-        collection=bpy.data.collections.new('Local Character Hands');context.scene.collection.children.link(collection)
+        collection=bpy.data.collections.new('Rigmodo Hands');context.scene.collection.children.link(collection)
         new=rig.copy();new.data=rig.data.copy();collection.objects.link(new);new.name=rig.name+'_Hands';new.hide_set(False)
         for obj in context.selected_objects:obj.select_set(False)
         new.select_set(True);context.view_layer.objects.active=new;bpy.ops.object.mode_set(mode='EDIT')

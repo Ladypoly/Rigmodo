@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Local Character: independent local humanoid workflow."""
+"""Rigmodo: independent local humanoid workflow."""
 import json
 import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result
 
 class LC_Settings(PropertyGroup):
     height: FloatProperty(name="Height (m)", default=1.75, min=.1, max=10)
@@ -81,6 +81,7 @@ class LC_Settings(PropertyGroup):
     workflow_export: BoolProperty(name='Export when complete',default=False)
     workflow_loop: BoolProperty(name='Blend loop endpoint',default=False,description='Create an editable pose blend; inspect foot timing before using it as a loop')
     workflow_hide_sources: BoolProperty(name='Hide source and intermediate copies',default=True,description='Hide only after success; originals remain recoverable in the Outliner')
+    keep_skin_copies: BoolProperty(name='Keep skinning review copies',default=False,description='Keep separate weighted results instead of updating the selected character after successful skinning')
     workflow_twists: BoolProperty(name='Optional forearm twists',default=False,description='Add two deform helpers after core AI binding; arbitrary Unity Humanoid clips use the companion twist component')
     workflow_rigid: BoolProperty(name='Treat meshes as rigid character parts',default=False,description='An explicit material decision for robots: clear connected parts use one AI-suggested joint; ambiguous parts stay editable')
     workflow_allow_strain: BoolProperty(name='Allow severe deformation findings',default=False,description='Expert override after inspecting the recorded edge-strain probes; automatic motion/export normally stops for correction')
@@ -269,8 +270,8 @@ class WorkerModal:
 
 class LC_OT_skin(WorkerModal, Operator):
     bl_idname = 'local_character.ai_skin'
-    bl_label = 'AI Skin to New Copy'
-    bl_description = 'Run local SkinTokens on accepted joints and create weighted copies'
+    bl_label = 'AI Skin Avatar'
+    bl_description = 'Run local SkinTokens on accepted joints and apply verified weights to the selected character'
     # Separate apply owns undo; intervening user edits never join the job's undo.
     bl_options = {'REGISTER'}
     @classmethod
@@ -288,7 +289,7 @@ class LC_OT_skin(WorkerModal, Operator):
 
 class LC_OT_apply_skin(Operator):
     bl_idname = 'local_character.apply_skin_job'
-    bl_label = 'Create Copy from Finished Job'
+    bl_label = 'Apply Finished Skinning'
     bl_options = {'REGISTER', 'UNDO'}
     @classmethod
     def poll(cls, context): return context.mode == 'OBJECT' and bool(context.scene.lc_settings.skin_job) and not skinning._jobs
@@ -298,15 +299,17 @@ class LC_OT_apply_skin(Operator):
             request=json.loads((__import__('pathlib').Path(settings.skin_job)/'request.json').read_text())
             source_objects=[bpy.data.objects.get(request['rig']),*[bpy.data.objects.get(m['name']) for m in request['meshes']]]
             collection, rig, meshes = skinning.apply(context, settings.skin_job)
-            configuration.hide_sources(context,source_objects)
+            if not configuration.settings(context).keep_skin_copies:
+                rig,meshes=character_result.skin(context,source_objects[0],source_objects[1:],rig,meshes)
+            else:configuration.hide_sources(context,source_objects)
             for obj in context.selected_objects: obj.select_set(False)
             for obj in [rig, *meshes]: obj.select_set(True)
             context.view_layer.objects.active = rig
         except (ValueError, OSError, RuntimeError, KeyError) as exc:
             settings.skin_status = str(exc)
             self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
-        settings.skin_status = 'Weighted copies created; review deformation. Originals remain in place'
-        self.report({'INFO'}, f'Created {collection.name}; accepted joints preserved')
+        settings.skin_status = 'Skinning ready; accepted joints preserved'
+        self.report({'INFO'}, settings.skin_status)
         return {'FINISHED'}
 
 class LC_OT_protect(Operator):
@@ -341,7 +344,7 @@ class LC_OT_mark_region(Operator):
             regions.mark(mesh, regions.selected_vertices(mesh), settings.region_kind, settings.region_bone,
                 '' if settings.region_digit == 'NONE' else settings.region_digit)
         except (ValueError, RuntimeError) as exc: self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
-        self.report({'INFO'}, 'Region marked; next refinement applies it on copies')
+        self.report({'INFO'}, 'Region marked; next refinement applies it to the character')
         return {'FINISHED'}
 
 class LC_OT_clear_region(Operator):
@@ -361,7 +364,7 @@ class LC_OT_clear_region(Operator):
 
 class LC_OT_refine(WorkerModal, Operator):
     bl_idname = 'local_character.refine_regions'
-    bl_label = 'Refine to New Copy'
+    bl_label = 'Refine Skinning'
     bl_options = {'REGISTER'}
     status_property = 'region_status'
     job_property = 'region_job'
@@ -383,7 +386,7 @@ class LC_OT_refine(WorkerModal, Operator):
 
 class LC_OT_apply_region(Operator):
     bl_idname = 'local_character.apply_region_job'
-    bl_label = 'Create Copy from Finished Refinement'
+    bl_label = 'Apply Finished Refinement'
     bl_options = {'REGISTER', 'UNDO'}
     @classmethod
     def poll(cls, context): return context.mode == 'OBJECT' and not skinning._jobs and bool(context.scene.lc_settings.region_job)
@@ -393,15 +396,17 @@ class LC_OT_apply_region(Operator):
             request=json.loads((__import__('pathlib').Path(settings.region_job)/'request.json').read_text())
             source_objects=[bpy.data.objects.get(request['rig']),*[bpy.data.objects.get(m['name']) for m in request['meshes']]]
             (collection, rig, meshes), report = regional_jobs.apply(context, settings.region_job)
-            configuration.hide_sources(context,source_objects)
+            if not configuration.settings(context).keep_skin_copies:
+                rig,meshes=character_result.skin(context,source_objects[0],source_objects[1:],rig,meshes)
+            else:configuration.hide_sources(context,source_objects)
             for obj in context.selected_objects: obj.select_set(False)
             for obj in [rig, *meshes]: obj.select_set(True)
             context.view_layer.objects.active = rig
             settings.region_report = json.dumps(report)
         except (ValueError, OSError, RuntimeError, KeyError) as exc:
             settings.region_status = str(exc); self.report({'ERROR'}, str(exc)); return {'CANCELLED'}
-        settings.region_status = 'Review copies created; original weights preserved'
-        self.report({'INFO'}, f'Created {collection.name}; protected weights preserved')
+        settings.region_status = 'Skinning ready; protected weights preserved'
+        self.report({'INFO'}, settings.region_status)
         return {'FINISHED'}
 
 class LC_OT_place(WorkerModal,Operator):
@@ -693,11 +698,11 @@ class LC_OT_advance_workflow(Operator):
 
 
 class LC_PT_main(Panel):
-    bl_label = "Local Character"
+    bl_label = "Rigmodo"
     bl_idname = "LC_PT_main"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "Local Character"
+    bl_category = "Rigmodo"
     def draw(self, context):ui.draw(self.layout,context)
 
 CLASSES = (LC_Settings, LC_Preferences, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,

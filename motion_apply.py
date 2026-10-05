@@ -163,7 +163,7 @@ def apply(context, folder, hand_curl=0.,contacts=False,heading=False,hands=None)
     for mesh in meshes:
         if mesh.parent_type!='OBJECT' or mesh.constraints or any(m.type=='ARMATURE' and m.object!=original for m in mesh.modifiers):
             raise ValueError('Motion review meshes need ordinary parenting and one accepted armature')
-    collection=bpy.data.collections.new('Local Character Motion')
+    collection=bpy.data.collections.new('Rigmodo Motion')
     objects=[]; data=[]; action=None
     try:
         rig=original.copy(); rig.data=original.data.copy(); objects.append(rig); data.append(rig.data)

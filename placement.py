@@ -177,7 +177,7 @@ def apply(context,folder):
     selected=list(context.selected_objects);active=context.view_layer.objects.active
     try:
         new=skeleton.create_armature(context,max(.1,(heads['Head'].z-heads['Hips'].z)*2),origin=(0,0,0))
-        collection=new.users_collection[0];collection.name='Local Character Joints'
+        collection=new.users_collection[0];collection.name='Rigmodo Joints'
         bpy.ops.object.mode_set(mode='EDIT')
         try:
             for name in heads:
@@ -192,7 +192,7 @@ def apply(context,folder):
             for modifier in list(mesh.modifiers):
                 if modifier.type=='ARMATURE':mesh.modifiers.remove(modifier)
             if source.get('preserve_weights'):
-                modifier=mesh.modifiers.new('Local Character Skin','ARMATURE');modifier.object=new
+                modifier=mesh.modifiers.new('Rigmodo Skin','ARMATURE');modifier.object=new
             else:
                 for group in list(mesh.vertex_groups):
                     if group.name in old_bones or skeleton.canonical_name(group.name) in heads:mesh.vertex_groups.remove(group)

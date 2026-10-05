@@ -3,7 +3,7 @@
 import json,textwrap
 import bpy
 from bpy.types import Operator
-from . import configuration,skinning,placement,motion_jobs,install_jobs,deformation_qa,landmarks,hands
+from . import configuration,skinning,placement,motion_jobs,install_jobs,deformation_qa,landmarks,hands,character_result
 
 _pose_mesh_scope={}
 
@@ -13,7 +13,9 @@ def message(layout,text,icon='NONE'):
 def scope(context):
     try:return placement.selected(context)
     except ValueError:
-        try:return motion_jobs.selected_rig(context),[]
+        try:
+            rig=motion_jobs.selected_rig(context)
+            return rig,motion_jobs.character_meshes(context,rig) if context.scene.lc_settings.ui_step=='MOTION' else []
         except ValueError:return None,[]
 
 def details(layout,key,title):
@@ -47,6 +49,20 @@ class LC_OT_select_character(Operator):
             select(context,rig,meshes)
         except (ValueError,RuntimeError) as error:self.report({'ERROR'},str(error));return {'CANCELLED'}
         return {'FINISHED'}
+
+class LC_OT_clean_history(Operator):
+    bl_idname='local_character.clean_history'
+    bl_label='Remove Old Workflow Versions'
+    bl_description='Remove hidden inputs of this character’s recorded jobs and their unused mesh/armature data; unrelated objects are retained'
+    bl_options={'REGISTER','UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
+    def execute(self,context):
+        try:
+            rig=motion_jobs.selected_rig(context);meshes=motion_jobs.character_meshes(context,rig)
+            removed=character_result.clean_history(context,rig,meshes)
+        except (ValueError,RuntimeError) as error:self.report({'ERROR'},str(error));return {'CANCELLED'}
+        self.report({'INFO'},f'Removed {len(removed)} old workflow objects');return {'FINISHED'}
 
 class LC_OT_object_mode(Operator):
     bl_idname='local_character.object_mode'
@@ -225,7 +241,7 @@ def draw(layout,context):
                         row=box.row();row.enabled=not skinning._jobs
                         row.operator('local_character.key_pose',text='Clear Poses').clear=True
                 except (ValueError,KeyError):message(box,'Key poses need to be recaptured.',icon='ERROR')
-        row=layout.row();row.scale_y=1.45;row.enabled=bool(rig and meshes) and context.mode=='OBJECT' and not skinning._jobs
+        row=layout.row();row.scale_y=1.45;row.enabled=bool(rig) and context.mode=='OBJECT' and not skinning._jobs
         row.operator('local_character.generate_motion',text='Generate Motion',icon='ACTION')
         if rig and rig.animation_data and rig.animation_data.action:layout.operator('local_character.preview_motion',text='Preview Motion',icon='PREVIEW_RANGE')
         message(layout,s.motion_status)
@@ -269,7 +285,8 @@ def draw_preferences(layout,context,prefs):
         for key in ('skin_device','skin_beams','motion_steps','motion_seed'):box.prop(prefs,key)
         box=layout.box();box.label(text='Geometric solvers')
         for key in ('refine_iterations','refine_seams','voxel_resolution'):box.prop(prefs,key)
-        box=layout.box();box.label(text='Workflow behavior');box.prop(prefs,'workflow_hide_sources');box.prop(prefs,'workflow_allow_strain')
+        box=layout.box();box.label(text='Workflow behavior');box.prop(prefs,'keep_skin_copies');box.prop(prefs,'workflow_hide_sources');box.prop(prefs,'workflow_allow_strain')
+        box.operator('local_character.clean_history')
     else:
         message(layout,'Finished results are applied automatically. Recovery is for interrupted sessions.')
         for key,op in (('placement_job','apply_placement_job'),('skin_job','apply_skin_job'),('region_job','apply_region_job'),('motion_job','apply_motion_job')):
@@ -278,4 +295,4 @@ def draw_preferences(layout,context,prefs):
         for key in ('workflow_reuse_joints','workflow_rebind','workflow_rigid','workflow_twists','workflow_motion','workflow_export','workflow_loop'):box.prop(s,key)
         box.operator('local_character.build_character',text='Run Complete Workflow')
 
-CLASSES=(LC_OT_preferences,LC_OT_select_character,LC_OT_object_mode,LC_OT_weight_editor,LC_OT_joint_editor,LC_OT_pose_editor)
+CLASSES=(LC_OT_preferences,LC_OT_select_character,LC_OT_clean_history,LC_OT_object_mode,LC_OT_weight_editor,LC_OT_joint_editor,LC_OT_pose_editor)

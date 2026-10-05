@@ -1,4 +1,12 @@
-# Compact handoff: Local Character 0.8.0
+# Compact handoff: Rigmodo 0.9.0
+
+Final 0.9 Unity tests pass Humanoid and Generic in private project local-character-motion-unity-ifbo4iqj: maximum Generic surface discrepancy 5.5466e-6 m, bone probes within the measured rest-precision budget, Root travel 3.168163 m in both profiles. The branded companion is packaged but was not redeployed into the user's open Unity project.
+
+5 October update: user chose Rigmodo as the product name. Skin Avatar and individual skin/refinement applies keep the same source objects/names by default after successful worker validation, removing only owned temporary copies/data. `character_result.skin` preserves the accepted armature data and Action, transfers mesh data/group layout transactionally, protects shared mesh users and rolls back failures. `keep_skin_copies` in global Defaults restores opt-in review copies. Full end-to-end rig/motion workflows still produce review versions. Motion generation from only the armature automatically includes visible bound meshes; explicit mesh subsets remain captured exactly.
+
+Current live scene has only Rigmodo_Rig and body_mesh in Rigmodo Motion, plus the empty user Collection. Seven historical hidden objects were verified against recorded job IDs and exact live pointers, then removed through the undo-owning cleanup operator. Private backup: LocalAppData/Temp/rigmodo-before-history-cleanup.blend. Do not restore the old scene assumptions below. `docs/rigmodo-live-2026-10-05.json` proves geometry/paint/joints/pose/Action/selection preservation. The original provider cache and extension ID stay local_character/LocalCharacter for compatibility; UI, generated object names and Unity menus use Rigmodo.
+
+Fresh tests: rigmodo-results-acceptance (stable identity, repeated commits, shared data/shape keys/orphans, rollback, rig-only motion scope, safe history cleanup), rigmodo-auto-skin-acceptance (actual SkinTokens/AUTO/QA, 55.71 s, unchanged object/data/collection counts), rigmodo-ui-regression, rigmodo-keyframe-regression, and rigmodo-export-acceptance. The latter uses actual committed weights and cached real motion arrays; materials are omitted from this private numerical export fixture because relative image references lack their original directory. Prior records below remain history.
 
 The user authorized finishing the local Blender extension autonomously, including private avatar imports and Unity checks. The implemented humanoid scope is in [the final architecture](unity-humanoid-extension-final-plan.md); operation is in [README](../README.md); measured limits are in [build status](BUILD_STATUS.md). Do not confuse historical research candidates with unimplemented runtime dependencies.
 

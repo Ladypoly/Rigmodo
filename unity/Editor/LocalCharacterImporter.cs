@@ -45,7 +45,7 @@ namespace LocalCharacter.Editor
     // Explicit menu operation: unrelated FBX imports and subsequent user overrides are untouched.
     public static class CharacterImporter
     {
-        [MenuItem("Assets/Local Character/Configure Selected Export for Unity")]
+        [MenuItem("Assets/Rigmodo/Configure Selected Export for Unity")]
         public static void ConfigureSelected()
         {
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);
@@ -59,7 +59,7 @@ namespace LocalCharacter.Editor
                 }
                 else Configure(path);
             }
-            catch (Exception ex) { Debug.LogError("Local Character: " + ex.Message); }
+            catch (Exception ex) { Debug.LogError("Rigmodo: " + ex.Message); }
         }
 
         public static CharacterValidation Configure(string assetPath)
@@ -152,7 +152,7 @@ namespace LocalCharacter.Editor
             string output = Path.ChangeExtension(assetPath, ".unity-validation.json");
             File.WriteAllText(output, JsonUtility.ToJson(result, true));
             AssetDatabase.ImportAsset(output);
-            Debug.Log("Local Character configured: " + assetPath);
+            Debug.Log("Rigmodo configured: " + assetPath);
             return result;
         }
 

@@ -76,7 +76,7 @@ namespace LocalCharacter.Editor
                 result.editable_clip_asset = RootMotionClip.Create(assetPath, sourceAsset, imported, manifest);
             string output = Path.ChangeExtension(assetPath, ".unity-validation.json");
             File.WriteAllText(output, JsonUtility.ToJson(result, true)); AssetDatabase.ImportAsset(output);
-            Debug.Log("Local Character animation configured: " + assetPath);
+            Debug.Log("Rigmodo animation configured: " + assetPath);
             return result;
         }
     }

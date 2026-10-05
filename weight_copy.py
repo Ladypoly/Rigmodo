@@ -9,7 +9,7 @@ from mathutils import Matrix
 def clone(context,rig,meshes,label='Root'):
     """Structural adaptation must preserve even unbound or unfinished paint."""
     if context.mode!='OBJECT':raise ValueError('Return to Object Mode before copying a character')
-    collection=bpy.data.collections.new('Local Character '+label);objects=[];blocks=[]
+    collection=bpy.data.collections.new('Rigmodo '+label);objects=[];blocks=[]
     try:
         target=rig.copy();target.data=rig.data.copy();objects.append(target);blocks.append(target.data)
         target.name=rig.name+'_'+label;target.parent=None;target.matrix_world=rig.matrix_world.copy();collection.objects.link(target)
@@ -40,7 +40,7 @@ def create(context, rig, meshes, bone_names, weights, label='Refined', method='s
         for row in matrix:
             if any(not math.isfinite(w) or w < 0 for w in row) or abs(sum(row) - 1) > 1e-4:
                 raise ValueError('Copy requires finite nonnegative normalized weights')
-    collection = bpy.data.collections.new('Local Character ' + label)
+    collection = bpy.data.collections.new('Rigmodo ' + label)
     created, copied_data = [], []
     try:
         copied_rig = rig.copy(); copied_rig.data = rig.data.copy()
@@ -56,7 +56,7 @@ def create(context, rig, meshes, bone_names, weights, label='Refined', method='s
             mesh.matrix_parent_inverse = Matrix.Identity(4); mesh.matrix_world = original.matrix_world.copy()
             collection.objects.link(mesh)
             modifiers = [m for m in mesh.modifiers if m.type == 'ARMATURE']
-            if not modifiers: modifiers = [mesh.modifiers.new('Local Character Skin', 'ARMATURE')]
+            if not modifiers: modifiers = [mesh.modifiers.new('Rigmodo Skin', 'ARMATURE')]
             for modifier in modifiers: modifier.object = copied_rig
             locks = {g.name: g.lock_weight for g in mesh.vertex_groups}
             for group in list(mesh.vertex_groups):

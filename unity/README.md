@@ -1,8 +1,8 @@
-# Local Character Unity companion 0.5.0
+# Rigmodo Unity companion 0.9.0
 
 Extract this archive to `Assets/LocalCharacter` in Unity 6.3 LTS. Editor and Runtime folders must both be present. Assembly definitions isolate the editor tools from game scripts; the runtime assembly contains only the opt-in forearm twist component. Remove older copies of the same companion classes before placing another version at a different path.
 
-Copy complete Blender-exported bundles into Assets. Select the character FBX and use **Assets → Local Character → Configure Selected Export for Unity**. Configure its animation FBX afterward. Re-run only when you intend to apply the exported profile: this command sets mapping, four weights, uncompressed initial animation and exposed bone transforms explicitly.
+Copy complete Blender-exported bundles into Assets. Select the character FBX and use **Assets → Rigmodo → Configure Selected Export for Unity**. Configure its animation FBX afterward. Re-run only when you intend to apply the exported profile: this command sets mapping, four weights, uncompressed initial animation and exposed bone transforms explicitly.
 
 For generated Humanoid motion, use the editable `.anim` created/selected by the companion. Its explicit motion curves preserve the Blender Root trajectory. Use Animator root motion for traveling playback; in-place clips suit game-controller locomotion. The embedded FBX clip alone can drift under Unity's body projection. Existing edits to generated `.anim` assets survive reconfiguration.
 
