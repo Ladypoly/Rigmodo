@@ -1,0 +1,1234 @@
+{
+  "date": "2026-10-05",
+  "scope": "research only; runtime and user scene unchanged",
+  "blender": "5.2.0 LTS",
+  "blender_build": "fbe6228777e7",
+  "cpu": "Intel Core i9-13900K",
+  "source_inspection": {
+    "github_revision": "e4bea5df73c1fc1c253d63edbc01ba4c2c64843d",
+    "not_installed_build_revision": true,
+    "files": [
+      {
+        "name": "transform_pose",
+        "url": "https://raw.githubusercontent.com/blender/blender/e4bea5df73c1fc1c253d63edbc01ba4c2c64843d/source/blender/editors/transform/transform_convert_armature.cc",
+        "sha256": "8f5826f91b9aefeb2b4026db308cd3dad48c496ad553b531fdebc728f4cdb4b7",
+        "bytes": 56403
+      },
+      {
+        "name": "transform",
+        "url": "https://raw.githubusercontent.com/blender/blender/e4bea5df73c1fc1c253d63edbc01ba4c2c64843d/source/blender/editors/transform/transform.cc",
+        "sha256": "635c5ee121ec58a0cdfe67bbfe82811bf6c22bcef615e45f80063012aa30ce07",
+        "bytes": 76682
+      },
+      {
+        "name": "rna_window",
+        "url": "https://raw.githubusercontent.com/blender/blender/e4bea5df73c1fc1c253d63edbc01ba4c2c64843d/source/blender/makesrna/intern/rna_wm.cc",
+        "sha256": "0cc06836a6c48579983c6709866fe4ac8e214046676400166b26af5716365dde",
+        "bytes": 138013
+      }
+    ]
+  },
+  "native": {
+    "input_method": "documented Window.event_simulate through real native keymap",
+    "production_addon_loaded": false,
+    "custom_transaction_probe": false,
+    "cases": [
+      {
+        "name": "G_read_only",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "TRANSFORM_OT_translate",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 1,
+        "handler_calls": 11,
+        "handler_writes": 0,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 0,
+        "neighbor_change_survives_end": false,
+        "active_basis_restored_at_end": false,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": true,
+        "redo_restores_result": true,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "G_other_bone_confirm",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "TRANSFORM_OT_translate",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 1,
+        "handler_calls": 11,
+        "handler_writes": 1,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 1,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": false,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": true,
+        "redo_restores_result": true,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "G_other_bone_cancel",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "TRANSFORM_OT_translate",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 1,
+        "handler_calls": 10,
+        "handler_writes": 1,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 1,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": true,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": false,
+        "redo_restores_result": null,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "R_other_bone_confirm",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "TRANSFORM_OT_rotate",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 1,
+        "handler_calls": 13,
+        "handler_writes": 1,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 1,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": false,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": true,
+        "redo_restores_result": true,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "R_other_bone_cancel",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "TRANSFORM_OT_rotate",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 1,
+        "handler_calls": 10,
+        "handler_writes": 1,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 1,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": true,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": false,
+        "redo_restores_result": null,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "G_parent_write",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "TRANSFORM_OT_translate",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 1,
+        "handler_calls": 11,
+        "handler_writes": 1,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 1,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": false,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": true,
+        "redo_restores_result": true,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "R_selected_overlap",
+        "selected": [
+          "LeftHand",
+          "RightArm"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "TRANSFORM_OT_rotate",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 6,
+        "handler_calls": 11,
+        "handler_writes": 7,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 7,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": false,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": true,
+        "redo_restores_result": true,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "G_constrained_other",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "TRANSFORM_OT_translate",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 1,
+        "handler_calls": 11,
+        "handler_writes": 1,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 1,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": false,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": true,
+        "redo_restores_result": true,
+        "constrained_neighbor_visible_change": false,
+        "constrained_neighbor_max_evaluated_matrix_change": 1.0000000000287557e-07
+      }
+    ]
+  },
+  "custom_transaction": {
+    "input_method": "documented Window.event_simulate through real native keymap",
+    "production_addon_loaded": false,
+    "custom_transaction_probe": true,
+    "cases": [
+      {
+        "name": "G_read_only",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "POSE_OT_autopose_lab_drag",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 6,
+        "handler_calls": 8,
+        "handler_writes": 0,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 10,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": false,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": true,
+        "redo_restores_result": true,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "G_other_bone_confirm",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "POSE_OT_autopose_lab_drag",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 6,
+        "handler_calls": 8,
+        "handler_writes": 0,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 10,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": false,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": true,
+        "redo_restores_result": true,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "G_other_bone_cancel",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "POSE_OT_autopose_lab_drag",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 6,
+        "handler_calls": 8,
+        "handler_writes": 0,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 10,
+        "neighbor_change_survives_end": false,
+        "active_basis_restored_at_end": true,
+        "full_pose_restored_at_end": true,
+        "one_undo_restores_full_pose": false,
+        "redo_restores_result": null,
+        "constrained_neighbor_visible_change": null,
+        "cancel_restored_full_pose_without_gesture_undo": true
+      },
+      {
+        "name": "R_other_bone_confirm",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "POSE_OT_autopose_lab_drag",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 6,
+        "handler_calls": 8,
+        "handler_writes": 0,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 5,
+        "neighbor_change_survives_end": true,
+        "active_basis_restored_at_end": false,
+        "full_pose_restored_at_end": false,
+        "one_undo_restores_full_pose": true,
+        "redo_restores_result": true,
+        "constrained_neighbor_visible_change": null
+      },
+      {
+        "name": "R_other_bone_cancel",
+        "selected": [
+          "LeftHand"
+        ],
+        "active_bone": "LeftHand",
+        "modal_operators": [
+          "POSE_OT_autopose_lab_drag",
+          "WM_OT_autopose_lab_observer"
+        ],
+        "unique_active_matrices_during_drag": 6,
+        "unique_neighbor_basis_during_drag": 6,
+        "handler_calls": 8,
+        "handler_writes": 0,
+        "max_handler_recursion_depth": 1,
+        "msgbus_notifications": 5,
+        "neighbor_change_survives_end": false,
+        "active_basis_restored_at_end": true,
+        "full_pose_restored_at_end": true,
+        "one_undo_restores_full_pose": false,
+        "redo_restores_result": null,
+        "constrained_neighbor_visible_change": null,
+        "cancel_restored_full_pose_without_gesture_undo": true
+      }
+    ]
+  },
+  "solver": {
+    "scope": "original research prototypes; no learned model, gravity, dynamics, collisions or general anatomical limits",
+    "solver_joints": 29,
+    "constraints": 40,
+    "fixed_polishing_sweeps": 48,
+    "rows": [
+      {
+        "case": "small_hand",
+        "algorithm": "relax",
+        "median_solve_ms": 2.7194500003133726,
+        "p95_solve_ms": 2.8166399998099223,
+        "target_error_h": 0.00041567032197768186,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.0749626851251622e-06,
+        "pelvis_delta_h": 3.9370524684394704e-05,
+        "chest_delta_h": 0.00031030492574487715,
+        "left_elbow_delta_h": 0.057382398167085194,
+        "left_knee_delta_h": 0.0007431149389432372,
+        "finite": true
+      },
+      {
+        "case": "small_hand",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.926549999803683,
+        "p95_solve_ms": 1.0104149996095657,
+        "target_error_h": 0.0,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.6808283550182099,
+        "pelvis_delta_h": 4.257474626873521e-09,
+        "chest_delta_h": 0.0008921626350675993,
+        "left_elbow_delta_h": 0.03650778208470209,
+        "left_knee_delta_h": 0.0005002426478416513,
+        "finite": true
+      },
+      {
+        "case": "far_hand",
+        "algorithm": "relax",
+        "median_solve_ms": 2.5897999998960586,
+        "p95_solve_ms": 2.6424799998494564,
+        "target_error_h": 0.06895181724083911,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.013360756124747238,
+        "pelvis_delta_h": 0.0006905175693935401,
+        "chest_delta_h": 0.06671206895675005,
+        "left_elbow_delta_h": 0.11424094096696315,
+        "left_knee_delta_h": 0.004253637309318703,
+        "finite": true
+      },
+      {
+        "case": "far_hand",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.9107999999287131,
+        "p95_solve_ms": 0.9442300002319826,
+        "target_error_h": 8.514949253627232e-09,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 4.514549439911701,
+        "pelvis_delta_h": 4.257474626873521e-09,
+        "chest_delta_h": 0.10660481978622911,
+        "left_elbow_delta_h": 0.1701425535020839,
+        "left_knee_delta_h": 0.0005002426478416513,
+        "finite": true
+      },
+      {
+        "case": "extreme_arm",
+        "algorithm": "relax",
+        "median_solve_ms": 2.500400000371883,
+        "p95_solve_ms": 2.5570149996838154,
+        "target_error_h": 0.8611583509636306,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.21712386434104997,
+        "pelvis_delta_h": 0.2896371826015111,
+        "chest_delta_h": 0.4856210046665231,
+        "left_elbow_delta_h": 0.5367740097784234,
+        "left_knee_delta_h": 0.11301322392419064,
+        "finite": true
+      },
+      {
+        "case": "extreme_arm",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.7611000000906643,
+        "p95_solve_ms": 0.8438649996605817,
+        "target_error_h": 1.1155274864020184,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 10.715894085847978,
+        "pelvis_delta_h": 4.257474626873521e-09,
+        "chest_delta_h": 0.29420163199410393,
+        "left_elbow_delta_h": 0.33785040650814036,
+        "left_knee_delta_h": 0.0005002426478416513,
+        "finite": true
+      },
+      {
+        "case": "pelvis_down",
+        "algorithm": "relax",
+        "median_solve_ms": 2.582099999926868,
+        "p95_solve_ms": 2.7059599998210615,
+        "target_error_h": 0.03164006917947905,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 8.605465417814293e-05,
+        "pelvis_delta_h": 0.06839891285779473,
+        "chest_delta_h": 0.06857620932938609,
+        "left_elbow_delta_h": 0.02126450460399069,
+        "left_knee_delta_h": 0.11577967393176118,
+        "finite": true
+      },
+      {
+        "case": "pelvis_down",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.5734000001211825,
+        "p95_solve_ms": 0.6112649999522546,
+        "target_error_h": 0.06766102274888872,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.5501549443550678,
+        "pelvis_delta_h": 0.03351807539474914,
+        "chest_delta_h": 0.0,
+        "left_elbow_delta_h": 0.0,
+        "left_knee_delta_h": 0.0005002257016849179,
+        "finite": true
+      },
+      {
+        "case": "pelvis_sideways",
+        "algorithm": "relax",
+        "median_solve_ms": 2.566549999755807,
+        "p95_solve_ms": 2.7013500000066415,
+        "target_error_h": 0.01817342560360257,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.05493319593481007,
+        "pelvis_delta_h": 0.10293095243444927,
+        "chest_delta_h": 0.029367441528420055,
+        "left_elbow_delta_h": 0.009221138301245215,
+        "left_knee_delta_h": 0.04496007262595557,
+        "finite": true
+      },
+      {
+        "case": "pelvis_sideways",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.5837500002598972,
+        "p95_solve_ms": 0.7779499996559023,
+        "target_error_h": 0.11984495282721733,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.059727271928422455,
+        "pelvis_delta_h": 0.0035893633206811114,
+        "chest_delta_h": 0.0,
+        "left_elbow_delta_h": 0.0,
+        "left_knee_delta_h": 0.0005002426478416513,
+        "finite": true
+      },
+      {
+        "case": "one_foot",
+        "algorithm": "relax",
+        "median_solve_ms": 2.6858000001084292,
+        "p95_solve_ms": 3.312080000341666,
+        "target_error_h": 0.03811767995235015,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.00018711364311677992,
+        "pelvis_delta_h": 0.12585701445711303,
+        "chest_delta_h": 0.08474558498484981,
+        "left_elbow_delta_h": 0.012722577099241334,
+        "left_knee_delta_h": 0.11566925984929323,
+        "finite": true
+      },
+      {
+        "case": "one_foot",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.4075000001648732,
+        "p95_solve_ms": 0.4166849999819533,
+        "target_error_h": 0.05988185505650245,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.686386676920998,
+        "pelvis_delta_h": 0.09993104868751147,
+        "chest_delta_h": 0.0,
+        "left_elbow_delta_h": 0.0,
+        "left_knee_delta_h": 0.0005002341821545564,
+        "finite": true
+      },
+      {
+        "case": "pinned_hand",
+        "algorithm": "relax",
+        "median_solve_ms": 2.582549999715411,
+        "p95_solve_ms": 2.6625549998243514,
+        "target_error_h": 0.025193811570992597,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.0038980962674876702,
+        "pelvis_delta_h": 0.05483463735321575,
+        "chest_delta_h": 0.05500311292107477,
+        "left_elbow_delta_h": 0.008981758764875562,
+        "left_knee_delta_h": 0.10055125923260745,
+        "finite": true
+      },
+      {
+        "case": "pinned_hand",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.5462499998429848,
+        "p95_solve_ms": 0.573989999747937,
+        "target_error_h": 0.07999999287177073,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.2164234065998498e-07,
+        "pelvis_delta_h": 0.0,
+        "chest_delta_h": 2.128737313406808e-09,
+        "left_elbow_delta_h": 1.7029898507254463e-08,
+        "left_knee_delta_h": 0.0005002426810506574,
+        "finite": true
+      },
+      {
+        "case": "multiple_pins",
+        "algorithm": "relax",
+        "median_solve_ms": 2.592100000128994,
+        "p95_solve_ms": 2.649655000323037,
+        "target_error_h": 0.018522889795011457,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.003668056445884223,
+        "pelvis_delta_h": 0.04149590968533665,
+        "chest_delta_h": 0.04171362942978401,
+        "left_elbow_delta_h": 0.01209978327653817,
+        "left_knee_delta_h": 0.08861890230895923,
+        "finite": true
+      },
+      {
+        "case": "multiple_pins",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.8827999999994063,
+        "p95_solve_ms": 0.9697200003756733,
+        "target_error_h": 0.06031097581977769,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.07820465867254059,
+        "pelvis_delta_h": 0.004324974401841208,
+        "chest_delta_h": 2.128737313406808e-09,
+        "left_elbow_delta_h": 0.0,
+        "left_knee_delta_h": 0.0005002426478416513,
+        "finite": true
+      },
+      {
+        "case": "extreme_leg",
+        "algorithm": "relax",
+        "median_solve_ms": 2.5209000000359083,
+        "p95_solve_ms": 2.8135350003594795,
+        "target_error_h": 0.9113859305190948,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.22473627233339757,
+        "pelvis_delta_h": 0.0,
+        "chest_delta_h": 0.02524288841971607,
+        "left_elbow_delta_h": 0.005406583529369036,
+        "left_knee_delta_h": 0.13813186014636014,
+        "finite": true
+      },
+      {
+        "case": "extreme_leg",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.4907000002276618,
+        "p95_solve_ms": 0.5180900001960254,
+        "target_error_h": 0.9182004158391359,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 3.098560680843302,
+        "pelvis_delta_h": 0.0,
+        "chest_delta_h": 0.0,
+        "left_elbow_delta_h": 0.0,
+        "left_knee_delta_h": 0.13435963280200652,
+        "finite": true
+      },
+      {
+        "case": "elbow_bending",
+        "algorithm": "relax",
+        "median_solve_ms": 2.7182999997421575,
+        "p95_solve_ms": 2.851889999828927,
+        "target_error_h": 0.0009962093242875559,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.2080759337396505e-06,
+        "pelvis_delta_h": 5.960864923370322e-06,
+        "chest_delta_h": 4.623617262179379e-05,
+        "left_elbow_delta_h": 0.10280031411939076,
+        "left_knee_delta_h": 0.0005095986391393453,
+        "finite": true
+      },
+      {
+        "case": "elbow_bending",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.8756000001994835,
+        "p95_solve_ms": 0.9935900005530127,
+        "target_error_h": 0.0,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 3.1570877578908174,
+        "pelvis_delta_h": 4.257474626873521e-09,
+        "chest_delta_h": 0.0003296229712920539,
+        "left_elbow_delta_h": 0.10366145428071524,
+        "left_knee_delta_h": 0.0005002426478416513,
+        "finite": true
+      },
+      {
+        "case": "knee_bending",
+        "algorithm": "relax",
+        "median_solve_ms": 2.5728499999786436,
+        "p95_solve_ms": 2.783790000057706,
+        "target_error_h": 0.04213669882935126,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.00013970986468442398,
+        "pelvis_delta_h": 0.08792330712248944,
+        "chest_delta_h": 0.0881808639786814,
+        "left_elbow_delta_h": 0.02894624022741902,
+        "left_knee_delta_h": 0.13197695904197684,
+        "finite": true
+      },
+      {
+        "case": "knee_bending",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 0.5799499999739055,
+        "p95_solve_ms": 0.6060700000489305,
+        "target_error_h": 0.09769618225132283,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.5473455159599995,
+        "pelvis_delta_h": 0.03333993796526843,
+        "chest_delta_h": 0.0,
+        "left_elbow_delta_h": 0.0,
+        "left_knee_delta_h": 0.0005002341821545564,
+        "finite": true
+      },
+      {
+        "case": "target_is_pinned",
+        "algorithm": "relax",
+        "median_solve_ms": 2.588399999694957,
+        "p95_solve_ms": 2.7801350004665437,
+        "target_error_h": 0.20000001411048682,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 5.931006642091269e-08,
+        "pelvis_delta_h": 5.098018911699804e-22,
+        "chest_delta_h": 0.0,
+        "left_elbow_delta_h": 0.0,
+        "left_knee_delta_h": 0.0005002427308732209,
+        "finite": true
+      },
+      {
+        "case": "target_is_pinned",
+        "algorithm": "fabrik_style",
+        "median_solve_ms": 1.1410999995860038,
+        "p95_solve_ms": 1.1560399999325455,
+        "target_error_h": 0.19999997761785965,
+        "max_pin_error_h": 8.032987059913876e-08,
+        "max_length_relative_error": 9.258656165629949,
+        "pelvis_delta_h": 0.1723435585247958,
+        "chest_delta_h": 0.2762297764319344,
+        "left_elbow_delta_h": 0.23812500421335137,
+        "left_knee_delta_h": 0.000500238415985296,
+        "finite": true
+      }
+    ],
+    "proportions": [
+      {
+        "height": 0.875,
+        "arm_scale": 1,
+        "case": "small_hand",
+        "target_error_h": 0.00041567032197768186,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.0749626851251622e-06,
+        "pelvis_delta_h": 3.9370524684394704e-05,
+        "chest_delta_h": 0.00031030492574487715,
+        "left_elbow_delta_h": 0.057382398167085194,
+        "left_knee_delta_h": 0.0007431149389432372,
+        "finite": true
+      },
+      {
+        "height": 0.875,
+        "arm_scale": 1,
+        "case": "far_hand",
+        "target_error_h": 0.06895181651725729,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.013360996201387441,
+        "pelvis_delta_h": 0.0006905098547887425,
+        "chest_delta_h": 0.06671202394178952,
+        "left_elbow_delta_h": 0.11424097823446022,
+        "left_knee_delta_h": 0.004253628708407353,
+        "finite": true
+      },
+      {
+        "height": 3.5,
+        "arm_scale": 1,
+        "case": "small_hand",
+        "target_error_h": 0.00041567032197768186,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.0749626851251622e-06,
+        "pelvis_delta_h": 3.9370524684394704e-05,
+        "chest_delta_h": 0.00031030492574487715,
+        "left_elbow_delta_h": 0.057382398167085194,
+        "left_knee_delta_h": 0.0007431149389432372,
+        "finite": true
+      },
+      {
+        "height": 3.5,
+        "arm_scale": 1,
+        "case": "far_hand",
+        "target_error_h": 0.06895181724083911,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.013360756124747238,
+        "pelvis_delta_h": 0.0006905175693935401,
+        "chest_delta_h": 0.06671206895675005,
+        "left_elbow_delta_h": 0.11424094096696315,
+        "left_knee_delta_h": 0.004253637309318703,
+        "finite": true
+      },
+      {
+        "height": 1.75,
+        "arm_scale": 0.65,
+        "case": "small_hand",
+        "target_error_h": 0.00035084571877895657,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.1385043213281892e-06,
+        "pelvis_delta_h": 1.811643319118943e-05,
+        "chest_delta_h": 0.00014670741904075226,
+        "left_elbow_delta_h": 0.04261484130775949,
+        "left_knee_delta_h": 0.0005658398292745433,
+        "finite": true
+      },
+      {
+        "height": 1.75,
+        "arm_scale": 0.65,
+        "case": "far_hand",
+        "target_error_h": 0.07279660336773798,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.015470078274885469,
+        "pelvis_delta_h": 0.0015820665328315179,
+        "chest_delta_h": 0.06848245542478539,
+        "left_elbow_delta_h": 0.11461581405362874,
+        "left_knee_delta_h": 0.006792862764103695,
+        "finite": true
+      },
+      {
+        "height": 1.75,
+        "arm_scale": 1.4,
+        "case": "small_hand",
+        "target_error_h": 0.0004547568229848893,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.0619057349218488e-06,
+        "pelvis_delta_h": 5.48411882535616e-05,
+        "chest_delta_h": 0.00043560948198427123,
+        "left_elbow_delta_h": 0.07092577821600331,
+        "left_knee_delta_h": 0.0009020569255156935,
+        "finite": true
+      },
+      {
+        "height": 1.75,
+        "arm_scale": 1.4,
+        "case": "far_hand",
+        "target_error_h": 0.06595959315117562,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.012219107405156512,
+        "pelvis_delta_h": 0.00031597406779186225,
+        "chest_delta_h": 0.06501364615488103,
+        "left_elbow_delta_h": 0.11151727063665513,
+        "left_knee_delta_h": 0.002374759280422068,
+        "finite": true
+      }
+    ],
+    "ordering": [
+      {
+        "order": "forward",
+        "target_error_h": 0.02523986166155979,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.0038937892709558016,
+        "pelvis_delta_h": 0.034794205797155746,
+        "chest_delta_h": 0.03502048275918563,
+        "left_elbow_delta_h": 0.00973792965173556,
+        "left_knee_delta_h": 0.08036168798583206,
+        "finite": true
+      },
+      {
+        "order": "reverse",
+        "target_error_h": 0.025760979987762174,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.004349115406137142,
+        "pelvis_delta_h": 0.03440406281328121,
+        "chest_delta_h": 0.03466302868183163,
+        "left_elbow_delta_h": 0.009720113644821476,
+        "left_knee_delta_h": 0.07881273197605428,
+        "finite": true
+      },
+      {
+        "order": "symmetric",
+        "target_error_h": 0.018522889795011457,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.003668056445884223,
+        "pelvis_delta_h": 0.04149590968533665,
+        "chest_delta_h": 0.04171362942978401,
+        "left_elbow_delta_h": 0.01209978327653817,
+        "left_knee_delta_h": 0.08861890230895923,
+        "finite": true
+      },
+      {
+        "order": "fabrik_tasks_forward",
+        "target_error_h": 0.06031097581977769,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.07820465867254059,
+        "pelvis_delta_h": 0.004324974401841208,
+        "chest_delta_h": 2.128737313406808e-09,
+        "left_elbow_delta_h": 0.0,
+        "left_knee_delta_h": 0.0005002426478416513,
+        "finite": true
+      },
+      {
+        "order": "fabrik_tasks_reverse",
+        "target_error_h": 0.0,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.0,
+        "pelvis_delta_h": 0.06000001112619933,
+        "chest_delta_h": 2.128737313406808e-09,
+        "left_elbow_delta_h": 0.0,
+        "left_knee_delta_h": 0.0005002426478416513,
+        "finite": true
+      }
+    ],
+    "iterations": [
+      {
+        "iterations": 8,
+        "solve_ms": 1.159899999947811,
+        "target_error_h": 0.12303327427179116,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.020904911286959663,
+        "pelvis_delta_h": 0.00028989666648988405,
+        "chest_delta_h": 0.019262243798747965,
+        "left_elbow_delta_h": 0.06299154963050825,
+        "left_knee_delta_h": 0.0025907550973606475,
+        "finite": true
+      },
+      {
+        "iterations": 16,
+        "solve_ms": 1.404999999977008,
+        "target_error_h": 0.10747463561972034,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.021298359136532746,
+        "pelvis_delta_h": 0.00025267588253267335,
+        "chest_delta_h": 0.033260455886809405,
+        "left_elbow_delta_h": 0.07837124962866802,
+        "left_knee_delta_h": 0.0020665593895542278,
+        "finite": true
+      },
+      {
+        "iterations": 32,
+        "solve_ms": 1.9474000000627711,
+        "target_error_h": 0.08530402234197358,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.01750350813693867,
+        "pelvis_delta_h": 0.00025763670910931006,
+        "chest_delta_h": 0.05281847114553724,
+        "left_elbow_delta_h": 0.09809534350054817,
+        "left_knee_delta_h": 0.0013740620592839867,
+        "finite": true
+      },
+      {
+        "iterations": 48,
+        "solve_ms": 2.4750000002313755,
+        "target_error_h": 0.06895181724083911,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.013360756124747238,
+        "pelvis_delta_h": 0.0006905175693935401,
+        "chest_delta_h": 0.06671206895675005,
+        "left_elbow_delta_h": 0.11424094096696315,
+        "left_knee_delta_h": 0.004253637309318703,
+        "finite": true
+      },
+      {
+        "iterations": 96,
+        "solve_ms": 4.095799999959127,
+        "target_error_h": 0.03892238190349156,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.007327783661320421,
+        "pelvis_delta_h": 0.0028411819590447402,
+        "chest_delta_h": 0.09179325879287654,
+        "left_elbow_delta_h": 0.14027409403878005,
+        "left_knee_delta_h": 0.006368761205357571,
+        "finite": true
+      }
+    ],
+    "target_weights": [
+      {
+        "case": "far_hand",
+        "target_mobility": 0.02,
+        "target_error_h": 0.008452549698426721,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.2001393801100138,
+        "pelvis_delta_h": 0.004405920382380276,
+        "chest_delta_h": 0.10243183865438665,
+        "left_elbow_delta_h": 0.16197091068584818,
+        "left_knee_delta_h": 0.0032523438725544163,
+        "finite": true
+      },
+      {
+        "case": "extreme_arm",
+        "target_mobility": 0.02,
+        "target_error_h": 0.16162798247181503,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 1.9283063793105861,
+        "pelvis_delta_h": 0.5038286306680639,
+        "chest_delta_h": 0.8418783199004662,
+        "left_elbow_delta_h": 1.1220930242416403,
+        "left_knee_delta_h": 0.22301590602005295,
+        "finite": true
+      },
+      {
+        "case": "far_hand",
+        "target_mobility": 0.2,
+        "target_error_h": 0.039203929623773434,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.060480283373257296,
+        "pelvis_delta_h": 0.002525042843580986,
+        "chest_delta_h": 0.08915665124199999,
+        "left_elbow_delta_h": 0.13792361154198898,
+        "left_knee_delta_h": 0.0046942194665766405,
+        "finite": true
+      },
+      {
+        "case": "extreme_arm",
+        "target_mobility": 0.2,
+        "target_error_h": 0.6221644206213243,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.49759325817521277,
+        "pelvis_delta_h": 0.415684886969874,
+        "chest_delta_h": 0.6625398887808691,
+        "left_elbow_delta_h": 0.7638541722078198,
+        "left_knee_delta_h": 0.1807811677346584,
+        "finite": true
+      },
+      {
+        "case": "far_hand",
+        "target_mobility": 1.0,
+        "target_error_h": 0.06895181724083911,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.013360756124747238,
+        "pelvis_delta_h": 0.0006905175693935401,
+        "chest_delta_h": 0.06671206895675005,
+        "left_elbow_delta_h": 0.11424094096696315,
+        "left_knee_delta_h": 0.004253637309318703,
+        "finite": true
+      },
+      {
+        "case": "extreme_arm",
+        "target_mobility": 1.0,
+        "target_error_h": 0.8611583509636306,
+        "max_pin_error_h": 0.0,
+        "max_length_relative_error": 0.21712386434104997,
+        "pelvis_delta_h": 0.2896371826015111,
+        "chest_delta_h": 0.4856210046665231,
+        "left_elbow_delta_h": 0.5367740097784234,
+        "left_knee_delta_h": 0.11301322392419064,
+        "finite": true
+      }
+    ]
+  },
+  "adapter": {
+    "passed": true,
+    "blender": "5.2.0 LTS",
+    "rig_bones": 53,
+    "solver_joints": 29,
+    "matrix_roundtrip_max_error": 1.0132789611816406e-06,
+    "preserved_roll_and_transport_twist_error_rad": 0.0,
+    "all_hybrid_cases_feasible": true,
+    "hybrid_pelvis_pin_mode": "full_frame",
+    "uniform_world_roundtrip_error_m": 1.7881393432617188e-07,
+    "nonuniform_rejected": true,
+    "disconnected_rig_proposals": [
+      {
+        "case": "small_hand",
+        "attachment_reconstruction_residual_m": 0.00014625567367632244,
+        "after_fk_pin_error_m": 1.7866835591375772e-07,
+        "naive_non_root_translation_m": 0.0001460975137159607,
+        "rig_bone_length_error_m": 6.991007292511675e-08
+      },
+      {
+        "case": "far_hand",
+        "attachment_reconstruction_residual_m": 0.015096545348854478,
+        "after_fk_pin_error_m": 0.00036738825252923885,
+        "naive_non_root_translation_m": 0.0150694918248492,
+        "rig_bone_length_error_m": 6.38354974435984e-08
+      },
+      {
+        "case": "extreme_arm",
+        "attachment_reconstruction_residual_m": 0.14573042864910601,
+        "after_fk_pin_error_m": 0.14573040973593943,
+        "naive_non_root_translation_m": 0.1324691023274659,
+        "rig_bone_length_error_m": 9.231403519383008e-08
+      },
+      {
+        "case": "pelvis_down",
+        "attachment_reconstruction_residual_m": 0.00012323899581177106,
+        "after_fk_pin_error_m": 0.000123195040160707,
+        "naive_non_root_translation_m": 0.00012323365263653394,
+        "rig_bone_length_error_m": 1.1697172710989356e-07
+      },
+      {
+        "case": "pelvis_sideways",
+        "attachment_reconstruction_residual_m": 0.07357982417751792,
+        "after_fk_pin_error_m": 0.07357982417751792,
+        "naive_non_root_translation_m": 0.07063985079125054,
+        "rig_bone_length_error_m": 9.907143150300612e-08
+      },
+      {
+        "case": "one_foot",
+        "attachment_reconstruction_residual_m": 0.0699497900456152,
+        "after_fk_pin_error_m": 0.0699496948701223,
+        "naive_non_root_translation_m": 0.06994977354593862,
+        "rig_bone_length_error_m": 5.23935757557048e-08
+      },
+      {
+        "case": "pinned_hand",
+        "attachment_reconstruction_residual_m": 0.001414457539447146,
+        "after_fk_pin_error_m": 0.001414457539447146,
+        "naive_non_root_translation_m": 0.0010231435745984886,
+        "rig_bone_length_error_m": 9.47515067517557e-08
+      },
+      {
+        "case": "multiple_pins",
+        "attachment_reconstruction_residual_m": 0.0013539139943049509,
+        "after_fk_pin_error_m": 0.0013539139943049509,
+        "naive_non_root_translation_m": 0.000962764072706041,
+        "rig_bone_length_error_m": 8.651137249626739e-08
+      },
+      {
+        "case": "extreme_leg",
+        "attachment_reconstruction_residual_m": 0.07485380545737025,
+        "after_fk_pin_error_m": 0.07485380181228614,
+        "naive_non_root_translation_m": 0.05792477153518913,
+        "rig_bone_length_error_m": 1.239122612295418e-07
+      },
+      {
+        "case": "elbow_bending",
+        "attachment_reconstruction_residual_m": 2.1683012420343436e-05,
+        "after_fk_pin_error_m": 2.223521675789939e-07,
+        "naive_non_root_translation_m": 2.139520846031124e-05,
+        "rig_bone_length_error_m": 5.267151004240134e-08
+      },
+      {
+        "case": "knee_bending",
+        "attachment_reconstruction_residual_m": 0.0001769267487135546,
+        "after_fk_pin_error_m": 0.00017690194298312787,
+        "naive_non_root_translation_m": 0.00017692499028078296,
+        "rig_bone_length_error_m": 1.2381480479772833e-07
+      },
+      {
+        "case": "target_is_pinned",
+        "attachment_reconstruction_residual_m": 3.803585609546443e-07,
+        "after_fk_pin_error_m": 3.4365003180912313e-07,
+        "naive_non_root_translation_m": 2.6656007498500226e-07,
+        "rig_bone_length_error_m": 7.090822734534541e-08
+      }
+    ],
+    "hybrid_analytic_pin_projection": [
+      {
+        "case": "small_hand",
+        "pin_error_m": 8.093937982852606e-08,
+        "bone_length_error_m": 6.991007292511675e-08,
+        "active_target_error_m": 0.0007594704318314887,
+        "pelvis_delta_m": 6.889841829839945e-05,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "far_hand",
+        "pin_error_m": 1.008584079942173e-07,
+        "bone_length_error_m": 6.38354974435984e-08,
+        "active_target_error_m": 0.12110256948386786,
+        "pelvis_delta_m": 0.0012084059051987199,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "extreme_arm",
+        "pin_error_m": 5.009649835233164e-07,
+        "bone_length_error_m": 1.788862132312552e-07,
+        "active_target_error_m": 1.6292273965858863,
+        "pelvis_delta_m": 0.48044798175433173,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "pelvis_down",
+        "pin_error_m": 1.7772406998092776e-07,
+        "bone_length_error_m": 1.1697172710989356e-07,
+        "active_target_error_m": 0.05537012107640871,
+        "pelvis_delta_m": 0.11969809750683993,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "pelvis_sideways",
+        "pin_error_m": 1.8837826516432185e-07,
+        "bone_length_error_m": 1.1297116511710392e-07,
+        "active_target_error_m": 0.056334312037183455,
+        "pelvis_delta_m": 0.17711158659032603,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "one_foot",
+        "pin_error_m": 6.537857940340133e-08,
+        "bone_length_error_m": 7.488141001710247e-08,
+        "active_target_error_m": 0.06670593549566213,
+        "pelvis_delta_m": 0.22024979219633195,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "pinned_hand",
+        "pin_error_m": 4.3147722648882154e-07,
+        "bone_length_error_m": 9.47515067517557e-08,
+        "active_target_error_m": 0.04385213178743556,
+        "pelvis_delta_m": 0.09621601860987163,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "multiple_pins",
+        "pin_error_m": 3.6247514467775343e-07,
+        "bone_length_error_m": 8.651137249626739e-08,
+        "active_target_error_m": 0.03215781419415473,
+        "pelvis_delta_m": 0.07289627743557806,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "extreme_leg",
+        "pin_error_m": 1.1920928955078125e-07,
+        "bone_length_error_m": 1.1192878768273573e-07,
+        "active_target_error_m": 1.944955430408201,
+        "pelvis_delta_m": 1.1920928955078125e-07,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "elbow_bending",
+        "pin_error_m": 5.5762817635844286e-08,
+        "bone_length_error_m": 5.6361028150098136e-08,
+        "active_target_error_m": 0.0017384775520286355,
+        "pelvis_delta_m": 1.0431513636725716e-05,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "knee_bending",
+        "pin_error_m": 1.50678667546486e-07,
+        "bone_length_error_m": 1.3077092891888853e-07,
+        "active_target_error_m": 0.07373916297139792,
+        "pelvis_delta_m": 0.15386584194566594,
+        "safety_gate_accept": true
+      },
+      {
+        "case": "target_is_pinned",
+        "pin_error_m": 4.327204335004105e-07,
+        "bone_length_error_m": 8.893066688608897e-08,
+        "active_target_error_m": 0.34999966280793193,
+        "pelvis_delta_m": 1.215570460485579e-06,
+        "safety_gate_accept": true
+      }
+    ],
+    "private_avatar_evaluation_benchmark": {
+      "samples": 100,
+      "base_vertices": 6598,
+      "evaluated_vertices": 6598,
+      "total": {
+        "median_ms": 3.2113000002027547,
+        "p95_ms": 3.4515100000135135
+      },
+      "scope": "graph prototype plus direct body-bone writes and actual skinned mesh evaluation; no anatomical-quality or viewport-draw claim"
+    },
+    "benchmark": {
+      "samples": 100,
+      "mesh_vertices": 0,
+      "solver": {
+        "median_ms": 2.741049999713141,
+        "p95_ms": 3.024320000076841
+      },
+      "adapter_write": {
+        "median_ms": 2.126550000411953,
+        "p95_ms": 2.3122450002119876
+      },
+      "depsgraph_update": {
+        "median_ms": 0.2543999994486512,
+        "p95_ms": 0.5321149995779705
+      },
+      "total": {
+        "median_ms": 5.158649999884801,
+        "p95_ms": 5.7377899994662585
+      },
+      "limit": "CPU, bare armature; not real-avatar viewport/frame-rate acceptance"
+    }
+  },
+  "experimental_failures_retained": [
+    "Initial harness used legacy Bone.select; Blender 5.2 requires PoseBone.select.",
+    "Constraint collections have no clear(); remove individual constraints.",
+    "Simulated mouse motion requires event value NOTHING.",
+    "Object scale read before depsgraph update was stale; test now updates once and rejects nonuniform scale.",
+    "Initial hybrid ignored a pinned pelvis during reach projection, moving it by 0.0708904 m in the extreme-leg case. Final prototype explicitly uses a full-frame pelvis pin. Position-only pelvis pin remains future work.",
+    "Bare graph can stretch short rigid attachment bars and FK reconstruction loses pins. Recorded raw residuals are retained.",
+    "Near-hard active target reduces target error while increasing geometry constraint error; weights alone are not a feasibility guarantee."
+  ],
+  "not_measured": [
+    "Native OS mouse/gizmo integration on a real avatar at 60 Hz",
+    "Full anatomical angular limits",
+    "Production Auto Pose viewport frame rate",
+    "General multi-rig constraints/control adapters",
+    "Auto-key Action/NLA ownership acceptance"
+  ]
+}
