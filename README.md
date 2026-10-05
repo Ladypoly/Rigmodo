@@ -4,12 +4,13 @@ Independent Blender 5.2 extension for local humanoid joint placement, AI skinnin
 
 ## Start
 
-Enable Rigmodo in Preferences and open its 3D View sidebar tab. Select one character's meshes in Object Mode, upright Z-up and facing Blender -Y, preferably in an A/T pose with separated fingers. The panel has four steps: **Rig → Skin → Motion → Export**.
+Enable Rigmodo in Preferences and open its 3D View sidebar tab. Select one character's meshes in Object Mode, upright Z-up and facing Blender -Y, preferably in an A/T pose with separated fingers. The panel has three steps: **Rig → Skin → Motion**.
 
 1. **Rig:** choose **Automatic** and press **Generate Rig**. For guided placement, choose **Landmarks → Set Landmarks**. The front-view editor asks for pelvis, head base, elbow, wrist and knee. Either side works with symmetry enabled. Drag markers to adjust, Backspace to undo, Enter to accept or Esc to cancel; then press **Generate Rig**. Disable symmetry to place both sides separately.
 2. **Skin:** press **Skin Avatar** with the rig and meshes selected. SkinTokens, automatic regional correction and deformation checks run on temporary copies. On success, weights return to the same rig and mesh objects with their existing names; temporary objects, mesh/armature data and empty workflow collections are removed. Accepted joints and the rig's Action stay intact. **Advanced skinning** reveals Surface/Volume alternatives, region rules, refinement and **Open Weight Editor**. The focused paint panel offers bone choice and brush controls; **Test Deformation** enters Pose Mode.
 3. **Motion:** selecting just the armature is enough. Its visible bound meshes are included automatically; explicitly selected meshes still define a narrower scope. Enter a description and press **Generate Motion**. To guide Kimodo, pose the armature and insert ordinary Blender pose keyframes, then enable **Use Key Poses**. Keys in the active Action guide the generated clip, beginning at the Timeline's **Start** frame. Edit, move or delete them in the Timeline or Dope Sheet. **Preview Motion** sets the playback range. Hand poses, contacts and loop finishing are under **Motion options**.
-4. **Export:** set name, absolute destination folder and Unity profile, then press **Export to Unity**. Animation is enabled after motion generation. The existing Unity companion configures the bundle.
+
+Optional **Unity export** lives under **Extension Settings → Recovery**. Select the rig and meshes, set name, absolute destination folder and Unity profile, then press **Export to Unity**. Animation is enabled after motion generation. The existing Unity companion configures the bundle.
 
 Front landmarks constrain X/Z joint positions; AI supplies depth and the remaining joints, including fingers. Generated guides are locked. **Rig options → Edit Joints** provides precise full-3D correction; use **Unlock** before replacing a locked guide. The landmark editor is a focused custom viewport mode; weight editing uses Blender's native painting tools with a dedicated panel. This release does not include a complete RetopoFlow-style workspace.
 

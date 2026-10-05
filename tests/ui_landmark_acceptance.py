@@ -25,15 +25,21 @@ class Layout:
         category,name=key.split('.');assert hasattr(getattr(bpy.ops,category),name)
         self.records.append(('operator',key));return SimpleNamespace()
     def panel(self,key,**kwargs):return self,self if self.expanded else None
+assert [item.identifier for item in s.bl_rna.properties['ui_step'].enum_items]==['RIG','SKIN','MOTION']
+s['ui_step']=3;addon.migrate_workflow_tab();assert s.ui_step=='MOTION'
 for expanded in (False,True):
-    for step in ('RIG','SKIN','MOTION','EXPORT'):
+    for step in ('RIG','SKIN','MOTION'):
         s.motion_use_keyframes=True
         s.image_pose_status='Image pose applied. Review, then Capture Pose or Insert Pose Key.'
         s.ui_step=step;s.ui_skin_advanced=expanded;records=[];ui.draw(Layout(records,expanded),bpy.context)
         assert not set(configuration.KEYS)&{key for kind,key in records if kind=='prop'},records
         assert not {('operator','local_character.capture_key_pose'),('operator','local_character.key_pose')}&set(records)
         assert not any('Capture Pose' in text for kind,text in records if kind=='label')
-for page in ('SETUP','DEFAULTS','RECOVERY'):prefs.page=page;ui.draw_preferences(Layout([],True),bpy.context,prefs)
+        assert ('operator','local_character.export_unity') not in records
+        assert not {'character_name','export_directory','profile','include_action','loop_action'}&{key for kind,key in records if kind=='prop'}
+for page in ('SETUP','DEFAULTS','RECOVERY'):
+    prefs.page=page;records=[];ui.draw_preferences(Layout(records,True),bpy.context,prefs)
+    assert (('operator','local_character.export_unity') in records)==(page=='RECOVERY')
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete()
 bpy.ops.import_scene.gltf(filepath=r'R:\BLENDER\BANTER_Avatars\Shane.glb')
 rig=next(o for o in bpy.context.scene.objects if o.type=='ARMATURE')
@@ -89,5 +95,6 @@ result=dict(passed=True,global_preferences_used=True,legacy_settings_migrated=Tr
     eight_front_anchors_exact=True,model_depth_preserved=True,landmarks_locked=True,source_preserved=True,
     sources_hidden_after_individual_step=True,original_plus_copy_rejected=True,stale_landmarks_rejected=True,cached_actual_mia_used=True,
     native_weight_editor_draws=True,bone_choice_updates_group=True,pose_and_joint_editors_work=True,character_selection_helper_works=True,
-    keyposes_use_one_toggle=True,no_capture_recall_clear_buttons=True)
+    keyposes_use_one_toggle=True,no_capture_recall_clear_buttons=True,three_workflow_tabs=True,
+    export_only_in_preferences=True,legacy_export_tab_migrated=True)
 (output/'results.json').write_text(json.dumps(result,indent=2));print('UI_LANDMARK_ACCEPTANCE',json.dumps(result),flush=True)

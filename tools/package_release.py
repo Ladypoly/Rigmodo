@@ -20,7 +20,7 @@ with zipfile.ZipFile(extension) as archive:
     if version=='0.9.0':assert 'character_result.py' in names
     if version=='0.10.0':assert {'configuration.py','landmarks.py','hands.py','hand_geometry.py','ui.py','motion_keyframes.py','character_result.py','auto_pose.py','auto_pose_solver.py'}<=names
     if version=='0.11.0':assert {'image_pose.py','sam_pose_worker.py','sam_pose_install.py','sam_pose_protocol.py','auto_pose.py','auto_pose_solver.py','motion_keyframes.py','character_result.py'}<=names
-    if version=='0.12.0':assert {'image_pose.py','sam_pose_worker.py','sam_pose_install.py','sam_pose_protocol.py','auto_pose.py','auto_pose_solver.py','motion_keyframes.py','character_result.py'}<=names
+    if version in {'0.12.0','0.12.1'}:assert {'image_pose.py','sam_pose_worker.py','sam_pose_install.py','sam_pose_protocol.py','auto_pose.py','auto_pose_solver.py','motion_keyframes.py','character_result.py','ui.py'}<=names
     assert not any(n.startswith(('tests/','tools/','native/','docs/','artifacts/','unity/','.git/')) for n in names)
     assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl'} for n in names)
     for name in names:
@@ -80,6 +80,10 @@ if version=='0.12.0':
     sources.update(ui_and_landmarks='rigmodo-timeline-keyposes-ui-final/results.json',
         image_pose=str(root/'docs/image-pose-acceptance-2026-10-05.json'),
         timeline_keyposes=str(root/'docs/timeline-keyposes-acceptance-2026-10-05.json'))
+if version=='0.12.1':
+    sources.update(ui_and_landmarks='rigmodo-three-tabs-ui/results.json',
+        previous_release=str(root/'docs/release-verification-0.12.0-2026-10-05.json'),
+        export_tab_live=str(root/'docs/export-tab-removal-live-2026-10-05.json'))
 for name,path in sources.items():
     file=temporary/path
     if file.is_file():evidence[name]=json.loads(file.read_text())
@@ -135,6 +139,15 @@ if version=='0.12.0':
     assert checks['image_gui']['sam_neural_inference_tested'] and checks['ui']['no_capture_recall_clear_buttons']
     evidence['live_reload']=checks['live']
     evidence['unchanged_workflow_baseline_version']='0.11.0'
+
+if version=='0.12.1':
+    evidence['live_reload']=evidence['export_tab_live']
+    checks=evidence['ui_and_landmarks']
+    assert checks['passed'] and checks['three_workflow_tabs'] and checks['export_only_in_preferences'] and checks['legacy_export_tab_migrated']
+    assert evidence['live_reload']['passed'] and evidence['live_reload']['scene_preserved'] and evidence['live_reload']['version']==version
+    assert evidence['live_reload']['workflow_tabs']==['RIG','SKIN','MOTION']
+    assert evidence['previous_release']['version']=='0.12.0' and evidence['previous_release']['extension_zip_validated']
+    evidence['unchanged_workflow_baseline_version']='0.12.0'
 evidence['live_companion']=json.loads((root/'docs/live-companion-2026-10-03.json').read_text())
 assert evidence['live_companion']['compilation_passed'] and evidence['live_companion']['open_scene_state_preserved']
 baseline=json.loads((root/'docs/live-project-baseline.json').read_text())
@@ -146,8 +159,8 @@ for file in (extension,companion,artifacts/'local_character-windows-providers.zi
     checksums[file.name]=dict(bytes=file.stat().st_size,sha256=digest)
 record=dict(version=version,extension_zip_validated=True,source_modules_compile=True,private_assets_excluded=True,
     artifacts=checksums,evidence=evidence,hardware_limit='RTX 4090 24 GB tested; sampled global device usage is not a physical 16 GB proof')
-release_date='2026-10-05' if version in {'0.9.0','0.10.0','0.11.0','0.12.0'} else '2026-10-04' if version in {'0.6.0','0.7.0','0.8.0'} else '2026-10-03'
-release_name=f'release-verification-{version}-{release_date}' if version in {'0.7.0','0.8.0','0.9.0','0.10.0','0.11.0','0.12.0'} else f'release-verification-{release_date}'
+release_date='2026-10-05' if version in {'0.9.0','0.10.0','0.11.0','0.12.0','0.12.1'} else '2026-10-04' if version in {'0.6.0','0.7.0','0.8.0'} else '2026-10-03'
+release_name=f'release-verification-{version}-{release_date}' if version in {'0.7.0','0.8.0','0.9.0','0.10.0','0.11.0','0.12.0','0.12.1'} else f'release-verification-{release_date}'
 (root/f'docs/{release_name}.json').write_text(json.dumps(record,indent=2)+'\n')
 (artifacts/f'local_character-{version}-checksums.json').write_text(json.dumps(checksums,indent=2)+'\n')
 print('RELEASE_PACKAGED',json.dumps(checksums),flush=True)

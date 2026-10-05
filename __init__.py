@@ -2,6 +2,7 @@
 """Rigmodo: independent local humanoid workflow."""
 import json
 import bpy
+from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
@@ -98,7 +99,7 @@ class LC_Settings(PropertyGroup):
     setup_status: StringProperty(default='')
     setup_job: StringProperty(default='')
     show_controls: BoolProperty(name='Joint, skinning and export controls',default=False)
-    ui_step: EnumProperty(name='Step',items=[('RIG','Rig','Create or adjust joints'),('SKIN','Skin','Bind and refine weights'),('MOTION','Motion','Generate and preview animation'),('EXPORT','Export','Export to Unity')],default='RIG')
+    ui_step: EnumProperty(name='Step',items=[('RIG','Rig','Create or adjust joints'),('SKIN','Skin','Bind and refine weights'),('MOTION','Motion','Generate and preview animation')],default='RIG')
     ui_rig_mode: EnumProperty(name='Rigging',items=[('AUTO','Automatic','Infer joints from geometry'),('ASSISTED','Landmarks','Guide joints in a front-view editor')],default='AUTO')
     ui_skin_advanced: BoolProperty(name='Advanced skinning',default=False)
     ui_skin_method: EnumProperty(name='Binding',items=[('AI','AI','Use learned skinning'),('GEODESIC','Surface','Bind along surface edges'),('VOXEL','Volume','Closed-volume heat with surface fallback')],default='AI')
@@ -714,13 +715,24 @@ CLASSES = (LC_Settings, LC_Preferences, *auto_pose.CLASSES, *image_pose.CLASSES,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
+@persistent
+def migrate_workflow_tab(_=None):
+    for scene in bpy.data.scenes:
+        if scene.library:continue
+        settings=scene.lc_settings
+        if settings.get('ui_step') in (3,'EXPORT'):settings.ui_step='MOTION'
+
 def register():
     for cls in CLASSES: bpy.utils.register_class(cls)
     bpy.types.Scene.lc_settings = PointerProperty(type=LC_Settings)
+    bpy.app.timers.register(migrate_workflow_tab,first_interval=0)
+    bpy.app.handlers.load_post.append(migrate_workflow_tab)
     auto_pose.register()
     image_pose.register()
 
 def unregister():
+    if bpy.app.timers.is_registered(migrate_workflow_tab):bpy.app.timers.unregister(migrate_workflow_tab)
+    if migrate_workflow_tab in bpy.app.handlers.load_post:bpy.app.handlers.load_post.remove(migrate_workflow_tab)
     image_pose.unregister()
     auto_pose.cleanup()
     landmarks.cleanup()

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Four quiet workflow steps; installation and engine tuning live in Preferences."""
+"""Three quiet workflow steps; setup, tuning and export live in Preferences."""
 import json,textwrap
 import bpy
 from bpy.types import Operator
@@ -248,23 +248,31 @@ def draw(layout,context):
                 from .skeleton import FINGERS
                 for finger in FINGERS:body.prop(s,'hand_'+s.hand_side.lower()+'_'+finger.lower())
             body.prop(s,'motion_loop_blend');body.operator('local_character.finish_loop',text='Blend Loop Endpoint')
-    else:
-        layout.prop(s,'character_name',text='Name');layout.prop(s,'export_directory',text='Folder');layout.prop(s,'profile',text='Unity rig')
-        layout.prop(s,'include_action',text='Include animation')
-        if s.include_action:layout.prop(s,'loop_action',text='Loop in Unity')
-        row=layout.row();row.scale_y=1.45;row.enabled=bool(rig and meshes) and context.mode=='OBJECT' and not skinning._jobs
-        row.operator('local_character.export_unity',text='Export to Unity',icon='EXPORT')
-        body=details(layout,'lc_export_checks','Export checks')
-        if body:
-            body.operator('local_character.preflight',text='Check Character')
-            if s.last_report:
-                try:
-                    report=json.loads(s.last_report)
-                    for finding in (report.get('errors',[])+report.get('warnings',[]))[:3]:message(body,finding,icon='INFO')
-                    if report.get('ready'):body.label(text='Ready for export',icon='CHECKMARK')
-                except ValueError:pass
-            if s.last_export:message(body,'Last export: '+s.last_export)
     if s.workflow_status and skinning._jobs:message(layout,s.workflow_status)
+
+def draw_export_tools(layout,context):
+    from . import preflight
+    s=context.scene.lc_settings
+    try:rig,meshes=preflight.selection(context)
+    except ValueError:rig,meshes=None,[]
+    layout.prop(s,'character_name',text='Name');layout.prop(s,'export_directory',text='Folder');layout.prop(s,'profile',text='Unity rig')
+    layout.prop(s,'include_action',text='Include animation')
+    if s.include_action:layout.prop(s,'loop_action',text='Loop in Unity')
+    if not meshes:
+        message(layout,'Select the rig and character meshes to export.')
+        if rig:layout.operator('local_character.select_character')
+    row=layout.row();row.enabled=bool(rig and meshes) and context.mode=='OBJECT' and not skinning._jobs
+    row.operator('local_character.export_unity',text='Export to Unity',icon='EXPORT')
+    body=details(layout,'lc_export_checks','Export checks')
+    if body:
+        body.operator('local_character.preflight',text='Check Character')
+        if s.last_report:
+            try:
+                report=json.loads(s.last_report)
+                for finding in (report.get('errors',[])+report.get('warnings',[]))[:3]:message(body,finding,icon='INFO')
+                if report.get('ready'):body.label(text='Ready for export',icon='CHECKMARK')
+            except ValueError:pass
+        if s.last_export:message(body,'Last export: '+s.last_export)
 
 def draw_preferences(layout,context,prefs):
     resolved=configuration.settings(context);s=context.scene.lc_settings
@@ -298,5 +306,6 @@ def draw_preferences(layout,context,prefs):
         box=layout.box();box.label(text='Complete workflow')
         for key in ('workflow_reuse_joints','workflow_rebind','workflow_rigid','workflow_twists','workflow_motion','workflow_export','workflow_loop'):box.prop(s,key)
         box.operator('local_character.build_character',text='Run Complete Workflow')
+        box=layout.box();box.label(text='Unity export');draw_export_tools(box,context)
 
 CLASSES=(LC_OT_preferences,LC_OT_select_character,LC_OT_clean_history,LC_OT_object_mode,LC_OT_weight_editor,LC_OT_joint_editor,LC_OT_pose_editor)

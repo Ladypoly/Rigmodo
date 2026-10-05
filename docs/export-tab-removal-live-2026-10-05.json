@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "version": "0.12.1",
+  "scene_preserved": true,
+  "objects": 7,
+  "active": "Rigmodo_Rig_Motion_Motion",
+  "frame": 92,
+  "action": "Generated Motion.002",
+  "workflow_tabs": [
+    "RIG",
+    "SKIN",
+    "MOTION"
+  ],
+  "export_in_preferences": true
+}
