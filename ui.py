@@ -154,8 +154,7 @@ def draw(layout,context):
         if s.ui_step=='MOTION':
             from . import image_pose
             image_pose.draw(layout,context)
-            layout.operator('local_character.capture_key_pose',text='Capture Pose',icon='KEY_HLT')
-            message(layout,'Capture this pose for Kimodo, then choose another timeline frame to pose again.')
+            layout.prop(s,'motion_use_keyframes')
         layout.operator('local_character.object_mode',text='Finish Pose Editing',icon='CHECKMARK')
         return
     if context.mode!='OBJECT':layout.operator('local_character.object_mode',text='Back to Object Mode')
@@ -235,24 +234,8 @@ def draw(layout,context):
         layout.prop(s,'motion_in_place')
         layout.prop(s,'motion_use_keyframes')
         if s.motion_use_keyframes:
-            from . import motion_keyframes
-            box=layout.box();box.prop(s,'motion_start_frame')
             fps=context.scene.render.fps/context.scene.render.fps_base
-            box.label(text=f'Clip ends at frame {s.motion_start_frame+(s.motion_frames-1)*fps/30:g}')
-            message(box,'Pose your character at a timeline frame, then capture it. Repeat for the poses you want.')
-            row=box.row(align=True);row.enabled=bool(rig) and not skinning._jobs
-            row.operator('local_character.test_pose',text='Edit Pose',icon='POSE_HLT')
-            row.operator('local_character.capture_key_pose',text='Capture Pose',icon='KEY_HLT')
-            if rig:
-                try:
-                    for pose in motion_keyframes.data(rig)['poses']:
-                        row=box.row(align=True);row.enabled=not skinning._jobs
-                        row.operator('local_character.key_pose',text=f"Frame {pose['frame']:g}",icon='POSE_HLT').frame=pose['frame']
-                        op=row.operator('local_character.key_pose',text='',icon='X');op.frame=pose['frame'];op.remove=True
-                    if motion_keyframes.data(rig)['poses']:
-                        row=box.row();row.enabled=not skinning._jobs
-                        row.operator('local_character.key_pose',text='Clear Poses').clear=True
-                except (ValueError,KeyError):message(box,'Key poses need to be recaptured.',icon='ERROR')
+            message(layout,f'Pose keys from frames {context.scene.frame_start:g}–{context.scene.frame_start+(s.motion_frames-1)*fps/30:g} guide the motion.')
         row=layout.row();row.scale_y=1.45;row.enabled=bool(rig) and context.mode=='OBJECT' and not skinning._jobs
         row.operator('local_character.generate_motion',text='Generate Motion',icon='ACTION')
         if rig and rig.animation_data and rig.animation_data.action:layout.operator('local_character.preview_motion',text='Preview Motion',icon='PREVIEW_RANGE')

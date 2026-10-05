@@ -93,7 +93,12 @@ def run():
         elif phase==3:
             assert diff(snapshot(),state['applied'])<1e-6
             rows.append('whole_pose_redo')
-            addon.motion_keyframes.capture(bpy.context,current());rows.append('kimodo_capture')
+            bpy.ops.object.mode_set(mode='POSE')
+            assert bpy.ops.local_character.auto_pose_key()=={'FINISHED'}
+            keys=addon.motion_keyframes.prepare(bpy.context,current(),90,bpy.context.scene.frame_start)
+            assert len(keys['poses'])==1
+            assert diff(snapshot(),state['applied'])<1e-6
+            bpy.ops.object.mode_set(mode='OBJECT');rows.append('kimodo_timeline_keyframes')
             if neural:finish();return None
             bpy.context.scene.lc_settings.ui_step='MOTION'
             native_drop();bpy.context.scene.frame_set(2);state['stale']=snapshot();state['phase']=4

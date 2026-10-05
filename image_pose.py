@@ -287,7 +287,7 @@ class LC_OT_apply_image_pose(Operator):
             # automatic Undo push. Capture both boundaries explicitly for that path.
             if self.async_undo and not bpy.app.background:bpy.ops.ed.undo_push(message='Before Image Pose')
             count=apply(context,rig,result,request['hands']);skinning._state(folder,'applied')
-            context.scene.lc_settings.image_pose_status=f'Image pose applied · {count} joints. Review, then Capture Pose or Insert Pose Key.'
+            context.scene.lc_settings.image_pose_status=f'Image pose applied · {count} joints. Review, then insert pose keyframes.'
             if self.async_undo and not bpy.app.background:bpy.ops.ed.undo_push(message='Apply Image Pose')
         except (ValueError,OSError,KeyError,RuntimeError) as error:
             if snapshot is not None and rig:
@@ -336,6 +336,6 @@ def draw(layout,context):
         box.label(text='Or drop an image into this sidebar.')
     if context.scene.lc_settings.image_pose_status:
         from .ui import message
-        message(box,context.scene.lc_settings.image_pose_status)
+        message(box,context.scene.lc_settings.image_pose_status.replace('Capture Pose or Insert Pose Key','insert pose keyframes'))
 
 CLASSES=(LC_OT_image_pose,LC_OT_apply_image_pose,LC_OT_cancel_image_pose,LC_OT_setup_image_pose,LC_FH_image_pose)

@@ -213,9 +213,13 @@ def validated(context, folder):
     validate_rig(context,rig)
     if keys:
         from . import motion_keyframes
-        if hashlib.sha256(rig.get(motion_keyframes.PROPERTY,'').encode()).hexdigest()!=keys['source_sha256']:
-            raise ValueError('Captured key poses changed during inference; prepare a new job')
         if abs(context.scene.render.fps/context.scene.render.fps_base-keys['scene_fps'])>1e-6:raise ValueError('Scene frame rate changed during inference')
+        if keys.get('source_kind')=='action':
+            source=motion_keyframes.prepare(context,rig,keys['frames'],keys['start_frame'])['source_sha256']
+        else:  # Permit already prepared jobs from the older snapshot workflow.
+            source=hashlib.sha256(rig.get(motion_keyframes.PROPERTY,'').encode()).hexdigest()
+        if source!=keys['source_sha256']:
+            raise ValueError('Pose keyframes changed during inference; prepare a new job')
     meshes=[bpy.data.objects.get(entry['name']) for entry in request.get('meshes',[])]
     if any(not o or str(o.as_pointer())!=entry['pointer'] or o.name not in context.scene.objects for o,entry in zip(meshes,request.get('meshes',[]))):
         raise ValueError('Motion source mesh scope no longer matches')

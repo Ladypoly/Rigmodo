@@ -63,7 +63,7 @@ class LC_Settings(PropertyGroup):
     motion_steps: IntProperty(name='Sampling steps', default=100, min=10, max=200)
     motion_seed: IntProperty(name='Seed', default=101, min=0, max=2147483647)
     motion_in_place: BoolProperty(name='In place', default=False, description='Remove ground travel while preserving hip sway and jump height')
-    motion_use_keyframes: BoolProperty(name='Use key poses',default=False,description='Let the local model generate motion through captured poses on this character')
+    motion_use_keyframes: BoolProperty(name='Use Key Poses',default=False,description='Use pose keyframes from this armature’s active Action within the generated clip, starting at the Timeline Start frame')
     motion_start_frame: IntProperty(name='Start frame',default=1,min=-100000,max=100000,description='First timeline frame of the generated clip; length is sampled at 30 fps')
     motion_contacts: BoolProperty(name='Correct foot contacts',default=True,description='Bake local leg IK for detected contacts; review ground height and reachable foot positions')
     motion_heading: BoolProperty(name='Extract turning to Root',default=True,description='Move the source hip’s changing ground heading into Root while preserving the body’s world pose')
@@ -515,7 +515,7 @@ class LC_OT_motion(WorkerModal, Operator):
         try:
             rig=motion_jobs.selected_rig(context)
             self._folder=motion_jobs.prepare(context,rig,settings.motion_prompt,settings.motion_frames,
-                settings.motion_steps,settings.motion_seed,settings.motion_in_place,keyframes=settings.motion_use_keyframes,start_frame=settings.motion_start_frame)
+                settings.motion_steps,settings.motion_seed,settings.motion_in_place,keyframes=settings.motion_use_keyframes,start_frame=context.scene.frame_start)
             motion_jobs.start(self._folder,bpy.path.abspath(settings.motion_provider))
         except (ValueError,OSError,RuntimeError,KeyError) as exc: self.report({'ERROR'},str(exc)); return {'CANCELLED'}
         return self.begin(context)
@@ -647,7 +647,7 @@ class LC_OT_build(Operator):
     def poll(cls,context):return context.mode=='OBJECT' and any(o.type=='MESH' for o in context.selected_objects) and not skinning._jobs and not workflow._runs
     def execute(self,context):
         try:
-            settings=configuration.settings(context);values=workflow.options(settings,self.auto_skin)
+            settings=configuration.settings(context);values=workflow.options(settings,self.auto_skin,context)
             settings.workflow_skin_only=self.auto_skin
             self._run=workflow.Run(context,values);self._run.launch(context)
             context.scene.lc_settings.workflow_id=self._run.id

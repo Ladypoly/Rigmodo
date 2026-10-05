@@ -4,10 +4,11 @@ Select the accepted humanoid armature. In Rigmodo's **Motion** tab, drop one
 PNG/JPEG/WebP/BMP/TIFF image onto the sidebar, or click **Choose Image…**. Use
 one clearly visible person, with the desired body and hands in the image.
 The local worker applies the resulting pose at the captured timeline frame.
-Inspect the result, refine it using Auto Pose, then **Capture Pose** for Kimodo
-or **Insert Pose Key** to author animation. Applying the image alone does not
+Inspect the result, refine it using Auto Pose, then insert ordinary pose keys
+(Blender's **I** menu or **Insert Pose Key**). Enable **Use Key Poses** to guide
+Kimodo with those same timeline keys. Applying the image alone does not
 insert keys or replace an Action. An existing Action evaluates again on a frame
-change, reload or render, so capture or key the pose before those operations if
+change, reload or render, so key the pose before those operations if
 you want to retain it. Undo restores the previous pose.
 
 ## Installation

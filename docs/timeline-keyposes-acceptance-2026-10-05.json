@@ -1,0 +1,414 @@
+{
+  "passed": true,
+  "version": "0.12.0",
+  "source": {
+    "passed": true,
+    "version": "0.12.0",
+    "extracted_extension": false,
+    "cases": [
+      {
+        "fps": 30,
+        "start": 1,
+        "arm_angle": 0,
+        "source_frames": [
+          1,
+          45.0,
+          90.0
+        ],
+        "max_anchor_matrix_error": 1.1920928955078125e-07,
+        "actual_kimodo_inference": true,
+        "avatar_vertices": 0,
+        "finite_skin_deformation": true,
+        "diagnostics": {
+          "frames": 90,
+          "fps": 30,
+          "source_floor_estimate_m": 0.048433009393890156,
+          "travel_m": 0.32190321050730675,
+          "contact_frames": [
+            77,
+            80
+          ],
+          "contact_max_speed_m_s": 0.1483026096840429,
+          "source_height_range_m": [
+            0.9852181673049927,
+            0.9944458603858948
+          ],
+          "keyposes": {
+            "native_sampler": "conditioned_DDIM",
+            "anchors": [
+              {
+                "frame": 1.0,
+                "model_index": 0,
+                "mean_joint_error_m": 0.01312608307285312,
+                "max_joint_error_m": 0.04242116018677609
+              },
+              {
+                "frame": 45.0,
+                "model_index": 44,
+                "mean_joint_error_m": 0.06578188452142973,
+                "max_joint_error_m": 0.08590970589294182
+              },
+              {
+                "frame": 90.0,
+                "model_index": 89,
+                "mean_joint_error_m": 0.017833973690230084,
+                "max_joint_error_m": 0.06175657663603014
+              }
+            ],
+            "exact_artist_anchors": true,
+            "unsupported_fingers": "interpolated_artist_channels",
+            "settling_frames": 4
+          }
+        }
+      },
+      {
+        "fps": 24,
+        "start": 101,
+        "arm_angle": 45,
+        "source_frames": [
+          101,
+          136.2,
+          172.2
+        ],
+        "max_anchor_matrix_error": 2.384185791015625e-07,
+        "actual_kimodo_inference": false,
+        "avatar_vertices": 0,
+        "finite_skin_deformation": true,
+        "diagnostics": {
+          "frames": 90,
+          "fps": 30,
+          "source_floor_estimate_m": 0.06821820506147223,
+          "travel_m": 3.5356791700939545,
+          "contact_frames": [
+            31,
+            34
+          ],
+          "contact_max_speed_m_s": 0.14745800219137273,
+          "source_height_range_m": [
+            0.9419585466384888,
+            0.9938814043998718
+          ],
+          "keyposes": {
+            "native_sampler": "conditioned_DDIM",
+            "anchors": [
+              {
+                "frame": 101.0,
+                "model_index": 0,
+                "mean_joint_error_m": 0.1878299735227113,
+                "max_joint_error_m": 0.7189081456503652
+              },
+              {
+                "frame": 136.1999969482422,
+                "model_index": 44,
+                "mean_joint_error_m": 1.6677922725109329,
+                "max_joint_error_m": 2.3502923047700457
+              },
+              {
+                "frame": 172.1999969482422,
+                "model_index": 89,
+                "mean_joint_error_m": 3.544310873747606,
+                "max_joint_error_m": 3.876477639802194
+              }
+            ],
+            "exact_artist_anchors": true,
+            "unsupported_fingers": "interpolated_artist_channels",
+            "settling_frames": 4
+          }
+        }
+      },
+      {
+        "fps": 30,
+        "start": 1,
+        "arm_angle": 25,
+        "source_frames": [
+          1,
+          45.0,
+          90.0
+        ],
+        "max_anchor_matrix_error": 2.980232238769531e-07,
+        "actual_kimodo_inference": false,
+        "avatar_vertices": 6598,
+        "finite_skin_deformation": true,
+        "diagnostics": {
+          "frames": 90,
+          "fps": 30,
+          "source_floor_estimate_m": 0.06821820506147223,
+          "travel_m": 3.5356791700939545,
+          "contact_frames": [
+            31,
+            34
+          ],
+          "contact_max_speed_m_s": 0.14745800219137273,
+          "source_height_range_m": [
+            0.9419585466384888,
+            0.9938814043998718
+          ],
+          "keyposes": {
+            "native_sampler": "conditioned_DDIM",
+            "anchors": [
+              {
+                "frame": 1.0,
+                "model_index": 0,
+                "mean_joint_error_m": 0.12202888569914531,
+                "max_joint_error_m": 0.6401146273795821
+              },
+              {
+                "frame": 45.0,
+                "model_index": 44,
+                "mean_joint_error_m": 1.6162638662159252,
+                "max_joint_error_m": 1.8238640696809865
+              },
+              {
+                "frame": 90.0,
+                "model_index": 89,
+                "mean_joint_error_m": 3.482417376156868,
+                "max_joint_error_m": 3.8367655459470726
+              }
+            ],
+            "exact_artist_anchors": true,
+            "unsupported_fingers": "interpolated_artist_channels",
+            "settling_frames": 4
+          }
+        }
+      }
+    ],
+    "partial_bone_keys": true,
+    "quaternion_euler_axis_angle": true,
+    "multiple_action_slots": true,
+    "outside_keys_ignored": true,
+    "timeline_and_working_pose_preserved": true,
+    "source_action_preserved": true,
+    "stale_key_edits_rejected": true,
+    "invalid_sampling_restores_pose": true,
+    "twists_derived_from_timeline": true
+  },
+  "extracted": {
+    "passed": true,
+    "version": "0.12.0",
+    "extracted_extension": true,
+    "cases": [
+      {
+        "fps": 30,
+        "start": 1,
+        "arm_angle": 0,
+        "source_frames": [
+          1,
+          45.0,
+          90.0
+        ],
+        "max_anchor_matrix_error": 1.1920928955078125e-07,
+        "actual_kimodo_inference": false,
+        "avatar_vertices": 0,
+        "finite_skin_deformation": true,
+        "diagnostics": {
+          "frames": 90,
+          "fps": 30,
+          "source_floor_estimate_m": 0.06821820506147223,
+          "travel_m": 3.5356791700939545,
+          "contact_frames": [
+            31,
+            34
+          ],
+          "contact_max_speed_m_s": 0.14745800219137273,
+          "source_height_range_m": [
+            0.9419585466384888,
+            0.9938814043998718
+          ],
+          "keyposes": {
+            "native_sampler": "conditioned_DDIM",
+            "anchors": [
+              {
+                "frame": 1.0,
+                "model_index": 0,
+                "mean_joint_error_m": 0.28107490270198165,
+                "max_joint_error_m": 1.1038009765779935
+              },
+              {
+                "frame": 45.0,
+                "model_index": 44,
+                "mean_joint_error_m": 1.674425550120249,
+                "max_joint_error_m": 2.430025062602219
+              },
+              {
+                "frame": 90.0,
+                "model_index": 89,
+                "mean_joint_error_m": 3.51909869885134,
+                "max_joint_error_m": 3.890950195868721
+              }
+            ],
+            "exact_artist_anchors": true,
+            "unsupported_fingers": "interpolated_artist_channels",
+            "settling_frames": 4
+          }
+        }
+      },
+      {
+        "fps": 24,
+        "start": 101,
+        "arm_angle": 45,
+        "source_frames": [
+          101,
+          136.2,
+          172.2
+        ],
+        "max_anchor_matrix_error": 2.384185791015625e-07,
+        "actual_kimodo_inference": false,
+        "avatar_vertices": 0,
+        "finite_skin_deformation": true,
+        "diagnostics": {
+          "frames": 90,
+          "fps": 30,
+          "source_floor_estimate_m": 0.06821820506147223,
+          "travel_m": 3.5356791700939545,
+          "contact_frames": [
+            31,
+            34
+          ],
+          "contact_max_speed_m_s": 0.14745800219137273,
+          "source_height_range_m": [
+            0.9419585466384888,
+            0.9938814043998718
+          ],
+          "keyposes": {
+            "native_sampler": "conditioned_DDIM",
+            "anchors": [
+              {
+                "frame": 101.0,
+                "model_index": 0,
+                "mean_joint_error_m": 0.1878299735227113,
+                "max_joint_error_m": 0.7189081456503652
+              },
+              {
+                "frame": 136.1999969482422,
+                "model_index": 44,
+                "mean_joint_error_m": 1.6677922725109329,
+                "max_joint_error_m": 2.3502923047700457
+              },
+              {
+                "frame": 172.1999969482422,
+                "model_index": 89,
+                "mean_joint_error_m": 3.544310873747606,
+                "max_joint_error_m": 3.876477639802194
+              }
+            ],
+            "exact_artist_anchors": true,
+            "unsupported_fingers": "interpolated_artist_channels",
+            "settling_frames": 4
+          }
+        }
+      },
+      {
+        "fps": 30,
+        "start": 1,
+        "arm_angle": 25,
+        "source_frames": [
+          1,
+          45.0,
+          90.0
+        ],
+        "max_anchor_matrix_error": 2.980232238769531e-07,
+        "actual_kimodo_inference": false,
+        "avatar_vertices": 6598,
+        "finite_skin_deformation": true,
+        "diagnostics": {
+          "frames": 90,
+          "fps": 30,
+          "source_floor_estimate_m": 0.06821820506147223,
+          "travel_m": 3.5356791700939545,
+          "contact_frames": [
+            31,
+            34
+          ],
+          "contact_max_speed_m_s": 0.14745800219137273,
+          "source_height_range_m": [
+            0.9419585466384888,
+            0.9938814043998718
+          ],
+          "keyposes": {
+            "native_sampler": "conditioned_DDIM",
+            "anchors": [
+              {
+                "frame": 1.0,
+                "model_index": 0,
+                "mean_joint_error_m": 0.12202888569914531,
+                "max_joint_error_m": 0.6401146273795821
+              },
+              {
+                "frame": 45.0,
+                "model_index": 44,
+                "mean_joint_error_m": 1.6162638662159252,
+                "max_joint_error_m": 1.8238640696809865
+              },
+              {
+                "frame": 90.0,
+                "model_index": 89,
+                "mean_joint_error_m": 3.482417376156868,
+                "max_joint_error_m": 3.8367655459470726
+              }
+            ],
+            "exact_artist_anchors": true,
+            "unsupported_fingers": "interpolated_artist_channels",
+            "settling_frames": 4
+          }
+        }
+      }
+    ],
+    "partial_bone_keys": true,
+    "quaternion_euler_axis_angle": true,
+    "multiple_action_slots": true,
+    "outside_keys_ignored": true,
+    "timeline_and_working_pose_preserved": true,
+    "source_action_preserved": true,
+    "stale_key_edits_rejected": true,
+    "invalid_sampling_restores_pose": true,
+    "twists_derived_from_timeline": true
+  },
+  "ui": {
+    "passed": true,
+    "global_preferences_used": true,
+    "legacy_settings_migrated": true,
+    "workflow_panel_has_no_runtime_fields": true,
+    "eight_front_anchors_exact": true,
+    "model_depth_preserved": true,
+    "landmarks_locked": true,
+    "source_preserved": true,
+    "sources_hidden_after_individual_step": true,
+    "original_plus_copy_rejected": true,
+    "stale_landmarks_rejected": true,
+    "cached_actual_mia_used": true,
+    "native_weight_editor_draws": true,
+    "bone_choice_updates_group": true,
+    "pose_and_joint_editors_work": true,
+    "character_selection_helper_works": true,
+    "keyposes_use_one_toggle": true,
+    "no_capture_recall_clear_buttons": true
+  },
+  "image_gui": {
+    "passed": true,
+    "version": "0.12.0",
+    "cases": [
+      "native_drop_and_async_apply",
+      "whole_pose_undo",
+      "whole_pose_redo",
+      "kimodo_timeline_keyframes"
+    ],
+    "actual_file_handler_dispatch": true,
+    "simulated_worker": false,
+    "sam_neural_inference_tested": true
+  },
+  "live": {
+    "passed": true,
+    "version": "0.12.0",
+    "scene_preserved": true,
+    "objects": 7,
+    "active": "Rigmodo_Rig_Motion_Motion",
+    "frame": 92,
+    "action": "Generated Motion.002",
+    "native_keypose_toggle": true,
+    "separate_capture_controls": false,
+    "provider_ready": true
+  },
+  "workflow": "Ordinary active-Action pose keys, one Use Key Poses toggle; clip starts at Timeline Start",
+  "inference": "One real conditioned Kimodo run; retarget-only cases use cached motion. Real SAM image-drop/keyframe GUI also passes",
+  "unity": "Exporter and generated-Action representation unchanged; prior Unity checks retained as a historical baseline"
+}

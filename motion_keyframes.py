@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Artist pose snapshots, inverse retargeting and native constraint transport."""
+"""Timeline pose sampling, inverse retargeting and native constraint transport."""
 import hashlib,json,math
 import bpy,numpy as np
 from bpy.types import Operator
@@ -30,7 +30,7 @@ def validate_basis(rig,p):
         if abs(np.linalg.norm(q)-1)>1e-4 or np.max(np.abs(scale-1))>1e-4:raise ValueError('Key poses need unit rotations and unscaled bones')
         if skeleton.canonical_name(name) not in {'Root','Hips'} and np.linalg.norm(loc)>1e-5:raise ValueError('Only Root/Hips movement is supported in key poses')
 
-def capture(context,rig):
+def sample_pose(context,rig):
     from . import auto_pose
     if auto_pose._sessions:raise ValueError('Confirm or cancel the Auto Pose gesture before capturing a pose')
     # Pose Mode is the author's editing context; validate the rig without
@@ -70,6 +70,12 @@ def capture(context,rig):
     delta=(world@rig.pose.bones[mapping['Hips'].name].head)-(world@mapping['Hips'].head_local)
     root=[delta.x/scale,.988+delta.z/scale,-delta.y/scale]
     row=dict(frame=context.scene.frame_current+context.scene.frame_subframe,root=root,global_rotations=globals.tolist(),basis=basis)
+    return row
+
+
+def capture(context,rig):
+    """Legacy snapshot API, retained for older saved files and scripts only."""
+    row=sample_pose(context,rig)
     result=data(rig);current=signature(context,rig)
     if result.get('poses') and result.get('rest_signature')!=current:raise ValueError('Rest joints changed; clear old key poses before capturing new ones')
     result.update(schema_version=1,rest_signature=current)
@@ -78,14 +84,71 @@ def capture(context,rig):
     if len(result['poses'])>32:raise ValueError('Use at most 32 key poses per character')
     rig[PROPERTY]=json.dumps(result,allow_nan=False);return row
 
+def pose_curves(rig):
+    """Read only this armature's active Action slot, including layered Actions."""
+    ad=rig.animation_data
+    if not ad or not ad.action or not ad.action_slot:return []
+    paths={b.path_from_id()+'.'+channel for b in rig.pose.bones
+           for channel in ('location','rotation_quaternion','rotation_euler','rotation_axis_angle','scale')}
+    curves=[]
+    for layer in ad.action.layers:
+        for strip in layer.strips:
+            bag=strip.channelbag(ad.action_slot,ensure=False)
+            if bag:
+                curves.extend(c for c in bag.fcurves if not c.mute and c.data_path in paths)
+    return curves
+
+
+def timeline_poses(context,rig,frames,start_frame):
+    from . import auto_pose
+    if auto_pose._sessions:raise ValueError('Confirm or cancel the Auto Pose gesture before generating motion')
+    if context.screen and context.screen.is_animation_playing:raise ValueError('Stop playback before generating from pose keyframes')
+    ad=rig.animation_data
+    if not ad or not ad.action or not ad.action_slot:raise ValueError('Add pose keyframes to the armature, or turn off Use Key Poses')
+    if ad.drivers or rig.data.animation_data and rig.data.animation_data.drivers:
+        raise ValueError('Pose keyframes need a deform rig without animation drivers')
+    if any(not t.mute and t.strips for t in ad.nla_tracks):raise ValueError('Mute NLA tracks before generating from pose keyframes')
+    for layer in ad.action.layers:
+        for strip in layer.strips:
+            bag=strip.channelbag(ad.action_slot,ensure=False)
+            if bag and any(not c.mute and c.keyframe_points and c.data_path in
+                           {'location','rotation_euler','rotation_quaternion','rotation_axis_angle','scale'} for c in bag.fcurves):
+                raise ValueError('Key Root/Hips bones instead of the armature object transform')
+    fps=context.scene.render.fps/context.scene.render.fps_base
+    if not math.isfinite(fps) or fps<=0 or not math.isfinite(start_frame):raise ValueError('Use a finite start frame and positive scene frame rate')
+    end=start_frame+(frames-1)*fps/30
+    times=sorted({float(p.co.x) for c in pose_curves(rig) for p in c.keyframe_points
+                  if start_frame-1e-5<=p.co.x<=end+1e-5})
+    if not times:raise ValueError(f'Add pose keyframes between frames {start_frame:g} and {end:g}, or turn off Use Key Poses')
+    if len(times)>frames:raise ValueError('Pose keys are denser than the generated 30 fps clip; use fewer pose keyframes')
+    saved=auto_pose.channel_snapshot(rig)
+    frame,subframe=context.scene.frame_current,context.scene.frame_subframe
+    rows=[]
+    try:
+        for time in times:
+            context.scene.frame_set(math.floor(time),subframe=time%1)
+            context.view_layer.update()
+            twists.update_pose(rig)
+            context.view_layer.update()
+            rows.append(sample_pose(context,rig))
+    finally:
+        context.scene.frame_set(frame,subframe=subframe)
+        auto_pose.restore_channels(rig,saved)
+        context.view_layer.update()
+    key_data=[dict(path=c.data_path,index=c.array_index,keys=[
+        [list(p.co),p.interpolation,list(p.handle_left),list(p.handle_right),p.handle_left_type,p.handle_right_type,p.type]
+        for p in c.keyframe_points if start_frame-1e-5<=p.co.x<=end+1e-5]) for c in pose_curves(rig)]
+    source=dict(action=str(ad.action.as_pointer()),slot=ad.action_slot.handle,rest_signature=signature(context,rig),poses=rows,key_data=key_data)
+    digest=hashlib.sha256(json.dumps(source,allow_nan=False).encode()).hexdigest()
+    return rows,digest
+
+
 def prepare(context,rig,frames,start_frame,in_place=False):
-    result=data(rig)
-    if not result.get('poses'):raise ValueError('Capture at least one pose, or turn off Use key poses')
-    if result.get('schema_version')!=1 or result.get('rest_signature')!=signature(context,rig):raise ValueError('Key poses belong to edited rest joints or a changed scene scale; capture them again')
+    rows,digest=timeline_poses(context,rig,frames,start_frame)
     fps=context.scene.render.fps/context.scene.render.fps_base;indices=[]
     if not math.isfinite(fps) or fps<=0 or not math.isfinite(start_frame):raise ValueError('Use a finite start frame and positive scene frame rate')
     poses=[]
-    for p in result['poses']:
+    for p in rows:
         p=dict(p)
         validate_basis(rig,p)
         time=(p['frame']-start_frame)*30/fps;index=round(time)
@@ -96,7 +159,7 @@ def prepare(context,rig,frames,start_frame,in_place=False):
         if max(np.abs(rotations@np.swapaxes(rotations,-1,-2)-np.eye(3)).max(),np.abs(np.linalg.det(rotations)-1).max())>1e-4:raise ValueError('Key pose rotations are invalid')
         if in_place and np.linalg.norm(root[[0,2]])>1e-5:raise ValueError('Moving key poses require In place to be turned off')
         p['index']=index;poses.append(p);indices.append(index)
-    return dict(schema_version=1,frames=frames,start_frame=start_frame,scene_fps=fps,poses=poses,source_sha256=hashlib.sha256(rig[PROPERTY].encode()).hexdigest())
+    return dict(schema_version=1,source_kind='action',frames=frames,start_frame=start_frame,scene_fps=fps,poses=poses,source_sha256=digest)
 
 def write(folder,keys,frames):
     dim=9+12*30;observed=np.zeros((frames,dim),dtype='<f4');mask=np.zeros_like(observed)
@@ -203,7 +266,7 @@ def overlay(context,rig,keys):
     action['lc_key_pose_frames']=json.dumps([p['frame'] for p in ordered]);action['lc_key_pose_settling_frames']=4
 
 class LC_OT_capture_key_pose(Operator):
-    bl_idname='local_character.capture_key_pose';bl_label='Capture Pose';bl_options={'REGISTER','UNDO'}
+    bl_idname='local_character.capture_key_pose';bl_label='Capture Legacy Pose';bl_options={'INTERNAL','UNDO'}
     bl_description='Capture this humanoid pose at the current timeline frame; the original Action remains unchanged'
     @classmethod
     def poll(cls,context):
@@ -218,7 +281,7 @@ class LC_OT_capture_key_pose(Operator):
         return {'FINISHED'}
 
 class LC_OT_key_pose(Operator):
-    bl_idname='local_character.key_pose';bl_label='Key Pose';bl_options={'REGISTER','UNDO'}
+    bl_idname='local_character.key_pose';bl_label='Legacy Key Pose';bl_options={'INTERNAL','UNDO'}
     frame:FloatProperty(default=-1,options={'HIDDEN'})
     remove:bpy.props.BoolProperty(default=False,options={'HIDDEN'})
     clear:bpy.props.BoolProperty(default=False,options={'HIDDEN'})

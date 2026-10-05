@@ -51,7 +51,7 @@ class Run:
         if self.options.get('motion') and self.options.get('motion_use_keyframes'):
             from . import motion_keyframes
             if self.options.get('loop'):raise ValueError('Disable automatic loop finishing when using key poses; finish loops on a separate Action copy')
-            if not accepted or add_root or self.options.get('twists'):raise ValueError('Generate/skin the final rig first, then capture key poses in Motion')
+            if not accepted or add_root or self.options.get('twists'):raise ValueError('Generate/skin the final rig first, then add pose keyframes in Motion')
             motion_keyframes.prepare(context,self.rig,self.options['motion_frames'],self.options['motion_start_frame'],self.options['motion_in_place'])
         self.pending=(['root'] if add_root else []) if accepted else ['placement']
         self.pending+=['skin'] if self.options.get('rebind',True) or not accepted else []
@@ -165,11 +165,12 @@ class Run:
         # Completed phases remain available for correction or resumption.
 
 
-def options(settings,skin_only=False):
+def options(settings,skin_only=False,context=None):
     keys=('keep_skin_copies','placement_python','skin_executable','skin_models','skin_device','skin_beams','refine_iterations','refine_strength',
           'refine_seams','motion_prompt','motion_frames','motion_steps','motion_seed','motion_in_place','motion_provider',
-          'motion_hand_curl','motion_contacts','motion_heading','motion_loop_blend','motion_use_keyframes','motion_start_frame','export_directory','character_name','profile')
+          'motion_hand_curl','motion_contacts','motion_heading','motion_loop_blend','motion_use_keyframes','export_directory','character_name','profile')
     values={key:getattr(settings,key) for key in keys}
+    values['motion_start_frame']=(context or bpy.context).scene.frame_start
     from . import hand_pose
     values['hands']=hand_pose.settings(settings) if settings.hand_controls else None
     for key in ('placement_python','skin_executable','skin_models','motion_provider'):values[key]=bpy.path.abspath(values[key])

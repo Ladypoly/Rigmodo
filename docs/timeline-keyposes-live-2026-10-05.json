@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "version": "0.12.0",
+  "scene_preserved": true,
+  "objects": 7,
+  "active": "Rigmodo_Rig_Motion_Motion",
+  "frame": 92,
+  "action": "Generated Motion.002",
+  "native_keypose_toggle": true,
+  "separate_capture_controls": false,
+  "provider_ready": true
+}
