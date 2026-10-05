@@ -4,7 +4,7 @@ import bpy
 from mathutils import Vector
 import numpy as np
 
-def write(rig,meshes,bundle):
+def write(rig,meshes,bundle,frames=(1,13,25,49,73)):
     fps=bpy.context.scene.render.fps/bpy.context.scene.render.fps_base
     hips=rig.matrix_world@rig.data.bones['Hips'].head_local
     up=(rig.matrix_world@rig.data.bones['Head'].head_local-hips).normalized()
@@ -37,7 +37,7 @@ def write(rig,meshes,bundle):
                 bones=[groups[g.group] for g in row],weights=[g.weight for g in row]))
         weight_reference.append(dict(name=mesh.name,vertices=entries))
     (bundle/'weight-reference.json').write_text(json.dumps(dict(meshes=weight_reference)))
-    for frame in (1,13,25,49,73):
+    for frame in frames:
         bpy.context.scene.frame_set(frame);bpy.context.view_layer.update();points=[]
         root=rig.matrix_world@rig.pose.bones['Root'].head
         if start is None:start=root.copy()
@@ -58,12 +58,12 @@ def write(rig,meshes,bundle):
                 delta=matrix@control-hips
                 transformed.append(dict(x=delta.dot(left),y=delta.dot(forward),z=delta.dot(up)))
             probes.append(dict(name=bone.name,points=transformed))
-        samples.append(dict(time=(frame-1)/fps,points=points,bones=probes))
+        samples.append(dict(time=(frame-frames[0])/fps,points=points,bones=probes))
     trajectory=[]
-    for frame in range(1,74):
+    for frame in range(frames[0],frames[-1]+1):
         bpy.context.scene.frame_set(frame);bpy.context.view_layer.update()
         delta=rig.matrix_world@rig.pose.bones['Root'].head-start
-        trajectory.append(dict(time=(frame-1)/fps,position=dict(x=-delta.x,y=delta.z,z=-delta.y)))
+        trajectory.append(dict(time=(frame-frames[0])/fps,position=dict(x=-delta.x,y=delta.z,z=-delta.y)))
     if precision_budget>.0005:raise ValueError('Rest-frame precision budget exceeds 0.5 mm; inspect the accepted skeleton')
     (bundle/'animation-reference.json').write_text(json.dumps(dict(samples=samples,root_travel=(root-start).length,trajectory=trajectory,
         rig_rest_precision_budget_m=precision_budget,maximum_rest_rotation_anisotropy=orthogonality,

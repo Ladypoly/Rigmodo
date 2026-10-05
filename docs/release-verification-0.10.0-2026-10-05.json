@@ -1,0 +1,2229 @@
+{
+  "version": "0.10.0",
+  "extension_zip_validated": true,
+  "source_modules_compile": true,
+  "private_assets_excluded": true,
+  "artifacts": {
+    "local_character-0.10.0.zip": {
+      "bytes": 254028,
+      "sha256": "06ea3f1150342abeae0cd30d318d43829e5bed67f3d8b18555e255b71d1f55a4"
+    },
+    "local_character-unity-companion-0.10.0.zip": {
+      "bytes": 12333,
+      "sha256": "9c079e5b22fdd4ebcb8ab76bb7f90352284522d3ba22f0248cbe3a38c9ef2b7e"
+    },
+    "local_character-windows-providers.zip": {
+      "bytes": 42531100,
+      "sha256": "1751c541becd9ca3350ce5f2f2bc9387502919f36b4ff1f066aa5976b1a56f17"
+    }
+  },
+  "evidence": {
+    "fresh_install": {
+      "passed": true,
+      "cache": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-install-veal6fz8\\providers",
+      "native_files": 1965,
+      "models": 8,
+      "tokenizer_downloaded": true,
+      "larger_checkpoints_seeded": true,
+      "fresh_isolated_runtime": true,
+      "owned_descendants_cancelled": true
+    },
+    "fresh_inference": {
+      "passed": true,
+      "fresh_cache": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-install-veal6fz8\\providers",
+      "actual_inference": [
+        "MIA",
+        "SkinTokens",
+        "Kimodo"
+      ],
+      "stages": [
+        {
+          "stage": "placement",
+          "elapsed": 5.224549300000945
+        },
+        {
+          "stage": "skin",
+          "elapsed": 60.630732399993576
+        },
+        {
+          "stage": "refine",
+          "elapsed": 0.8062358000024687
+        },
+        {
+          "stage": "motion",
+          "elapsed": 12.885945300004096
+        }
+      ],
+      "elapsed_seconds": 137.48712700000033,
+      "bones": 55,
+      "source_preserved": true,
+      "bundle": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-fresh-inference\\InstalledWorkflow"
+    },
+    "corpus": [
+      {
+        "case": "Cardboard",
+        "passed": true,
+        "source_preserved": true,
+        "actual_inference": [
+          "MIA",
+          "SkinTokens"
+        ],
+        "motion_arrays_reused": true,
+        "vertices": 11452,
+        "bones": 53,
+        "elapsed_seconds": 82.04166120000446,
+        "volume_reports": [
+          {
+            "topological_edges": 4511,
+            "verified_seam_edges": 339,
+            "ambiguous_seam_edges": 0,
+            "mesh": "Arms_Joints_AI_Skin_Refined",
+            "method": "VOXEL",
+            "digit_vertices": 0,
+            "joint_evidence_relabels": 0,
+            "rigid_vertices": 0,
+            "protected_vertices": 0,
+            "locked_bones": 0,
+            "body_policy": "surface",
+            "surface_components": 136,
+            "geodesic_vertices": 2541,
+            "geometry_method": "GEODESIC",
+            "volume_fallback_reason": "open or nonmanifold surface",
+            "editable_vertices": 2541,
+            "seam_constraint_conflicts": 0,
+            "iterations": 6,
+            "maximum_weight_change": 0.32722991704940796
+          },
+          {
+            "topological_edges": 3765,
+            "verified_seam_edges": 195,
+            "ambiguous_seam_edges": 0,
+            "mesh": "Body_Joints_AI_Skin_Refined",
+            "method": "VOXEL",
+            "digit_vertices": 0,
+            "joint_evidence_relabels": 0,
+            "rigid_vertices": 0,
+            "protected_vertices": 0,
+            "locked_bones": 0,
+            "body_policy": "surface",
+            "surface_components": 74,
+            "geodesic_vertices": 1870,
+            "geometry_method": "GEODESIC",
+            "volume_fallback_reason": "open or nonmanifold surface",
+            "editable_vertices": 1870,
+            "seam_constraint_conflicts": 0,
+            "iterations": 6,
+            "maximum_weight_change": 0.34688127040863037
+          },
+          {
+            "topological_edges": 7175,
+            "verified_seam_edges": 1033,
+            "ambiguous_seam_edges": 2,
+            "mesh": "Hands_Joints_AI_Skin_Refined",
+            "method": "VOXEL",
+            "digit_vertices": 3332,
+            "joint_evidence_relabels": 0,
+            "rigid_vertices": 0,
+            "protected_vertices": 0,
+            "locked_bones": 0,
+            "body_policy": "surface",
+            "surface_components": 193,
+            "geodesic_vertices": 4303,
+            "geometry_method": "GEODESIC",
+            "volume_fallback_reason": "open or nonmanifold surface",
+            "editable_vertices": 4303,
+            "seam_constraint_conflicts": 0,
+            "iterations": 6,
+            "maximum_weight_change": 0.3203044533729553
+          },
+          {
+            "topological_edges": 431,
+            "verified_seam_edges": 16,
+            "ambiguous_seam_edges": 21,
+            "mesh": "Head_Joints_AI_Skin_Refined",
+            "method": "VOXEL",
+            "digit_vertices": 0,
+            "joint_evidence_relabels": 0,
+            "rigid_vertices": 0,
+            "protected_vertices": 0,
+            "locked_bones": 0,
+            "body_policy": "surface",
+            "surface_components": 31,
+            "geodesic_vertices": 272,
+            "geometry_method": "GEODESIC",
+            "volume_fallback_reason": "open or nonmanifold surface",
+            "editable_vertices": 272,
+            "seam_constraint_conflicts": 0,
+            "iterations": 6,
+            "maximum_weight_change": 0.2889136075973511
+          },
+          {
+            "topological_edges": 4632,
+            "verified_seam_edges": 258,
+            "ambiguous_seam_edges": 0,
+            "mesh": "Legs_Joints_AI_Skin_Refined",
+            "method": "VOXEL",
+            "digit_vertices": 0,
+            "joint_evidence_relabels": 0,
+            "rigid_vertices": 0,
+            "protected_vertices": 0,
+            "locked_bones": 0,
+            "body_policy": "surface",
+            "surface_components": 102,
+            "geodesic_vertices": 2466,
+            "geometry_method": "GEODESIC",
+            "volume_fallback_reason": "open or nonmanifold surface",
+            "editable_vertices": 2466,
+            "seam_constraint_conflicts": 0,
+            "iterations": 6,
+            "maximum_weight_change": 0.3441317081451416
+          }
+        ],
+        "quality": "Rendered views require review; no anatomical ground truth assumed"
+      },
+      {
+        "case": "Mechanical",
+        "passed": true,
+        "source_preserved": true,
+        "actual_inference": [
+          "MIA",
+          "SkinTokens"
+        ],
+        "motion_arrays_reused": true,
+        "vertices": 17962,
+        "bones": 53,
+        "elapsed_seconds": 75.20074829999794,
+        "volume_reports": [
+          {
+            "topological_edges": 18314,
+            "verified_seam_edges": 328,
+            "ambiguous_seam_edges": 0,
+            "mesh": "Wolf3D_Head_Joints_AI_Skin_Refined",
+            "method": "VOXEL",
+            "digit_vertices": 0,
+            "joint_evidence_relabels": 0,
+            "rigid_vertices": 0,
+            "protected_vertices": 0,
+            "locked_bones": 0,
+            "body_policy": "surface",
+            "surface_components": 35,
+            "geodesic_vertices": 6601,
+            "geometry_method": "GEODESIC",
+            "volume_fallback_reason": "overlapping closed shells need separate volume regions",
+            "editable_vertices": 6601,
+            "seam_constraint_conflicts": 0,
+            "iterations": 6,
+            "maximum_weight_change": 0.32819193601608276
+          },
+          {
+            "topological_edges": 29302,
+            "verified_seam_edges": 740,
+            "ambiguous_seam_edges": 0,
+            "mesh": "Wolf3D_Outfit_Top_Joints_AI_Skin_Refined",
+            "method": "VOXEL",
+            "digit_vertices": 1230,
+            "joint_evidence_relabels": 0,
+            "rigid_vertices": 0,
+            "protected_vertices": 0,
+            "locked_bones": 0,
+            "body_policy": "surface",
+            "surface_components": 99,
+            "geodesic_vertices": 11361,
+            "geometry_method": "GEODESIC",
+            "volume_fallback_reason": "open or nonmanifold surface",
+            "editable_vertices": 11361,
+            "seam_constraint_conflicts": 0,
+            "iterations": 6,
+            "maximum_weight_change": 0.34723836183547974
+          }
+        ],
+        "quality": "Rendered views require review; no anatomical ground truth assumed"
+      }
+    ],
+    "controls": {
+      "passed": true,
+      "painted_rerig_preserved": true,
+      "joint_locks_exact": true,
+      "optional_core_rest_unchanged": true,
+      "bones": 57,
+      "eye_jaw_mapping": true,
+      "socket_non_deforming": true,
+      "distinct_hand_poses": true,
+      "bundle": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-controls-final\\OptionalControls"
+    },
+    "rigid": {
+      "passed": true,
+      "rigid_vertices": 8842,
+      "ambiguous_weights_exact": true,
+      "source_preserved": true,
+      "policies_persistent": true,
+      "ai_rebuild_policies_exact": true,
+      "ai_result_replayed": true,
+      "reports": [
+        {
+          "topological_edges": 18314,
+          "verified_seam_edges": 328,
+          "ambiguous_seam_edges": 0,
+          "rigid_components_assigned": 26,
+          "ambiguous_components_preserved": 9,
+          "mesh": "Wolf3D_Head_Joints_AI_Skin_Refined",
+          "method": "RIGID_PARTS",
+          "digit_vertices": 0,
+          "joint_evidence_relabels": 0,
+          "rigid_vertices": 5811,
+          "protected_vertices": 0,
+          "locked_bones": 0,
+          "body_policy": "rigid_parts_preserve_ambiguous",
+          "iterations": 12,
+          "editable_vertices": 0,
+          "seam_constraint_conflicts": 0,
+          "maximum_weight_change": 1.0
+        },
+        {
+          "topological_edges": 29302,
+          "verified_seam_edges": 740,
+          "ambiguous_seam_edges": 0,
+          "rigid_components_assigned": 24,
+          "ambiguous_components_preserved": 75,
+          "mesh": "Wolf3D_Outfit_Top_Joints_AI_Skin_Refined",
+          "method": "RIGID_PARTS",
+          "digit_vertices": 1230,
+          "joint_evidence_relabels": 0,
+          "rigid_vertices": 3031,
+          "protected_vertices": 0,
+          "locked_bones": 0,
+          "body_policy": "rigid_parts_preserve_ambiguous",
+          "iterations": 12,
+          "editable_vertices": 0,
+          "seam_constraint_conflicts": 0,
+          "maximum_weight_change": 0.9300767183303833
+        }
+      ],
+      "bundle": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-rigid-release\\RigidMechanical"
+    },
+    "geometry": {
+      "passed": true,
+      "reports": [
+        {
+          "topological_edges": 528,
+          "verified_seam_edges": 0,
+          "ambiguous_seam_edges": 0,
+          "mesh": "ClosedOrganic",
+          "method": "VOXEL",
+          "digit_vertices": 0,
+          "joint_evidence_relabels": 0,
+          "rigid_vertices": 0,
+          "protected_vertices": 0,
+          "locked_bones": 0,
+          "body_policy": "surface",
+          "surface_components": 1,
+          "geodesic_vertices": 178,
+          "geometry_method": "VOXEL_WITH_SURFACE_DETAILS",
+          "volume_cells": 1872,
+          "voxel_size": 0.041666666666666664,
+          "resolved_surface_vertices": 178,
+          "volume_seed_cells": 48,
+          "volume_heat_iterations": 40,
+          "surface_detail_vertices": 0,
+          "editable_vertices": 178,
+          "seam_constraint_conflicts": 0,
+          "iterations": 40,
+          "maximum_weight_change": 0.9979602098464966
+        },
+        {
+          "topological_edges": 496,
+          "verified_seam_edges": 0,
+          "ambiguous_seam_edges": 0,
+          "mesh": "OpenOrganic",
+          "method": "VOXEL",
+          "digit_vertices": 0,
+          "joint_evidence_relabels": 0,
+          "rigid_vertices": 0,
+          "protected_vertices": 0,
+          "locked_bones": 0,
+          "body_policy": "surface",
+          "surface_components": 1,
+          "geodesic_vertices": 176,
+          "geometry_method": "GEODESIC",
+          "volume_fallback_reason": "open or nonmanifold surface",
+          "editable_vertices": 176,
+          "seam_constraint_conflicts": 0,
+          "iterations": 40,
+          "maximum_weight_change": 0.997195303440094
+        }
+      ],
+      "digit_reports": [
+        {
+          "topological_edges": 528,
+          "verified_seam_edges": 0,
+          "ambiguous_seam_edges": 0,
+          "mesh": "Index",
+          "method": "VOXEL",
+          "digit_vertices": 178,
+          "joint_evidence_relabels": 178,
+          "rigid_vertices": 0,
+          "protected_vertices": 0,
+          "locked_bones": 0,
+          "body_policy": "surface",
+          "surface_components": 1,
+          "geodesic_vertices": 178,
+          "geometry_method": "VOXEL_WITH_SURFACE_DETAILS",
+          "volume_cells": 624,
+          "voxel_size": 0.004166666728754838,
+          "resolved_surface_vertices": 178,
+          "volume_seed_cells": 144,
+          "volume_heat_iterations": 20,
+          "surface_detail_vertices": 178,
+          "editable_vertices": 178,
+          "seam_constraint_conflicts": 0,
+          "iterations": 20,
+          "maximum_weight_change": 1.0
+        },
+        {
+          "topological_edges": 528,
+          "verified_seam_edges": 0,
+          "ambiguous_seam_edges": 0,
+          "mesh": "Middle",
+          "method": "VOXEL",
+          "digit_vertices": 178,
+          "joint_evidence_relabels": 178,
+          "rigid_vertices": 0,
+          "protected_vertices": 0,
+          "locked_bones": 0,
+          "body_policy": "surface",
+          "surface_components": 1,
+          "geodesic_vertices": 178,
+          "geometry_method": "VOXEL_WITH_SURFACE_DETAILS",
+          "volume_cells": 624,
+          "voxel_size": 0.004166666728754838,
+          "resolved_surface_vertices": 178,
+          "volume_seed_cells": 144,
+          "volume_heat_iterations": 20,
+          "surface_detail_vertices": 178,
+          "editable_vertices": 178,
+          "seam_constraint_conflicts": 0,
+          "iterations": 20,
+          "maximum_weight_change": 1.0
+        }
+      ],
+      "rigid_report": [
+        {
+          "topological_edges": 496,
+          "verified_seam_edges": 0,
+          "ambiguous_seam_edges": 0,
+          "mesh": "FingerRing",
+          "method": "GEODESIC",
+          "digit_vertices": 165,
+          "joint_evidence_relabels": 165,
+          "rigid_vertices": 176,
+          "protected_vertices": 0,
+          "locked_bones": 0,
+          "body_policy": "surface",
+          "surface_components": 1,
+          "geodesic_vertices": 176,
+          "geometry_method": "GEODESIC",
+          "editable_vertices": 0,
+          "seam_constraint_conflicts": 0,
+          "iterations": 4,
+          "maximum_weight_change": 1.0
+        }
+      ],
+      "paint_protection_exact": true,
+      "locked_column_exact": true,
+      "overlapping_shell_rejection": "overlapping closed shells need separate volume regions"
+    },
+    "contacts": [
+      {
+        "angle": 0,
+        "scale": 1.0,
+        "maximum_contact_ankle_step_before_m": 0.004776084013904075,
+        "maximum_contact_ankle_step_after_m": 4.807789863616728e-07,
+        "maximum_local_limb_length_error": 3.480943109313017e-07,
+        "diagnostics": {
+          "contact_frames": 62,
+          "unreachable_contact_frames": 0,
+          "max_ankle_correction_m": 0.02921755060051607,
+          "maximum_pelvis_lowering_m": 0.017396711358313888
+        },
+        "loop_pose_endpoint_matches": true
+      },
+      {
+        "angle": 55,
+        "scale": 1.0,
+        "maximum_contact_ankle_step_before_m": 0.004776084013904075,
+        "maximum_contact_ankle_step_after_m": 4.807789863616728e-07,
+        "maximum_local_limb_length_error": 3.480943109313017e-07,
+        "diagnostics": {
+          "contact_frames": 62,
+          "unreachable_contact_frames": 0,
+          "max_ankle_correction_m": 0.02921755060051607,
+          "maximum_pelvis_lowering_m": 0.017396711358313888
+        },
+        "loop_pose_endpoint_matches": true
+      },
+      {
+        "angle": 55,
+        "scale": 2.0,
+        "maximum_contact_ankle_step_before_m": 0.00955216802780815,
+        "maximum_contact_ankle_step_after_m": 9.744037821454892e-07,
+        "maximum_local_limb_length_error": 3.480943109313017e-07,
+        "diagnostics": {
+          "contact_frames": 62,
+          "unreachable_contact_frames": 0,
+          "max_ankle_correction_m": 0.05844537017029581,
+          "maximum_pelvis_lowering_m": 0.034783234927189044
+        },
+        "loop_pose_endpoint_matches": true
+      }
+    ],
+    "unity_motion": {
+      "unity_version": "6000.3.21f1",
+      "cases": [
+        {
+          "name": "CardboardGENERIC",
+          "error": "",
+          "worst_bone_probe": "RightFoot@2",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "max_lbs_error_m": 2.625312163218041e-06,
+          "root_travel_m": 3.8245561122894287,
+          "expected_travel_m": 3.824556350708008,
+          "hand_motion_m": 0.0,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 2.3818679437681567e-06,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 1.053859250532696e-06,
+          "body_heading_degrees": 0.0,
+          "root_heading_degrees": 0.0
+        },
+        {
+          "name": "CardboardHUMANOID",
+          "error": "",
+          "worst_bone_probe": "",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.32661667466163635,
+            "y": 6.38378239159465e-16,
+            "z": 3.810584306716919
+          },
+          "max_lbs_error_m": 0.0,
+          "root_travel_m": 3.824556350708008,
+          "expected_travel_m": 3.824556350708008,
+          "hand_motion_m": 0.21806110441684723,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 0.0,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 1.053859250532696e-06,
+          "body_heading_degrees": 2.482858419418335,
+          "root_heading_degrees": 7.175479888916016
+        },
+        {
+          "name": "FreshInstalledGENERIC",
+          "error": "",
+          "worst_bone_probe": "RightFoot@1",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "max_lbs_error_m": 1.6856236470630392e-05,
+          "root_travel_m": 3.418764591217041,
+          "expected_travel_m": 3.41876482963562,
+          "hand_motion_m": 0.0,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 3.297263174317777e-05,
+          "lbs_precision_allowance_m": 9.023155143950135e-05,
+          "maximum_rest_rotation_anisotropy": 2.4164746719179675e-05,
+          "body_heading_degrees": 0.0,
+          "root_heading_degrees": 0.0
+        },
+        {
+          "name": "FreshInstalledHUMANOID",
+          "error": "",
+          "worst_bone_probe": "",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.2919621169567108,
+            "y": 2.3175905639050143e-15,
+            "z": 3.4062750339508057
+          },
+          "max_lbs_error_m": 0.0,
+          "root_travel_m": 3.418764591217041,
+          "expected_travel_m": 3.41876482963562,
+          "hand_motion_m": 0.2057807594537735,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 0.0,
+          "lbs_precision_allowance_m": 9.023155143950135e-05,
+          "maximum_rest_rotation_anisotropy": 2.4164746719179675e-05,
+          "body_heading_degrees": 2.7777013778686523,
+          "root_heading_degrees": 7.175479888916016
+        },
+        {
+          "name": "MechanicalGENERIC",
+          "error": "",
+          "worst_bone_probe": "RightToeBase@1",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "max_lbs_error_m": 3.123562009932357e-06,
+          "root_travel_m": 3.9519219398498535,
+          "expected_travel_m": 3.9519221782684326,
+          "hand_motion_m": 0.0,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 3.877182734868256e-06,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 1.7343334093311569e-06,
+          "body_heading_degrees": 0.0,
+          "root_heading_degrees": 0.0
+        },
+        {
+          "name": "MechanicalHUMANOID",
+          "error": "",
+          "worst_bone_probe": "",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.3374936878681183,
+            "y": -2.275957200481571e-15,
+            "z": 3.9374852180480957
+          },
+          "max_lbs_error_m": 0.0,
+          "root_travel_m": 3.951922655105591,
+          "expected_travel_m": 3.9519221782684326,
+          "hand_motion_m": 0.1961105316877365,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 0.0,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 1.7343334093311569e-06,
+          "body_heading_degrees": 3.5327463150024414,
+          "root_heading_degrees": 7.175479888916016
+        },
+        {
+          "name": "OptionalControlsGENERIC",
+          "error": "",
+          "worst_bone_probe": "RightFoot@1",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "max_lbs_error_m": 1.6856236470630392e-05,
+          "root_travel_m": 3.418764591217041,
+          "expected_travel_m": 3.41876482963562,
+          "hand_motion_m": 0.0,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 3.297263174317777e-05,
+          "lbs_precision_allowance_m": 9.023155143950135e-05,
+          "maximum_rest_rotation_anisotropy": 2.4164746719179675e-05,
+          "body_heading_degrees": 0.0,
+          "root_heading_degrees": 0.0
+        },
+        {
+          "name": "OptionalControlsHUMANOID",
+          "error": "",
+          "worst_bone_probe": "",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.2919621169567108,
+            "y": 2.3175905639050143e-15,
+            "z": 3.4062750339508057
+          },
+          "max_lbs_error_m": 0.0,
+          "root_travel_m": 3.418764591217041,
+          "expected_travel_m": 3.41876482963562,
+          "hand_motion_m": 0.2057807594537735,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 0.0,
+          "lbs_precision_allowance_m": 9.023155143950135e-05,
+          "maximum_rest_rotation_anisotropy": 2.4164746719179675e-05,
+          "body_heading_degrees": 2.7777013778686523,
+          "root_heading_degrees": 7.175479888916016
+        }
+      ]
+    },
+    "unity_jump": {
+      "unity_version": "6000.3.21f1",
+      "cases": [
+        {
+          "name": "JumpGENERIC",
+          "error": "",
+          "worst_bone_probe": "LeftToeBase@3",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "max_lbs_error_m": 1.2463866596590378e-06,
+          "root_travel_m": 3.2575597763061523,
+          "expected_travel_m": 3.2575600147247314,
+          "hand_motion_m": 0.0,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 2.0168929495412158e-06,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 2.624913975068921e-07,
+          "body_heading_degrees": 0.0,
+          "root_heading_degrees": 0.0,
+          "hip_rise_m": 0.0,
+          "actor_rise_m": 0.0
+        },
+        {
+          "name": "JumpHUMANOID",
+          "error": "",
+          "worst_bone_probe": "",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.2781952917575836,
+            "y": -6.672440377997191e-14,
+            "z": 3.245659351348877
+          },
+          "max_lbs_error_m": 0.0,
+          "root_travel_m": 3.2575600147247314,
+          "expected_travel_m": 3.2575600147247314,
+          "hand_motion_m": 0.22255873680114746,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 0.0,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 2.624913975068921e-07,
+          "body_heading_degrees": 3.1853671073913574,
+          "root_heading_degrees": 7.175452709197998,
+          "hip_rise_m": 0.36847811937332153,
+          "actor_rise_m": 1.379452108096757e-14
+        }
+      ]
+    },
+    "unity_transition": {
+      "passed": true,
+      "scene_preserved": true,
+      "prefab_saved": true,
+      "maximum_hand_step_m": 0.07024957239627838,
+      "maximum_root_step_m": 0.05932832136750221,
+      "maximum_helper_step_degrees": 8.211309432983398
+    },
+    "baseline": {
+      "blender": [
+        {
+          "case": "SyntheticT",
+          "status": "pass",
+          "bones": 53,
+          "mapping": 52,
+          "source_scene_preserved": true,
+          "fbx_shape_keys": 1
+        },
+        {
+          "case": "SyntheticA",
+          "status": "pass",
+          "bones": 53,
+          "mapping": 52,
+          "source_scene_preserved": true,
+          "fbx_shape_keys": 1
+        },
+        {
+          "case": "SyntheticMotionGeneric",
+          "status": "pass",
+          "selected_action_only": true,
+          "source_scene_preserved": true
+        },
+        {
+          "case": "SyntheticMotionHumanoid",
+          "status": "pass",
+          "selected_action_only": true,
+          "source_scene_preserved": true
+        },
+        {
+          "case": "unsupported_action_rejection",
+          "status": "pass"
+        },
+        {
+          "case": "ShanePreserved",
+          "status": "pass",
+          "bones": 68,
+          "source_file_preserved": true,
+          "shape_keys": 3
+        },
+        {
+          "case": "unweighted_rejection",
+          "status": "pass"
+        },
+        {
+          "case": "copy_only_four_weight_pruning",
+          "status": "pass"
+        }
+      ],
+      "unity_version": "6000.3.21f1",
+      "unity": [
+        {
+          "name": "SyntheticT",
+          "error": "",
+          "passed": true,
+          "bind_preserved": true,
+          "vertices_preserved": true,
+          "max_bind_delta": 0.0,
+          "generic_lbs_error_meters": 5.733831471843587e-07,
+          "humanoid_hand_movement_meters": 0.18530434370040894,
+          "humanoid_pose_applied": true,
+          "validation": {
+            "asset": "Assets/Fixtures/SyntheticT/SyntheticT.fbx",
+            "unity_version": "6000.3.21f1",
+            "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+            "valid_avatar": true,
+            "human_avatar": true,
+            "mapped_bones": 52,
+            "skinned_meshes": 1,
+            "blendshapes": 1,
+            "height_meters": 1.7242501974105835
+          }
+        },
+        {
+          "name": "SyntheticA",
+          "error": "",
+          "passed": true,
+          "bind_preserved": true,
+          "vertices_preserved": true,
+          "max_bind_delta": 0.0,
+          "generic_lbs_error_meters": 5.342935196495091e-07,
+          "humanoid_hand_movement_meters": 0.48060938715934753,
+          "humanoid_pose_applied": true,
+          "validation": {
+            "asset": "Assets/Fixtures/SyntheticA/SyntheticA.fbx",
+            "unity_version": "6000.3.21f1",
+            "skeleton_signature": "9c56639a3247edc247451aa173dd7a001183db8e5130e50d0d985d4e4048bc16",
+            "valid_avatar": true,
+            "human_avatar": true,
+            "mapped_bones": 52,
+            "skinned_meshes": 1,
+            "blendshapes": 1,
+            "height_meters": 1.3829994201660156
+          }
+        },
+        {
+          "name": "ShanePreserved",
+          "error": "",
+          "passed": true,
+          "bind_preserved": true,
+          "vertices_preserved": true,
+          "max_bind_delta": 0.0,
+          "generic_lbs_error_meters": 0.0,
+          "humanoid_hand_movement_meters": 0.6680556535720825,
+          "humanoid_pose_applied": true,
+          "validation": {
+            "asset": "Assets/Fixtures/ShanePreserved/ShanePreserved.fbx",
+            "unity_version": "6000.3.21f1",
+            "skeleton_signature": "1d9e00b6439e86133d953b839541dbaeb28793903ced52c6ce86b77fcaf0ec50",
+            "valid_avatar": true,
+            "human_avatar": true,
+            "mapped_bones": 54,
+            "skinned_meshes": 2,
+            "blendshapes": 3,
+            "height_meters": 1.854810357093811
+          }
+        }
+      ],
+      "animations": [
+        {
+          "name": "SelectedActionGeneric",
+          "error": "",
+          "passed": true,
+          "generic_lbs_error_meters": 5.183912321626849e-07,
+          "root_travel_meters": 0.30000001192092896,
+          "hand_movement_meters": 0.0,
+          "finger_rotation_degrees": 0.0,
+          "validation": {
+            "asset": "Assets/Fixtures/SyntheticMotionGeneric/Animations/SelectedWave.fbx",
+            "source_model": "Assets/Fixtures/SyntheticMotionGeneric/SyntheticMotionGeneric.fbx",
+            "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+            "clip": "SelectedWave",
+            "unity_version": "6000.3.21f1",
+            "editable_clip_asset": "",
+            "human": false,
+            "loop": false,
+            "duration_seconds": 1.0000001192092896,
+            "frame_rate": 24.0
+          }
+        },
+        {
+          "name": "HumanoidClipToSyntheticT",
+          "error": "",
+          "passed": true,
+          "generic_lbs_error_meters": 0.0,
+          "root_travel_meters": 0.30000001192092896,
+          "hand_movement_meters": 0.20444436371326447,
+          "finger_rotation_degrees": 23.90680694580078,
+          "validation": {
+            "asset": "Assets/Fixtures/SyntheticMotionHumanoid/Animations/SelectedWave.fbx",
+            "source_model": "Assets/Fixtures/SyntheticMotionHumanoid/SyntheticMotionHumanoid.fbx",
+            "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+            "clip": "SelectedWave",
+            "unity_version": "6000.3.21f1",
+            "editable_clip_asset": "",
+            "human": true,
+            "loop": false,
+            "duration_seconds": 1.0,
+            "frame_rate": 24.0
+          }
+        },
+        {
+          "name": "HumanoidClipToSyntheticA",
+          "error": "",
+          "passed": true,
+          "generic_lbs_error_meters": 0.0,
+          "root_travel_meters": 0.2399999499320984,
+          "hand_movement_meters": 0.1635553538799286,
+          "finger_rotation_degrees": 23.906740188598633,
+          "validation": {
+            "asset": "Assets/Fixtures/SyntheticMotionHumanoid/Animations/SelectedWave.fbx",
+            "source_model": "Assets/Fixtures/SyntheticMotionHumanoid/SyntheticMotionHumanoid.fbx",
+            "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+            "clip": "SelectedWave",
+            "unity_version": "6000.3.21f1",
+            "editable_clip_asset": "",
+            "human": true,
+            "loop": false,
+            "duration_seconds": 1.0,
+            "frame_rate": 24.0
+          }
+        },
+        {
+          "name": "HumanoidClipToShanePreserved",
+          "error": "",
+          "passed": true,
+          "generic_lbs_error_meters": 0.0,
+          "root_travel_meters": 0.3291109800338745,
+          "hand_movement_meters": 0.19624529778957367,
+          "finger_rotation_degrees": 23.906740188598633,
+          "validation": {
+            "asset": "Assets/Fixtures/SyntheticMotionHumanoid/Animations/SelectedWave.fbx",
+            "source_model": "Assets/Fixtures/SyntheticMotionHumanoid/SyntheticMotionHumanoid.fbx",
+            "skeleton_signature": "d821bed576e3bc3c40cf8aa9b7080a36bc1ee75a89a2f8dd3a2cba8524998ea8",
+            "clip": "SelectedWave",
+            "unity_version": "6000.3.21f1",
+            "editable_clip_asset": "",
+            "human": true,
+            "loop": false,
+            "duration_seconds": 1.0,
+            "frame_rate": 24.0
+          }
+        }
+      ]
+    },
+    "rpm_visual_failure": {
+      "passed": false,
+      "version": "0.5.0",
+      "case": "ReadyPlayerMeCamera",
+      "vertices": 9994,
+      "bones": 53,
+      "actual_inference": [
+        "MIA",
+        "SkinTokens",
+        "Kimodo"
+      ],
+      "elapsed_seconds": 135.68508219999785,
+      "source_preserved": true,
+      "root_heading": true,
+      "structural_checks_passed": true,
+      "visual_review_passed": false,
+      "failure": "Fresh humanoid AI placement/weights tear Camera/tripod geometry; now blocked by deformation review"
+    },
+    "unity_failed_rpm_structural_parity": {
+      "unity_version": "6000.3.21f1",
+      "cases": [
+        {
+          "name": "RPMGeneric",
+          "error": "",
+          "worst_bone_probe": "LeftHandThumb1@3",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "max_lbs_error_m": 4.663277650251985e-06,
+          "root_travel_m": 1.9215197563171387,
+          "expected_travel_m": 1.9215198755264282,
+          "hand_motion_m": 0.0,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 4.97547080158256e-06,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 4.7207933562276594e-07,
+          "body_heading_degrees": 0.0,
+          "root_heading_degrees": 0.0,
+          "hip_rise_m": 0.0,
+          "actor_rise_m": 0.0
+        },
+        {
+          "name": "RPMRelease",
+          "error": "",
+          "worst_bone_probe": "",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.16409757733345032,
+            "y": 2.3592239273284576e-16,
+            "z": 1.9144999980926514
+          },
+          "max_lbs_error_m": 0.0,
+          "root_travel_m": 1.9215197563171387,
+          "expected_travel_m": 1.9215198755264282,
+          "hand_motion_m": 0.1723274290561676,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 0.0,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 4.7207933562276594e-07,
+          "body_heading_degrees": -1.9406789541244507,
+          "root_heading_degrees": 7.175479888916016,
+          "hip_rise_m": 0.009662508964538574,
+          "actor_rise_m": 7.355227538141662e-16
+        }
+      ]
+    },
+    "deformation_gate": {
+      "passed": true,
+      "failed_camera_blocked": true,
+      "no_motion_or_export_after_failure": true,
+      "imported_joint_error_meters": 0.0,
+      "imported_rest_matrix_error": 3.2782554626464844e-07,
+      "imported_weights_exact_at_root_adaptation": true,
+      "unbound_root_adaptation": true,
+      "incompatible_reuse_rejected": true,
+      "source_preserved": true,
+      "original_bones": 67,
+      "adapted_bones": 68
+    },
+    "hazmat_release": {
+      "passed": true,
+      "version": "0.5.0",
+      "case": "Hazmat_female_01",
+      "vertices": 2792,
+      "bones": 53,
+      "actual_inference": [
+        "MIA",
+        "SkinTokens",
+        "Kimodo"
+      ],
+      "elapsed_seconds": 135.76309039999614,
+      "source_preserved": true,
+      "root_heading": true,
+      "deformation_report": "C:\\Users\\Elin\\AppData\\Local\\LocalCharacter\\jobs\\character-ztz5thqn\\deformation-report.json",
+      "visual_review_passed": true,
+      "reviewed_frames": [
+        1,
+        25,
+        49
+      ],
+      "review_scope": "Sampled front poses; no guarantee for all motions"
+    },
+    "extracted_release": {
+      "passed": true,
+      "release_archive": "C:\\Users\\Elin\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\local_character\\artifacts\\local_character-0.5.0.zip",
+      "extracted_worker_binding": true,
+      "source_preserved": true,
+      "deformation_guard_available": true,
+      "provider_inventory_available": true,
+      "vertices": 8,
+      "bones": 53
+    },
+    "unity_hazmat": {
+      "unity_version": "6000.3.21f1",
+      "cases": [
+        {
+          "name": "RPMGeneric",
+          "error": "",
+          "worst_bone_probe": "RightHandPinky2@2",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "max_lbs_error_m": 2.1444345748022897e-06,
+          "root_travel_m": 3.19588303565979,
+          "expected_travel_m": 3.195883274078369,
+          "hand_motion_m": 0.0,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 2.9988009373482782e-06,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 9.94058723335911e-07,
+          "body_heading_degrees": 0.0,
+          "root_heading_degrees": 0.0,
+          "hip_rise_m": 0.0,
+          "actor_rise_m": 0.0
+        },
+        {
+          "name": "RPMRelease",
+          "error": "",
+          "worst_bone_probe": "",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.27292799949645996,
+            "y": -6.392109064279339e-14,
+            "z": 3.1842081546783447
+          },
+          "max_lbs_error_m": 0.0,
+          "root_travel_m": 3.1958835124969482,
+          "expected_travel_m": 3.195883274078369,
+          "hand_motion_m": 0.20282866060733795,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 0.0,
+          "lbs_precision_allowance_m": 9.999999747378752e-06,
+          "maximum_rest_rotation_anisotropy": 9.94058723335911e-07,
+          "body_heading_degrees": 3.5092241764068604,
+          "root_heading_degrees": 7.175452709197998,
+          "hip_rise_m": 0.0028365254402160645,
+          "actor_rise_m": 1.2156942119645464e-14
+        }
+      ]
+    },
+    "imported_camera_recovery": {
+      "passed": true,
+      "case": "Camera_male_01",
+      "accepted_imported_joints": true,
+      "imported_weights_used": true,
+      "cached_real_kimodo_motion": true,
+      "source_preserved": true,
+      "bones": 66,
+      "deformation_report": "C:\\Users\\Elin\\AppData\\Local\\LocalCharacter\\jobs\\character-8j3knaox\\deformation-report.json",
+      "gross_tearing_resolved": true,
+      "reviewed_frames": [
+        1,
+        25,
+        49
+      ],
+      "mechanical_hinge_review_required": true
+    },
+    "unity_camera_recovery": {
+      "unity_version": "6000.3.21f1",
+      "cases": [
+        {
+          "name": "ReuseGENERIC",
+          "error": "",
+          "worst_bone_probe": "LeftHandPinky1@2",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "max_lbs_error_m": 2.24137443183281e-06,
+          "root_travel_m": 3.728952646255493,
+          "expected_travel_m": 3.7289528846740723,
+          "hand_motion_m": 0.0,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 1.030040584737435e-05,
+          "lbs_precision_allowance_m": 1.1910829925909638e-05,
+          "maximum_rest_rotation_anisotropy": 3.722234851011308e-06,
+          "body_heading_degrees": 0.0,
+          "root_heading_degrees": 0.0,
+          "hip_rise_m": 0.0,
+          "actor_rise_m": 0.0
+        },
+        {
+          "name": "ReuseHUMANOID",
+          "error": "",
+          "worst_bone_probe": "",
+          "passed": true,
+          "human_root_delta": {
+            "x": 0.3184521794319153,
+            "y": 1.27675647831893e-15,
+            "z": 3.715330123901367
+          },
+          "max_lbs_error_m": 0.0,
+          "root_travel_m": 3.7289528846740723,
+          "expected_travel_m": 3.7289528846740723,
+          "hand_motion_m": 0.21511276066303253,
+          "max_twist_rotation_error_degrees": 0.0,
+          "max_bone_probe_error_m": 0.0,
+          "lbs_precision_allowance_m": 1.1910829925909638e-05,
+          "maximum_rest_rotation_anisotropy": 3.722234851011308e-06,
+          "body_heading_degrees": 3.1851212978363037,
+          "root_heading_degrees": 7.175479888916016,
+          "hip_rise_m": 0.006137967109680176,
+          "actor_rise_m": 4.163336342344337e-15
+        }
+      ]
+    },
+    "ui_and_landmarks": {
+      "passed": true,
+      "global_preferences_used": true,
+      "legacy_settings_migrated": true,
+      "workflow_panel_has_no_runtime_fields": true,
+      "eight_front_anchors_exact": true,
+      "model_depth_preserved": true,
+      "landmarks_locked": true,
+      "source_preserved": true,
+      "sources_hidden_after_individual_step": true,
+      "original_plus_copy_rejected": true,
+      "stale_landmarks_rejected": true,
+      "cached_actual_mia_used": true,
+      "native_weight_editor_draws": true,
+      "bone_choice_updates_group": true,
+      "pose_and_joint_editors_work": true,
+      "character_selection_helper_works": true
+    },
+    "keyframe_controls": {
+      "passed": true,
+      "twist_correction_coherent": true,
+      "max_twist_dot_error": 4.76837158203125e-07,
+      "stale_twist_capture_rejected": true,
+      "invalid_interval_and_in_place_rejected": true,
+      "malformed_pose_rejected_before_allocation": true,
+      "verification_cancelled": true,
+      "negative_frame_remove_and_clear": true,
+      "negative_subframe_recall": true,
+      "cached_arrays_for_controls": true
+    },
+    "auto_pose": {
+      "passed": true,
+      "version": "0.10.0",
+      "source": {
+        "passed": true,
+        "cases": [
+          {
+            "case": "small_hand",
+            "height": 0.875,
+            "target_error_height": 9.197352384686736e-07,
+            "pin_error_height": 1.1059848107553906e-06,
+            "length_error_height": 5.572905348305568e-08,
+            "limited": false,
+            "milliseconds": 5.769999999756692,
+            "iterations": 3
+          },
+          {
+            "case": "far_hand",
+            "height": 0.875,
+            "target_error_height": 1.9878349184868595e-07,
+            "pin_error_height": 1.1881365479348229e-07,
+            "length_error_height": 4.504052018651704e-08,
+            "limited": false,
+            "milliseconds": 6.6014000003633555,
+            "iterations": 4
+          },
+          {
+            "case": "shorten_arm",
+            "height": 0.875,
+            "target_error_height": 2.7548745993574565e-07,
+            "pin_error_height": 1.2799102892350413e-07,
+            "length_error_height": 4.109800382552058e-08,
+            "limited": false,
+            "milliseconds": 6.798899999921559,
+            "iterations": 4
+          },
+          {
+            "case": "pelvis_down",
+            "height": 0.875,
+            "target_error_height": 3.405982565038008e-08,
+            "pin_error_height": 7.911648225520443e-08,
+            "length_error_height": 7.245320289759962e-08,
+            "limited": false,
+            "milliseconds": 9.71420000132639,
+            "iterations": 9
+          },
+          {
+            "case": "pelvis_sideways",
+            "height": 0.875,
+            "target_error_height": 0.0022100627375286645,
+            "pin_error_height": 7.628570430709742e-08,
+            "length_error_height": 3.4799154732415416e-08,
+            "limited": true,
+            "milliseconds": 33.09850000005099,
+            "iterations": 32
+          },
+          {
+            "case": "foot",
+            "height": 0.875,
+            "target_error_height": 6.198976626805338e-08,
+            "pin_error_height": 1.5064136401901878e-07,
+            "length_error_height": 6.391469474311049e-08,
+            "limited": false,
+            "milliseconds": 6.348000000798493,
+            "iterations": 7
+          },
+          {
+            "case": "multiple_pins",
+            "height": 0.875,
+            "target_error_height": 2.348953353359652e-07,
+            "pin_error_height": 6.860901466428446e-08,
+            "length_error_height": 5.73229627257429e-08,
+            "limited": false,
+            "milliseconds": 12.238200000865618,
+            "iterations": 6
+          },
+          {
+            "case": "hips_pin",
+            "height": 0.875,
+            "target_error_height": 4.382618821030475e-06,
+            "pin_error_height": 3.4059797014508927e-08,
+            "length_error_height": 4.15286242537251e-08,
+            "limited": false,
+            "milliseconds": 6.575199999133474,
+            "iterations": 8
+          },
+          {
+            "case": "elbow",
+            "height": 0.875,
+            "target_error_height": 5.084831188016725e-07,
+            "pin_error_height": 2.929975882647486e-07,
+            "length_error_height": 5.7248122686814895e-08,
+            "limited": false,
+            "milliseconds": 4.862100000536884,
+            "iterations": 3
+          },
+          {
+            "case": "knee",
+            "height": 0.875,
+            "target_error_height": 0.028528880115172635,
+            "pin_error_height": 7.294945550722609e-08,
+            "length_error_height": 3.245966539999756e-08,
+            "limited": true,
+            "milliseconds": 33.19050000027346,
+            "iterations": 32
+          },
+          {
+            "case": "extreme_arm",
+            "height": 0.875,
+            "target_error_height": 1.2721209910747153,
+            "pin_error_height": 5.733903501978014e-07,
+            "length_error_height": 5.1079564229133164e-08,
+            "limited": true,
+            "milliseconds": 45.148700000936515,
+            "iterations": 32
+          },
+          {
+            "case": "target_is_pin",
+            "height": 0.875,
+            "target_error_height": 0.08660258072563712,
+            "pin_error_height": 1.0845767326398994e-07,
+            "length_error_height": 2.5123793567386317e-08,
+            "limited": true,
+            "milliseconds": 56.21410000094329,
+            "iterations": 32
+          },
+          {
+            "case": "small_hand",
+            "height": 1.75,
+            "target_error_height": 9.197352384686736e-07,
+            "pin_error_height": 1.1059848107553906e-06,
+            "length_error_height": 5.572905348305568e-08,
+            "limited": false,
+            "milliseconds": 5.229899999903864,
+            "iterations": 3
+          },
+          {
+            "case": "far_hand",
+            "height": 1.75,
+            "target_error_height": 1.9878349184868595e-07,
+            "pin_error_height": 1.1881365479348229e-07,
+            "length_error_height": 4.504052018651704e-08,
+            "limited": false,
+            "milliseconds": 6.354400000418536,
+            "iterations": 4
+          },
+          {
+            "case": "shorten_arm",
+            "height": 1.75,
+            "target_error_height": 2.7548745993574565e-07,
+            "pin_error_height": 1.2799102892350413e-07,
+            "length_error_height": 4.109800382552058e-08,
+            "limited": false,
+            "milliseconds": 6.272800001170253,
+            "iterations": 4
+          },
+          {
+            "case": "pelvis_down",
+            "height": 1.75,
+            "target_error_height": 3.405982565038008e-08,
+            "pin_error_height": 7.911648225520443e-08,
+            "length_error_height": 7.245320289759962e-08,
+            "limited": false,
+            "milliseconds": 9.38049999967916,
+            "iterations": 9
+          },
+          {
+            "case": "pelvis_sideways",
+            "height": 1.75,
+            "target_error_height": 0.0022100627375286645,
+            "pin_error_height": 7.628570430709742e-08,
+            "length_error_height": 3.4799154732415416e-08,
+            "limited": true,
+            "milliseconds": 32.38740000051621,
+            "iterations": 32
+          },
+          {
+            "case": "foot",
+            "height": 1.75,
+            "target_error_height": 6.198976626805338e-08,
+            "pin_error_height": 1.5064136401901878e-07,
+            "length_error_height": 6.391469474311049e-08,
+            "limited": false,
+            "milliseconds": 6.982300001254771,
+            "iterations": 7
+          },
+          {
+            "case": "multiple_pins",
+            "height": 1.75,
+            "target_error_height": 2.348953353359652e-07,
+            "pin_error_height": 6.860901466428446e-08,
+            "length_error_height": 5.73229627257429e-08,
+            "limited": false,
+            "milliseconds": 11.76830000076734,
+            "iterations": 6
+          },
+          {
+            "case": "hips_pin",
+            "height": 1.75,
+            "target_error_height": 4.382618821030475e-06,
+            "pin_error_height": 3.4059797014508927e-08,
+            "length_error_height": 4.15286242537251e-08,
+            "limited": false,
+            "milliseconds": 6.534899999678601,
+            "iterations": 8
+          },
+          {
+            "case": "elbow",
+            "height": 1.75,
+            "target_error_height": 5.084831188016725e-07,
+            "pin_error_height": 2.929975882647486e-07,
+            "length_error_height": 5.7248122686814895e-08,
+            "limited": false,
+            "milliseconds": 4.996400000891299,
+            "iterations": 3
+          },
+          {
+            "case": "knee",
+            "height": 1.75,
+            "target_error_height": 0.028528880115172635,
+            "pin_error_height": 7.294945550722609e-08,
+            "length_error_height": 3.245966539999756e-08,
+            "limited": true,
+            "milliseconds": 34.37599999961094,
+            "iterations": 32
+          },
+          {
+            "case": "extreme_arm",
+            "height": 1.75,
+            "target_error_height": 1.2721209910747153,
+            "pin_error_height": 5.733903501978014e-07,
+            "length_error_height": 5.1079564229133164e-08,
+            "limited": true,
+            "milliseconds": 42.869599999903585,
+            "iterations": 32
+          },
+          {
+            "case": "target_is_pin",
+            "height": 1.75,
+            "target_error_height": 0.08660258072563712,
+            "pin_error_height": 1.0845767326398994e-07,
+            "length_error_height": 2.5123793567386317e-08,
+            "limited": true,
+            "milliseconds": 53.11509999955888,
+            "iterations": 32
+          },
+          {
+            "case": "small_hand",
+            "height": 3.5,
+            "target_error_height": 9.197352384686736e-07,
+            "pin_error_height": 1.1059848107553906e-06,
+            "length_error_height": 5.572905348305568e-08,
+            "limited": false,
+            "milliseconds": 5.2145999998174375,
+            "iterations": 3
+          },
+          {
+            "case": "far_hand",
+            "height": 3.5,
+            "target_error_height": 1.9878349184868595e-07,
+            "pin_error_height": 1.1881365479348229e-07,
+            "length_error_height": 4.504052018651704e-08,
+            "limited": false,
+            "milliseconds": 6.329699999696459,
+            "iterations": 4
+          },
+          {
+            "case": "shorten_arm",
+            "height": 3.5,
+            "target_error_height": 2.7548745993574565e-07,
+            "pin_error_height": 1.2799102892350413e-07,
+            "length_error_height": 4.109800382552058e-08,
+            "limited": false,
+            "milliseconds": 6.613600000491715,
+            "iterations": 4
+          },
+          {
+            "case": "pelvis_down",
+            "height": 3.5,
+            "target_error_height": 3.405982565038008e-08,
+            "pin_error_height": 7.911648225520443e-08,
+            "length_error_height": 7.245320289759962e-08,
+            "limited": false,
+            "milliseconds": 9.06829999985348,
+            "iterations": 9
+          },
+          {
+            "case": "pelvis_sideways",
+            "height": 3.5,
+            "target_error_height": 0.0022100627375286645,
+            "pin_error_height": 7.628570430709742e-08,
+            "length_error_height": 3.4799154732415416e-08,
+            "limited": true,
+            "milliseconds": 32.67290000076173,
+            "iterations": 32
+          },
+          {
+            "case": "foot",
+            "height": 3.5,
+            "target_error_height": 6.198976626805338e-08,
+            "pin_error_height": 1.5064136401901878e-07,
+            "length_error_height": 6.391469474311049e-08,
+            "limited": false,
+            "milliseconds": 6.449099999372265,
+            "iterations": 7
+          },
+          {
+            "case": "multiple_pins",
+            "height": 3.5,
+            "target_error_height": 2.348953353359652e-07,
+            "pin_error_height": 6.860901466428446e-08,
+            "length_error_height": 5.73229627257429e-08,
+            "limited": false,
+            "milliseconds": 11.936999999306863,
+            "iterations": 6
+          },
+          {
+            "case": "hips_pin",
+            "height": 3.5,
+            "target_error_height": 4.382618821030475e-06,
+            "pin_error_height": 3.4059797014508927e-08,
+            "length_error_height": 4.15286242537251e-08,
+            "limited": false,
+            "milliseconds": 6.3970999999583,
+            "iterations": 8
+          },
+          {
+            "case": "elbow",
+            "height": 3.5,
+            "target_error_height": 5.084831188016725e-07,
+            "pin_error_height": 2.929975882647486e-07,
+            "length_error_height": 5.7248122686814895e-08,
+            "limited": false,
+            "milliseconds": 5.155700000614161,
+            "iterations": 3
+          },
+          {
+            "case": "knee",
+            "height": 3.5,
+            "target_error_height": 0.028528880115172635,
+            "pin_error_height": 7.294945550722609e-08,
+            "length_error_height": 3.245966539999756e-08,
+            "limited": true,
+            "milliseconds": 33.441000001403154,
+            "iterations": 32
+          },
+          {
+            "case": "extreme_arm",
+            "height": 3.5,
+            "target_error_height": 1.2721209910747153,
+            "pin_error_height": 5.733903501978014e-07,
+            "length_error_height": 5.1079564229133164e-08,
+            "limited": true,
+            "milliseconds": 42.23670000101265,
+            "iterations": 32
+          },
+          {
+            "case": "target_is_pin",
+            "height": 3.5,
+            "target_error_height": 0.08660258072563712,
+            "pin_error_height": 1.0845767326398994e-07,
+            "length_error_height": 2.5123793567386317e-08,
+            "limited": true,
+            "milliseconds": 54.21169999863196,
+            "iterations": 32
+          }
+        ],
+        "solver_median_ms": 8.025300000554125,
+        "full_channels_restored": true,
+        "no_helper_objects": true,
+        "rotation_target_passed": true,
+        "capture_guard": true,
+        "unsafe_setup_rejected": true,
+        "whole_pose_keys": true,
+        "twist_helpers": true,
+        "lifecycle_cleanup": true,
+        "extracted_extension": false,
+        "version": "0.10.0"
+      },
+      "extracted": {
+        "passed": true,
+        "cases": [
+          {
+            "case": "small_hand",
+            "height": 0.875,
+            "target_error_height": 9.197352384686736e-07,
+            "pin_error_height": 1.1059848107553906e-06,
+            "length_error_height": 5.572905348305568e-08,
+            "limited": false,
+            "milliseconds": 5.819100000735489,
+            "iterations": 3
+          },
+          {
+            "case": "far_hand",
+            "height": 0.875,
+            "target_error_height": 1.9878349184868595e-07,
+            "pin_error_height": 1.1881365479348229e-07,
+            "length_error_height": 4.504052018651704e-08,
+            "limited": false,
+            "milliseconds": 7.224400000268361,
+            "iterations": 4
+          },
+          {
+            "case": "shorten_arm",
+            "height": 0.875,
+            "target_error_height": 2.7548745993574565e-07,
+            "pin_error_height": 1.2799102892350413e-07,
+            "length_error_height": 4.109800382552058e-08,
+            "limited": false,
+            "milliseconds": 6.613799998376635,
+            "iterations": 4
+          },
+          {
+            "case": "pelvis_down",
+            "height": 0.875,
+            "target_error_height": 3.405982565038008e-08,
+            "pin_error_height": 7.911648225520443e-08,
+            "length_error_height": 7.245320289759962e-08,
+            "limited": false,
+            "milliseconds": 10.700199998609605,
+            "iterations": 9
+          },
+          {
+            "case": "pelvis_sideways",
+            "height": 0.875,
+            "target_error_height": 0.0022100627375286645,
+            "pin_error_height": 7.628570430709742e-08,
+            "length_error_height": 3.4799154732415416e-08,
+            "limited": true,
+            "milliseconds": 36.51960000024701,
+            "iterations": 32
+          },
+          {
+            "case": "foot",
+            "height": 0.875,
+            "target_error_height": 6.198976626805338e-08,
+            "pin_error_height": 1.5064136401901878e-07,
+            "length_error_height": 6.391469474311049e-08,
+            "limited": false,
+            "milliseconds": 6.63189999977476,
+            "iterations": 7
+          },
+          {
+            "case": "multiple_pins",
+            "height": 0.875,
+            "target_error_height": 2.348953353359652e-07,
+            "pin_error_height": 6.860901466428446e-08,
+            "length_error_height": 5.73229627257429e-08,
+            "limited": false,
+            "milliseconds": 12.053100001139683,
+            "iterations": 6
+          },
+          {
+            "case": "hips_pin",
+            "height": 0.875,
+            "target_error_height": 4.382618821030475e-06,
+            "pin_error_height": 3.4059797014508927e-08,
+            "length_error_height": 4.15286242537251e-08,
+            "limited": false,
+            "milliseconds": 6.325900001684204,
+            "iterations": 8
+          },
+          {
+            "case": "elbow",
+            "height": 0.875,
+            "target_error_height": 5.084831188016725e-07,
+            "pin_error_height": 2.929975882647486e-07,
+            "length_error_height": 5.7248122686814895e-08,
+            "limited": false,
+            "milliseconds": 5.125800000314484,
+            "iterations": 3
+          },
+          {
+            "case": "knee",
+            "height": 0.875,
+            "target_error_height": 0.028528880115172635,
+            "pin_error_height": 7.294945550722609e-08,
+            "length_error_height": 3.245966539999756e-08,
+            "limited": true,
+            "milliseconds": 32.92979999969248,
+            "iterations": 32
+          },
+          {
+            "case": "extreme_arm",
+            "height": 0.875,
+            "target_error_height": 1.2721209910747153,
+            "pin_error_height": 5.733903501978014e-07,
+            "length_error_height": 5.1079564229133164e-08,
+            "limited": true,
+            "milliseconds": 43.76039999988279,
+            "iterations": 32
+          },
+          {
+            "case": "target_is_pin",
+            "height": 0.875,
+            "target_error_height": 0.08660258072563712,
+            "pin_error_height": 1.0845767326398994e-07,
+            "length_error_height": 2.5123793567386317e-08,
+            "limited": true,
+            "milliseconds": 54.12820000128704,
+            "iterations": 32
+          },
+          {
+            "case": "small_hand",
+            "height": 1.75,
+            "target_error_height": 9.197352384686736e-07,
+            "pin_error_height": 1.1059848107553906e-06,
+            "length_error_height": 5.572905348305568e-08,
+            "limited": false,
+            "milliseconds": 5.174500000066473,
+            "iterations": 3
+          },
+          {
+            "case": "far_hand",
+            "height": 1.75,
+            "target_error_height": 1.9878349184868595e-07,
+            "pin_error_height": 1.1881365479348229e-07,
+            "length_error_height": 4.504052018651704e-08,
+            "limited": false,
+            "milliseconds": 6.257099999857019,
+            "iterations": 4
+          },
+          {
+            "case": "shorten_arm",
+            "height": 1.75,
+            "target_error_height": 2.7548745993574565e-07,
+            "pin_error_height": 1.2799102892350413e-07,
+            "length_error_height": 4.109800382552058e-08,
+            "limited": false,
+            "milliseconds": 6.553600000188453,
+            "iterations": 4
+          },
+          {
+            "case": "pelvis_down",
+            "height": 1.75,
+            "target_error_height": 3.405982565038008e-08,
+            "pin_error_height": 7.911648225520443e-08,
+            "length_error_height": 7.245320289759962e-08,
+            "limited": false,
+            "milliseconds": 9.308700000474346,
+            "iterations": 9
+          },
+          {
+            "case": "pelvis_sideways",
+            "height": 1.75,
+            "target_error_height": 0.0022100627375286645,
+            "pin_error_height": 7.628570430709742e-08,
+            "length_error_height": 3.4799154732415416e-08,
+            "limited": true,
+            "milliseconds": 31.38279999984661,
+            "iterations": 32
+          },
+          {
+            "case": "foot",
+            "height": 1.75,
+            "target_error_height": 6.198976626805338e-08,
+            "pin_error_height": 1.5064136401901878e-07,
+            "length_error_height": 6.391469474311049e-08,
+            "limited": false,
+            "milliseconds": 6.427099999200436,
+            "iterations": 7
+          },
+          {
+            "case": "multiple_pins",
+            "height": 1.75,
+            "target_error_height": 2.348953353359652e-07,
+            "pin_error_height": 6.860901466428446e-08,
+            "length_error_height": 5.73229627257429e-08,
+            "limited": false,
+            "milliseconds": 12.010799999188748,
+            "iterations": 6
+          },
+          {
+            "case": "hips_pin",
+            "height": 1.75,
+            "target_error_height": 4.382618821030475e-06,
+            "pin_error_height": 3.4059797014508927e-08,
+            "length_error_height": 4.15286242537251e-08,
+            "limited": false,
+            "milliseconds": 6.669599999440834,
+            "iterations": 8
+          },
+          {
+            "case": "elbow",
+            "height": 1.75,
+            "target_error_height": 5.084831188016725e-07,
+            "pin_error_height": 2.929975882647486e-07,
+            "length_error_height": 5.7248122686814895e-08,
+            "limited": false,
+            "milliseconds": 4.938000000038301,
+            "iterations": 3
+          },
+          {
+            "case": "knee",
+            "height": 1.75,
+            "target_error_height": 0.028528880115172635,
+            "pin_error_height": 7.294945550722609e-08,
+            "length_error_height": 3.245966539999756e-08,
+            "limited": true,
+            "milliseconds": 32.6372999988962,
+            "iterations": 32
+          },
+          {
+            "case": "extreme_arm",
+            "height": 1.75,
+            "target_error_height": 1.2721209910747153,
+            "pin_error_height": 5.733903501978014e-07,
+            "length_error_height": 5.1079564229133164e-08,
+            "limited": true,
+            "milliseconds": 43.19779999968887,
+            "iterations": 32
+          },
+          {
+            "case": "target_is_pin",
+            "height": 1.75,
+            "target_error_height": 0.08660258072563712,
+            "pin_error_height": 1.0845767326398994e-07,
+            "length_error_height": 2.5123793567386317e-08,
+            "limited": true,
+            "milliseconds": 53.89699999977893,
+            "iterations": 32
+          },
+          {
+            "case": "small_hand",
+            "height": 3.5,
+            "target_error_height": 9.197352384686736e-07,
+            "pin_error_height": 1.1059848107553906e-06,
+            "length_error_height": 5.572905348305568e-08,
+            "limited": false,
+            "milliseconds": 5.084700000224984,
+            "iterations": 3
+          },
+          {
+            "case": "far_hand",
+            "height": 3.5,
+            "target_error_height": 1.9878349184868595e-07,
+            "pin_error_height": 1.1881365479348229e-07,
+            "length_error_height": 4.504052018651704e-08,
+            "limited": false,
+            "milliseconds": 6.464600000981591,
+            "iterations": 4
+          },
+          {
+            "case": "shorten_arm",
+            "height": 3.5,
+            "target_error_height": 2.7548745993574565e-07,
+            "pin_error_height": 1.2799102892350413e-07,
+            "length_error_height": 4.109800382552058e-08,
+            "limited": false,
+            "milliseconds": 6.3575999993190635,
+            "iterations": 4
+          },
+          {
+            "case": "pelvis_down",
+            "height": 3.5,
+            "target_error_height": 3.405982565038008e-08,
+            "pin_error_height": 7.911648225520443e-08,
+            "length_error_height": 7.245320289759962e-08,
+            "limited": false,
+            "milliseconds": 9.362400000100024,
+            "iterations": 9
+          },
+          {
+            "case": "pelvis_sideways",
+            "height": 3.5,
+            "target_error_height": 0.0022100627375286645,
+            "pin_error_height": 7.628570430709742e-08,
+            "length_error_height": 3.4799154732415416e-08,
+            "limited": true,
+            "milliseconds": 32.49800000048708,
+            "iterations": 32
+          },
+          {
+            "case": "foot",
+            "height": 3.5,
+            "target_error_height": 6.198976626805338e-08,
+            "pin_error_height": 1.5064136401901878e-07,
+            "length_error_height": 6.391469474311049e-08,
+            "limited": false,
+            "milliseconds": 6.797799998821574,
+            "iterations": 7
+          },
+          {
+            "case": "multiple_pins",
+            "height": 3.5,
+            "target_error_height": 2.348953353359652e-07,
+            "pin_error_height": 6.860901466428446e-08,
+            "length_error_height": 5.73229627257429e-08,
+            "limited": false,
+            "milliseconds": 11.957699998674798,
+            "iterations": 6
+          },
+          {
+            "case": "hips_pin",
+            "height": 3.5,
+            "target_error_height": 4.382618821030475e-06,
+            "pin_error_height": 3.4059797014508927e-08,
+            "length_error_height": 4.15286242537251e-08,
+            "limited": false,
+            "milliseconds": 6.250500000533066,
+            "iterations": 8
+          },
+          {
+            "case": "elbow",
+            "height": 3.5,
+            "target_error_height": 5.084831188016725e-07,
+            "pin_error_height": 2.929975882647486e-07,
+            "length_error_height": 5.7248122686814895e-08,
+            "limited": false,
+            "milliseconds": 4.875999999057967,
+            "iterations": 3
+          },
+          {
+            "case": "knee",
+            "height": 3.5,
+            "target_error_height": 0.028528880115172635,
+            "pin_error_height": 7.294945550722609e-08,
+            "length_error_height": 3.245966539999756e-08,
+            "limited": true,
+            "milliseconds": 33.16430000086257,
+            "iterations": 32
+          },
+          {
+            "case": "extreme_arm",
+            "height": 3.5,
+            "target_error_height": 1.2721209910747153,
+            "pin_error_height": 5.733903501978014e-07,
+            "length_error_height": 5.1079564229133164e-08,
+            "limited": true,
+            "milliseconds": 42.86580000007234,
+            "iterations": 32
+          },
+          {
+            "case": "target_is_pin",
+            "height": 3.5,
+            "target_error_height": 0.08660258072563712,
+            "pin_error_height": 1.0845767326398994e-07,
+            "length_error_height": 2.5123793567386317e-08,
+            "limited": true,
+            "milliseconds": 56.21389999942039,
+            "iterations": 32
+          }
+        ],
+        "solver_median_ms": 8.266550000371353,
+        "full_channels_restored": true,
+        "no_helper_objects": true,
+        "rotation_target_passed": true,
+        "capture_guard": true,
+        "unsafe_setup_rejected": true,
+        "whole_pose_keys": true,
+        "twist_helpers": true,
+        "lifecycle_cleanup": true,
+        "extracted_extension": true,
+        "version": "0.10.0"
+      },
+      "interaction": {
+        "passed": true,
+        "real_keymap_events": true,
+        "cases": [
+          {
+            "case": "G_confirm",
+            "changed": 0.06274643540382385,
+            "cancelled": false,
+            "native": false,
+            "passed": true,
+            "undo": true,
+            "redo": true
+          },
+          {
+            "case": "G_cancel",
+            "changed": 0.0,
+            "cancelled": true,
+            "native": false,
+            "passed": true
+          },
+          {
+            "case": "R_confirm",
+            "changed": 0.537253201007843,
+            "cancelled": false,
+            "native": false,
+            "passed": true,
+            "undo": true,
+            "redo": true
+          },
+          {
+            "case": "R_cancel",
+            "changed": 0.0,
+            "cancelled": true,
+            "native": false,
+            "passed": true
+          },
+          {
+            "case": "numeric_axis",
+            "changed": 0.07016181200742722,
+            "cancelled": false,
+            "native": false,
+            "passed": true,
+            "undo": true,
+            "redo": true
+          },
+          {
+            "case": "disabled_native_G",
+            "changed": 0.044344283640384674,
+            "cancelled": false,
+            "native": true,
+            "passed": true
+          },
+          {
+            "case": "sidebar_move_button",
+            "changed": 0.05164920911192894,
+            "cancelled": false,
+            "native": false,
+            "passed": true,
+            "undo": true,
+            "redo": true
+          },
+          {
+            "case": "disabled_during_gesture",
+            "changed": 0.0,
+            "cancelled": true,
+            "native": false,
+            "passed": true
+          },
+          {
+            "case": "no_selected_bone",
+            "changed": 0.0,
+            "cancelled": true,
+            "native": true,
+            "passed": true
+          }
+        ],
+        "blender": "5.2.0 LTS"
+      },
+      "avatar": {
+        "passed": true,
+        "samples": 60,
+        "vertices": 6598,
+        "bones": 53,
+        "max_target_error_height": 2.643207265416537e-07,
+        "full_pipeline_median_ms": 10.549350000474078,
+        "full_pipeline_p95_ms": 11.705165001148998,
+        "scope": "owned transaction solve, all bone writes, depsgraph and skinned vertex evaluation; excludes viewport drawing",
+        "no_helpers": true,
+        "action_preserved": true,
+        "cancel_restored": true,
+        "kimodo_capture_passed": true,
+        "two_pose_action_exported_profiles": [
+          "HUMANOID",
+          "GENERIC"
+        ],
+        "export_scope": "Blender bundle creation; existing Unity importer is unchanged"
+      },
+      "unity": {
+        "unity_version": "6000.3.21f1",
+        "cases": [
+          {
+            "name": "AutoPoseGENERIC",
+            "error": "",
+            "worst_bone_probe": "RightFoot@0,5833333",
+            "passed": true,
+            "human_root_delta": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "max_lbs_error_m": 2.840147317328956e-06,
+            "root_travel_m": 0.0,
+            "expected_travel_m": 0.0,
+            "hand_motion_m": 0.0,
+            "max_twist_rotation_error_degrees": 0.0,
+            "max_bone_probe_error_m": 1.1606626685534138e-05,
+            "lbs_precision_allowance_m": 3.731300967046991e-05,
+            "maximum_rest_rotation_anisotropy": 1.1177573469467461e-05,
+            "body_heading_degrees": 0.0,
+            "root_heading_degrees": 0.0,
+            "hip_rise_m": 0.0,
+            "actor_rise_m": 0.0
+          },
+          {
+            "name": "AutoPoseHUMANOID",
+            "error": "",
+            "worst_bone_probe": "",
+            "passed": true,
+            "human_root_delta": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "max_lbs_error_m": 0.0,
+            "root_travel_m": 0.0,
+            "expected_travel_m": 0.0,
+            "hand_motion_m": 0.05970185622572899,
+            "max_twist_rotation_error_degrees": 0.0,
+            "max_bone_probe_error_m": 0.0,
+            "lbs_precision_allowance_m": 3.731300967046991e-05,
+            "maximum_rest_rotation_anisotropy": 1.1177573469467461e-05,
+            "body_heading_degrees": 0.5248866677284241,
+            "root_heading_degrees": 0.0,
+            "hip_rise_m": 0.0,
+            "actor_rise_m": 0.0
+          }
+        ]
+      },
+      "failed_unity_before_explicit_root_marker": {
+        "unity_version": "6000.3.21f1",
+        "cases": [
+          {
+            "name": "AutoPoseGENERIC",
+            "error": "",
+            "worst_bone_probe": "RightFoot@0,5833333",
+            "passed": true,
+            "human_root_delta": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "max_lbs_error_m": 2.840147317328956e-06,
+            "root_travel_m": 0.0,
+            "expected_travel_m": 0.0,
+            "hand_motion_m": 0.0,
+            "max_twist_rotation_error_degrees": 0.0,
+            "max_bone_probe_error_m": 1.1606626685534138e-05,
+            "lbs_precision_allowance_m": 3.731300967046991e-05,
+            "maximum_rest_rotation_anisotropy": 1.1177573469467461e-05,
+            "body_heading_degrees": 0.0,
+            "root_heading_degrees": 0.0,
+            "hip_rise_m": 0.0,
+            "actor_rise_m": 0.0
+          },
+          {
+            "name": "AutoPoseHUMANOID",
+            "error": "System.Exception: Human root travel differs: 0,00779744 vs 0",
+            "worst_bone_probe": "",
+            "passed": false,
+            "human_root_delta": {
+              "x": 0.007232850417494774,
+              "y": -0.00020664169278461486,
+              "z": 0.002905726432800293
+            },
+            "max_lbs_error_m": 0.0,
+            "root_travel_m": 0.00779744004830718,
+            "expected_travel_m": 0.0,
+            "hand_motion_m": 0.059701815247535706,
+            "max_twist_rotation_error_degrees": 0.0,
+            "max_bone_probe_error_m": 0.0,
+            "lbs_precision_allowance_m": 3.731300967046991e-05,
+            "maximum_rest_rotation_anisotropy": 1.1177573469467461e-05,
+            "body_heading_degrees": 0.5248866677284241,
+            "root_heading_degrees": 0.5446454882621765,
+            "hip_rise_m": 0.0,
+            "actor_rise_m": 0.0
+          }
+        ]
+      },
+      "regressions": {
+        "ui_and_landmarks": {
+          "passed": true,
+          "global_preferences_used": true,
+          "legacy_settings_migrated": true,
+          "workflow_panel_has_no_runtime_fields": true,
+          "eight_front_anchors_exact": true,
+          "model_depth_preserved": true,
+          "landmarks_locked": true,
+          "source_preserved": true,
+          "sources_hidden_after_individual_step": true,
+          "original_plus_copy_rejected": true,
+          "stale_landmarks_rejected": true,
+          "cached_actual_mia_used": true,
+          "native_weight_editor_draws": true,
+          "bone_choice_updates_group": true,
+          "pose_and_joint_editors_work": true,
+          "character_selection_helper_works": true
+        },
+        "kimodo_controls": {
+          "passed": true,
+          "twist_correction_coherent": true,
+          "max_twist_dot_error": 4.76837158203125e-07,
+          "stale_twist_capture_rejected": true,
+          "invalid_interval_and_in_place_rejected": true,
+          "malformed_pose_rejected_before_allocation": true,
+          "verification_cancelled": true,
+          "negative_frame_remove_and_clear": true,
+          "negative_subframe_recall": true,
+          "cached_arrays_for_controls": true
+        }
+      },
+      "live": {
+        "passed": true,
+        "version": "0.10.0",
+        "pose_action_and_objects_preserved": true,
+        "mode": "POSE",
+        "enabled": true,
+        "active_bone": "LeftHand",
+        "objects": 2,
+        "frame": 74,
+        "keymaps": 2,
+        "overlay_registered": true,
+        "focused_panel_and_pin_overlay_visually_reviewed": true
+      },
+      "solver": "hierarchical pin-first DLS on exact rest-offset FK; CPU, no AI weights",
+      "limits": [
+        "Standard Rigmodo humanoid only",
+        "Conservative swing/twist bounds, not full anatomical hinge limits",
+        "No Auto Keying, NLA/control-rig editing, native gizmos, collision or balance",
+        "Timings exclude viewport drawing; no 30/60 Hz guarantee"
+      ],
+      "private_geometry_and_paths_excluded": true
+    },
+    "resource_profile": {
+      "exit_code": 0,
+      "global_gpu_baseline_mib": 8264,
+      "global_gpu_peak_mib": 11923,
+      "total_gpu_mib": 24564,
+      "peak_minus_baseline_mib": 3659,
+      "maximum_process_tree_rss_bytes": 2443714560,
+      "gpu_attribution": "Global device use includes desktop and other applications; difference is an estimate, not an owned-process GPU allocation measurement"
+    },
+    "live_reload": {
+      "passed": true,
+      "version": "0.10.0",
+      "pose_action_and_objects_preserved": true,
+      "mode": "POSE",
+      "enabled": true,
+      "active_bone": "LeftHand",
+      "objects": 2,
+      "frame": 74,
+      "keymaps": 2,
+      "overlay_registered": true,
+      "focused_panel_and_pin_overlay_visually_reviewed": true
+    },
+    "unchanged_workflow_baseline_version": "0.9.0",
+    "live_companion": {
+      "version": "0.5.0",
+      "project": "R:\\UNITY\\Banter\\SQ-CreatorSDK",
+      "owned_companion": "R:\\UNITY\\Banter\\SQ-CreatorSDK\\Assets\\LocalCharacterValidation",
+      "backup": "C:\\Users\\Elin\\AppData\\Local\\Temp\\local-character-live-companion-backup-h13xoy7d",
+      "original_monitored_files_preserved": true,
+      "compilation_passed": true,
+      "compiler_errors": [],
+      "open_scene_state_preserved": true,
+      "sample_scene_dirty": true,
+      "sample_scene_root_count": 32,
+      "preview_scene_dirty": true,
+      "preview_scene_root_count": 6
+    },
+    "live_unity_original_files_preserved": true
+  },
+  "hardware_limit": "RTX 4090 24 GB tested; sampled global device usage is not a physical 16 GB proof"
+}

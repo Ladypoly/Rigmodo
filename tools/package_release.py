@@ -18,6 +18,7 @@ with zipfile.ZipFile(extension) as archive:
     if version in {'0.7.0','0.8.0','0.9.0'}:assert {'hands.py','hand_geometry.py'}<=names
     if version in {'0.8.0','0.9.0'}:assert 'motion_keyframes.py' in names
     if version=='0.9.0':assert 'character_result.py' in names
+    if version=='0.10.0':assert {'configuration.py','landmarks.py','hands.py','hand_geometry.py','ui.py','motion_keyframes.py','character_result.py','auto_pose.py','auto_pose_solver.py'}<=names
     assert not any(n.startswith(('tests/','tools/','native/','docs/','artifacts/','unity/','.git/')) for n in names)
     assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl'} for n in names)
     for name in names:
@@ -66,6 +67,10 @@ if version=='0.9.0':
         ui_and_landmarks='rigmodo-ui-regression/results.json',keyframe_controls='rigmodo-keyframe-regression/results.json',
         rigmodo_export='rigmodo-export-acceptance/results.json',rigmodo_unity='local-character-motion-unity-ifbo4iqj/motion-results.json',
         rigmodo_extracted='rigmodo-extracted-acceptance/results.json')
+if version=='0.10.0':
+    sources.update(ui_and_landmarks='rigmodo-auto-pose-ui-regression/results.json',
+        keyframe_controls='rigmodo-auto-pose-keyframe-regression/results.json',
+        auto_pose=str(root/'docs/auto-pose-acceptance-2026-10-05.json'))
 for name,path in sources.items():
     file=temporary/path
     if file.is_file():evidence[name]=json.loads(file.read_text())
@@ -101,6 +106,12 @@ if version=='0.9.0':
     assert all(case['passed'] for case in evidence['rigmodo_unity']['cases'])
     evidence['live_reload']=json.loads((root/'docs/rigmodo-live-2026-10-05.json').read_text())
     assert evidence['live_reload']['passed'] and evidence['live_reload']['version']==version
+if version=='0.10.0':
+    for key in ('auto_pose','ui_and_landmarks','keyframe_controls'):assert evidence[key]['passed']
+    assert evidence['auto_pose']['version']==version and evidence['auto_pose']['extracted']['passed']
+    assert all(case['passed'] for case in evidence['auto_pose']['unity']['cases'])
+    evidence['live_reload']=evidence['auto_pose']['live']
+    evidence['unchanged_workflow_baseline_version']='0.9.0'
 evidence['live_companion']=json.loads((root/'docs/live-companion-2026-10-03.json').read_text())
 assert evidence['live_companion']['compilation_passed'] and evidence['live_companion']['open_scene_state_preserved']
 baseline=json.loads((root/'docs/live-project-baseline.json').read_text())
@@ -112,8 +123,8 @@ for file in (extension,companion,artifacts/'local_character-windows-providers.zi
     checksums[file.name]=dict(bytes=file.stat().st_size,sha256=digest)
 record=dict(version=version,extension_zip_validated=True,source_modules_compile=True,private_assets_excluded=True,
     artifacts=checksums,evidence=evidence,hardware_limit='RTX 4090 24 GB tested; sampled global device usage is not a physical 16 GB proof')
-release_date='2026-10-05' if version=='0.9.0' else '2026-10-04' if version in {'0.6.0','0.7.0','0.8.0'} else '2026-10-03'
-release_name=f'release-verification-{version}-{release_date}' if version in {'0.7.0','0.8.0','0.9.0'} else f'release-verification-{release_date}'
+release_date='2026-10-05' if version in {'0.9.0','0.10.0'} else '2026-10-04' if version in {'0.6.0','0.7.0','0.8.0'} else '2026-10-03'
+release_name=f'release-verification-{version}-{release_date}' if version in {'0.7.0','0.8.0','0.9.0','0.10.0'} else f'release-verification-{release_date}'
 (root/f'docs/{release_name}.json').write_text(json.dumps(record,indent=2)+'\n')
 (artifacts/f'local_character-{version}-checksums.json').write_text(json.dumps(checksums,indent=2)+'\n')
 print('RELEASE_PACKAGED',json.dumps(checksums),flush=True)

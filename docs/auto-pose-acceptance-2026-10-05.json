@@ -1,0 +1,1008 @@
+{
+  "passed": true,
+  "version": "0.10.0",
+  "source": {
+    "passed": true,
+    "cases": [
+      {
+        "case": "small_hand",
+        "height": 0.875,
+        "target_error_height": 9.197352384686736e-07,
+        "pin_error_height": 1.1059848107553906e-06,
+        "length_error_height": 5.572905348305568e-08,
+        "limited": false,
+        "milliseconds": 5.769999999756692,
+        "iterations": 3
+      },
+      {
+        "case": "far_hand",
+        "height": 0.875,
+        "target_error_height": 1.9878349184868595e-07,
+        "pin_error_height": 1.1881365479348229e-07,
+        "length_error_height": 4.504052018651704e-08,
+        "limited": false,
+        "milliseconds": 6.6014000003633555,
+        "iterations": 4
+      },
+      {
+        "case": "shorten_arm",
+        "height": 0.875,
+        "target_error_height": 2.7548745993574565e-07,
+        "pin_error_height": 1.2799102892350413e-07,
+        "length_error_height": 4.109800382552058e-08,
+        "limited": false,
+        "milliseconds": 6.798899999921559,
+        "iterations": 4
+      },
+      {
+        "case": "pelvis_down",
+        "height": 0.875,
+        "target_error_height": 3.405982565038008e-08,
+        "pin_error_height": 7.911648225520443e-08,
+        "length_error_height": 7.245320289759962e-08,
+        "limited": false,
+        "milliseconds": 9.71420000132639,
+        "iterations": 9
+      },
+      {
+        "case": "pelvis_sideways",
+        "height": 0.875,
+        "target_error_height": 0.0022100627375286645,
+        "pin_error_height": 7.628570430709742e-08,
+        "length_error_height": 3.4799154732415416e-08,
+        "limited": true,
+        "milliseconds": 33.09850000005099,
+        "iterations": 32
+      },
+      {
+        "case": "foot",
+        "height": 0.875,
+        "target_error_height": 6.198976626805338e-08,
+        "pin_error_height": 1.5064136401901878e-07,
+        "length_error_height": 6.391469474311049e-08,
+        "limited": false,
+        "milliseconds": 6.348000000798493,
+        "iterations": 7
+      },
+      {
+        "case": "multiple_pins",
+        "height": 0.875,
+        "target_error_height": 2.348953353359652e-07,
+        "pin_error_height": 6.860901466428446e-08,
+        "length_error_height": 5.73229627257429e-08,
+        "limited": false,
+        "milliseconds": 12.238200000865618,
+        "iterations": 6
+      },
+      {
+        "case": "hips_pin",
+        "height": 0.875,
+        "target_error_height": 4.382618821030475e-06,
+        "pin_error_height": 3.4059797014508927e-08,
+        "length_error_height": 4.15286242537251e-08,
+        "limited": false,
+        "milliseconds": 6.575199999133474,
+        "iterations": 8
+      },
+      {
+        "case": "elbow",
+        "height": 0.875,
+        "target_error_height": 5.084831188016725e-07,
+        "pin_error_height": 2.929975882647486e-07,
+        "length_error_height": 5.7248122686814895e-08,
+        "limited": false,
+        "milliseconds": 4.862100000536884,
+        "iterations": 3
+      },
+      {
+        "case": "knee",
+        "height": 0.875,
+        "target_error_height": 0.028528880115172635,
+        "pin_error_height": 7.294945550722609e-08,
+        "length_error_height": 3.245966539999756e-08,
+        "limited": true,
+        "milliseconds": 33.19050000027346,
+        "iterations": 32
+      },
+      {
+        "case": "extreme_arm",
+        "height": 0.875,
+        "target_error_height": 1.2721209910747153,
+        "pin_error_height": 5.733903501978014e-07,
+        "length_error_height": 5.1079564229133164e-08,
+        "limited": true,
+        "milliseconds": 45.148700000936515,
+        "iterations": 32
+      },
+      {
+        "case": "target_is_pin",
+        "height": 0.875,
+        "target_error_height": 0.08660258072563712,
+        "pin_error_height": 1.0845767326398994e-07,
+        "length_error_height": 2.5123793567386317e-08,
+        "limited": true,
+        "milliseconds": 56.21410000094329,
+        "iterations": 32
+      },
+      {
+        "case": "small_hand",
+        "height": 1.75,
+        "target_error_height": 9.197352384686736e-07,
+        "pin_error_height": 1.1059848107553906e-06,
+        "length_error_height": 5.572905348305568e-08,
+        "limited": false,
+        "milliseconds": 5.229899999903864,
+        "iterations": 3
+      },
+      {
+        "case": "far_hand",
+        "height": 1.75,
+        "target_error_height": 1.9878349184868595e-07,
+        "pin_error_height": 1.1881365479348229e-07,
+        "length_error_height": 4.504052018651704e-08,
+        "limited": false,
+        "milliseconds": 6.354400000418536,
+        "iterations": 4
+      },
+      {
+        "case": "shorten_arm",
+        "height": 1.75,
+        "target_error_height": 2.7548745993574565e-07,
+        "pin_error_height": 1.2799102892350413e-07,
+        "length_error_height": 4.109800382552058e-08,
+        "limited": false,
+        "milliseconds": 6.272800001170253,
+        "iterations": 4
+      },
+      {
+        "case": "pelvis_down",
+        "height": 1.75,
+        "target_error_height": 3.405982565038008e-08,
+        "pin_error_height": 7.911648225520443e-08,
+        "length_error_height": 7.245320289759962e-08,
+        "limited": false,
+        "milliseconds": 9.38049999967916,
+        "iterations": 9
+      },
+      {
+        "case": "pelvis_sideways",
+        "height": 1.75,
+        "target_error_height": 0.0022100627375286645,
+        "pin_error_height": 7.628570430709742e-08,
+        "length_error_height": 3.4799154732415416e-08,
+        "limited": true,
+        "milliseconds": 32.38740000051621,
+        "iterations": 32
+      },
+      {
+        "case": "foot",
+        "height": 1.75,
+        "target_error_height": 6.198976626805338e-08,
+        "pin_error_height": 1.5064136401901878e-07,
+        "length_error_height": 6.391469474311049e-08,
+        "limited": false,
+        "milliseconds": 6.982300001254771,
+        "iterations": 7
+      },
+      {
+        "case": "multiple_pins",
+        "height": 1.75,
+        "target_error_height": 2.348953353359652e-07,
+        "pin_error_height": 6.860901466428446e-08,
+        "length_error_height": 5.73229627257429e-08,
+        "limited": false,
+        "milliseconds": 11.76830000076734,
+        "iterations": 6
+      },
+      {
+        "case": "hips_pin",
+        "height": 1.75,
+        "target_error_height": 4.382618821030475e-06,
+        "pin_error_height": 3.4059797014508927e-08,
+        "length_error_height": 4.15286242537251e-08,
+        "limited": false,
+        "milliseconds": 6.534899999678601,
+        "iterations": 8
+      },
+      {
+        "case": "elbow",
+        "height": 1.75,
+        "target_error_height": 5.084831188016725e-07,
+        "pin_error_height": 2.929975882647486e-07,
+        "length_error_height": 5.7248122686814895e-08,
+        "limited": false,
+        "milliseconds": 4.996400000891299,
+        "iterations": 3
+      },
+      {
+        "case": "knee",
+        "height": 1.75,
+        "target_error_height": 0.028528880115172635,
+        "pin_error_height": 7.294945550722609e-08,
+        "length_error_height": 3.245966539999756e-08,
+        "limited": true,
+        "milliseconds": 34.37599999961094,
+        "iterations": 32
+      },
+      {
+        "case": "extreme_arm",
+        "height": 1.75,
+        "target_error_height": 1.2721209910747153,
+        "pin_error_height": 5.733903501978014e-07,
+        "length_error_height": 5.1079564229133164e-08,
+        "limited": true,
+        "milliseconds": 42.869599999903585,
+        "iterations": 32
+      },
+      {
+        "case": "target_is_pin",
+        "height": 1.75,
+        "target_error_height": 0.08660258072563712,
+        "pin_error_height": 1.0845767326398994e-07,
+        "length_error_height": 2.5123793567386317e-08,
+        "limited": true,
+        "milliseconds": 53.11509999955888,
+        "iterations": 32
+      },
+      {
+        "case": "small_hand",
+        "height": 3.5,
+        "target_error_height": 9.197352384686736e-07,
+        "pin_error_height": 1.1059848107553906e-06,
+        "length_error_height": 5.572905348305568e-08,
+        "limited": false,
+        "milliseconds": 5.2145999998174375,
+        "iterations": 3
+      },
+      {
+        "case": "far_hand",
+        "height": 3.5,
+        "target_error_height": 1.9878349184868595e-07,
+        "pin_error_height": 1.1881365479348229e-07,
+        "length_error_height": 4.504052018651704e-08,
+        "limited": false,
+        "milliseconds": 6.329699999696459,
+        "iterations": 4
+      },
+      {
+        "case": "shorten_arm",
+        "height": 3.5,
+        "target_error_height": 2.7548745993574565e-07,
+        "pin_error_height": 1.2799102892350413e-07,
+        "length_error_height": 4.109800382552058e-08,
+        "limited": false,
+        "milliseconds": 6.613600000491715,
+        "iterations": 4
+      },
+      {
+        "case": "pelvis_down",
+        "height": 3.5,
+        "target_error_height": 3.405982565038008e-08,
+        "pin_error_height": 7.911648225520443e-08,
+        "length_error_height": 7.245320289759962e-08,
+        "limited": false,
+        "milliseconds": 9.06829999985348,
+        "iterations": 9
+      },
+      {
+        "case": "pelvis_sideways",
+        "height": 3.5,
+        "target_error_height": 0.0022100627375286645,
+        "pin_error_height": 7.628570430709742e-08,
+        "length_error_height": 3.4799154732415416e-08,
+        "limited": true,
+        "milliseconds": 32.67290000076173,
+        "iterations": 32
+      },
+      {
+        "case": "foot",
+        "height": 3.5,
+        "target_error_height": 6.198976626805338e-08,
+        "pin_error_height": 1.5064136401901878e-07,
+        "length_error_height": 6.391469474311049e-08,
+        "limited": false,
+        "milliseconds": 6.449099999372265,
+        "iterations": 7
+      },
+      {
+        "case": "multiple_pins",
+        "height": 3.5,
+        "target_error_height": 2.348953353359652e-07,
+        "pin_error_height": 6.860901466428446e-08,
+        "length_error_height": 5.73229627257429e-08,
+        "limited": false,
+        "milliseconds": 11.936999999306863,
+        "iterations": 6
+      },
+      {
+        "case": "hips_pin",
+        "height": 3.5,
+        "target_error_height": 4.382618821030475e-06,
+        "pin_error_height": 3.4059797014508927e-08,
+        "length_error_height": 4.15286242537251e-08,
+        "limited": false,
+        "milliseconds": 6.3970999999583,
+        "iterations": 8
+      },
+      {
+        "case": "elbow",
+        "height": 3.5,
+        "target_error_height": 5.084831188016725e-07,
+        "pin_error_height": 2.929975882647486e-07,
+        "length_error_height": 5.7248122686814895e-08,
+        "limited": false,
+        "milliseconds": 5.155700000614161,
+        "iterations": 3
+      },
+      {
+        "case": "knee",
+        "height": 3.5,
+        "target_error_height": 0.028528880115172635,
+        "pin_error_height": 7.294945550722609e-08,
+        "length_error_height": 3.245966539999756e-08,
+        "limited": true,
+        "milliseconds": 33.441000001403154,
+        "iterations": 32
+      },
+      {
+        "case": "extreme_arm",
+        "height": 3.5,
+        "target_error_height": 1.2721209910747153,
+        "pin_error_height": 5.733903501978014e-07,
+        "length_error_height": 5.1079564229133164e-08,
+        "limited": true,
+        "milliseconds": 42.23670000101265,
+        "iterations": 32
+      },
+      {
+        "case": "target_is_pin",
+        "height": 3.5,
+        "target_error_height": 0.08660258072563712,
+        "pin_error_height": 1.0845767326398994e-07,
+        "length_error_height": 2.5123793567386317e-08,
+        "limited": true,
+        "milliseconds": 54.21169999863196,
+        "iterations": 32
+      }
+    ],
+    "solver_median_ms": 8.025300000554125,
+    "full_channels_restored": true,
+    "no_helper_objects": true,
+    "rotation_target_passed": true,
+    "capture_guard": true,
+    "unsafe_setup_rejected": true,
+    "whole_pose_keys": true,
+    "twist_helpers": true,
+    "lifecycle_cleanup": true,
+    "extracted_extension": false,
+    "version": "0.10.0"
+  },
+  "extracted": {
+    "passed": true,
+    "cases": [
+      {
+        "case": "small_hand",
+        "height": 0.875,
+        "target_error_height": 9.197352384686736e-07,
+        "pin_error_height": 1.1059848107553906e-06,
+        "length_error_height": 5.572905348305568e-08,
+        "limited": false,
+        "milliseconds": 5.819100000735489,
+        "iterations": 3
+      },
+      {
+        "case": "far_hand",
+        "height": 0.875,
+        "target_error_height": 1.9878349184868595e-07,
+        "pin_error_height": 1.1881365479348229e-07,
+        "length_error_height": 4.504052018651704e-08,
+        "limited": false,
+        "milliseconds": 7.224400000268361,
+        "iterations": 4
+      },
+      {
+        "case": "shorten_arm",
+        "height": 0.875,
+        "target_error_height": 2.7548745993574565e-07,
+        "pin_error_height": 1.2799102892350413e-07,
+        "length_error_height": 4.109800382552058e-08,
+        "limited": false,
+        "milliseconds": 6.613799998376635,
+        "iterations": 4
+      },
+      {
+        "case": "pelvis_down",
+        "height": 0.875,
+        "target_error_height": 3.405982565038008e-08,
+        "pin_error_height": 7.911648225520443e-08,
+        "length_error_height": 7.245320289759962e-08,
+        "limited": false,
+        "milliseconds": 10.700199998609605,
+        "iterations": 9
+      },
+      {
+        "case": "pelvis_sideways",
+        "height": 0.875,
+        "target_error_height": 0.0022100627375286645,
+        "pin_error_height": 7.628570430709742e-08,
+        "length_error_height": 3.4799154732415416e-08,
+        "limited": true,
+        "milliseconds": 36.51960000024701,
+        "iterations": 32
+      },
+      {
+        "case": "foot",
+        "height": 0.875,
+        "target_error_height": 6.198976626805338e-08,
+        "pin_error_height": 1.5064136401901878e-07,
+        "length_error_height": 6.391469474311049e-08,
+        "limited": false,
+        "milliseconds": 6.63189999977476,
+        "iterations": 7
+      },
+      {
+        "case": "multiple_pins",
+        "height": 0.875,
+        "target_error_height": 2.348953353359652e-07,
+        "pin_error_height": 6.860901466428446e-08,
+        "length_error_height": 5.73229627257429e-08,
+        "limited": false,
+        "milliseconds": 12.053100001139683,
+        "iterations": 6
+      },
+      {
+        "case": "hips_pin",
+        "height": 0.875,
+        "target_error_height": 4.382618821030475e-06,
+        "pin_error_height": 3.4059797014508927e-08,
+        "length_error_height": 4.15286242537251e-08,
+        "limited": false,
+        "milliseconds": 6.325900001684204,
+        "iterations": 8
+      },
+      {
+        "case": "elbow",
+        "height": 0.875,
+        "target_error_height": 5.084831188016725e-07,
+        "pin_error_height": 2.929975882647486e-07,
+        "length_error_height": 5.7248122686814895e-08,
+        "limited": false,
+        "milliseconds": 5.125800000314484,
+        "iterations": 3
+      },
+      {
+        "case": "knee",
+        "height": 0.875,
+        "target_error_height": 0.028528880115172635,
+        "pin_error_height": 7.294945550722609e-08,
+        "length_error_height": 3.245966539999756e-08,
+        "limited": true,
+        "milliseconds": 32.92979999969248,
+        "iterations": 32
+      },
+      {
+        "case": "extreme_arm",
+        "height": 0.875,
+        "target_error_height": 1.2721209910747153,
+        "pin_error_height": 5.733903501978014e-07,
+        "length_error_height": 5.1079564229133164e-08,
+        "limited": true,
+        "milliseconds": 43.76039999988279,
+        "iterations": 32
+      },
+      {
+        "case": "target_is_pin",
+        "height": 0.875,
+        "target_error_height": 0.08660258072563712,
+        "pin_error_height": 1.0845767326398994e-07,
+        "length_error_height": 2.5123793567386317e-08,
+        "limited": true,
+        "milliseconds": 54.12820000128704,
+        "iterations": 32
+      },
+      {
+        "case": "small_hand",
+        "height": 1.75,
+        "target_error_height": 9.197352384686736e-07,
+        "pin_error_height": 1.1059848107553906e-06,
+        "length_error_height": 5.572905348305568e-08,
+        "limited": false,
+        "milliseconds": 5.174500000066473,
+        "iterations": 3
+      },
+      {
+        "case": "far_hand",
+        "height": 1.75,
+        "target_error_height": 1.9878349184868595e-07,
+        "pin_error_height": 1.1881365479348229e-07,
+        "length_error_height": 4.504052018651704e-08,
+        "limited": false,
+        "milliseconds": 6.257099999857019,
+        "iterations": 4
+      },
+      {
+        "case": "shorten_arm",
+        "height": 1.75,
+        "target_error_height": 2.7548745993574565e-07,
+        "pin_error_height": 1.2799102892350413e-07,
+        "length_error_height": 4.109800382552058e-08,
+        "limited": false,
+        "milliseconds": 6.553600000188453,
+        "iterations": 4
+      },
+      {
+        "case": "pelvis_down",
+        "height": 1.75,
+        "target_error_height": 3.405982565038008e-08,
+        "pin_error_height": 7.911648225520443e-08,
+        "length_error_height": 7.245320289759962e-08,
+        "limited": false,
+        "milliseconds": 9.308700000474346,
+        "iterations": 9
+      },
+      {
+        "case": "pelvis_sideways",
+        "height": 1.75,
+        "target_error_height": 0.0022100627375286645,
+        "pin_error_height": 7.628570430709742e-08,
+        "length_error_height": 3.4799154732415416e-08,
+        "limited": true,
+        "milliseconds": 31.38279999984661,
+        "iterations": 32
+      },
+      {
+        "case": "foot",
+        "height": 1.75,
+        "target_error_height": 6.198976626805338e-08,
+        "pin_error_height": 1.5064136401901878e-07,
+        "length_error_height": 6.391469474311049e-08,
+        "limited": false,
+        "milliseconds": 6.427099999200436,
+        "iterations": 7
+      },
+      {
+        "case": "multiple_pins",
+        "height": 1.75,
+        "target_error_height": 2.348953353359652e-07,
+        "pin_error_height": 6.860901466428446e-08,
+        "length_error_height": 5.73229627257429e-08,
+        "limited": false,
+        "milliseconds": 12.010799999188748,
+        "iterations": 6
+      },
+      {
+        "case": "hips_pin",
+        "height": 1.75,
+        "target_error_height": 4.382618821030475e-06,
+        "pin_error_height": 3.4059797014508927e-08,
+        "length_error_height": 4.15286242537251e-08,
+        "limited": false,
+        "milliseconds": 6.669599999440834,
+        "iterations": 8
+      },
+      {
+        "case": "elbow",
+        "height": 1.75,
+        "target_error_height": 5.084831188016725e-07,
+        "pin_error_height": 2.929975882647486e-07,
+        "length_error_height": 5.7248122686814895e-08,
+        "limited": false,
+        "milliseconds": 4.938000000038301,
+        "iterations": 3
+      },
+      {
+        "case": "knee",
+        "height": 1.75,
+        "target_error_height": 0.028528880115172635,
+        "pin_error_height": 7.294945550722609e-08,
+        "length_error_height": 3.245966539999756e-08,
+        "limited": true,
+        "milliseconds": 32.6372999988962,
+        "iterations": 32
+      },
+      {
+        "case": "extreme_arm",
+        "height": 1.75,
+        "target_error_height": 1.2721209910747153,
+        "pin_error_height": 5.733903501978014e-07,
+        "length_error_height": 5.1079564229133164e-08,
+        "limited": true,
+        "milliseconds": 43.19779999968887,
+        "iterations": 32
+      },
+      {
+        "case": "target_is_pin",
+        "height": 1.75,
+        "target_error_height": 0.08660258072563712,
+        "pin_error_height": 1.0845767326398994e-07,
+        "length_error_height": 2.5123793567386317e-08,
+        "limited": true,
+        "milliseconds": 53.89699999977893,
+        "iterations": 32
+      },
+      {
+        "case": "small_hand",
+        "height": 3.5,
+        "target_error_height": 9.197352384686736e-07,
+        "pin_error_height": 1.1059848107553906e-06,
+        "length_error_height": 5.572905348305568e-08,
+        "limited": false,
+        "milliseconds": 5.084700000224984,
+        "iterations": 3
+      },
+      {
+        "case": "far_hand",
+        "height": 3.5,
+        "target_error_height": 1.9878349184868595e-07,
+        "pin_error_height": 1.1881365479348229e-07,
+        "length_error_height": 4.504052018651704e-08,
+        "limited": false,
+        "milliseconds": 6.464600000981591,
+        "iterations": 4
+      },
+      {
+        "case": "shorten_arm",
+        "height": 3.5,
+        "target_error_height": 2.7548745993574565e-07,
+        "pin_error_height": 1.2799102892350413e-07,
+        "length_error_height": 4.109800382552058e-08,
+        "limited": false,
+        "milliseconds": 6.3575999993190635,
+        "iterations": 4
+      },
+      {
+        "case": "pelvis_down",
+        "height": 3.5,
+        "target_error_height": 3.405982565038008e-08,
+        "pin_error_height": 7.911648225520443e-08,
+        "length_error_height": 7.245320289759962e-08,
+        "limited": false,
+        "milliseconds": 9.362400000100024,
+        "iterations": 9
+      },
+      {
+        "case": "pelvis_sideways",
+        "height": 3.5,
+        "target_error_height": 0.0022100627375286645,
+        "pin_error_height": 7.628570430709742e-08,
+        "length_error_height": 3.4799154732415416e-08,
+        "limited": true,
+        "milliseconds": 32.49800000048708,
+        "iterations": 32
+      },
+      {
+        "case": "foot",
+        "height": 3.5,
+        "target_error_height": 6.198976626805338e-08,
+        "pin_error_height": 1.5064136401901878e-07,
+        "length_error_height": 6.391469474311049e-08,
+        "limited": false,
+        "milliseconds": 6.797799998821574,
+        "iterations": 7
+      },
+      {
+        "case": "multiple_pins",
+        "height": 3.5,
+        "target_error_height": 2.348953353359652e-07,
+        "pin_error_height": 6.860901466428446e-08,
+        "length_error_height": 5.73229627257429e-08,
+        "limited": false,
+        "milliseconds": 11.957699998674798,
+        "iterations": 6
+      },
+      {
+        "case": "hips_pin",
+        "height": 3.5,
+        "target_error_height": 4.382618821030475e-06,
+        "pin_error_height": 3.4059797014508927e-08,
+        "length_error_height": 4.15286242537251e-08,
+        "limited": false,
+        "milliseconds": 6.250500000533066,
+        "iterations": 8
+      },
+      {
+        "case": "elbow",
+        "height": 3.5,
+        "target_error_height": 5.084831188016725e-07,
+        "pin_error_height": 2.929975882647486e-07,
+        "length_error_height": 5.7248122686814895e-08,
+        "limited": false,
+        "milliseconds": 4.875999999057967,
+        "iterations": 3
+      },
+      {
+        "case": "knee",
+        "height": 3.5,
+        "target_error_height": 0.028528880115172635,
+        "pin_error_height": 7.294945550722609e-08,
+        "length_error_height": 3.245966539999756e-08,
+        "limited": true,
+        "milliseconds": 33.16430000086257,
+        "iterations": 32
+      },
+      {
+        "case": "extreme_arm",
+        "height": 3.5,
+        "target_error_height": 1.2721209910747153,
+        "pin_error_height": 5.733903501978014e-07,
+        "length_error_height": 5.1079564229133164e-08,
+        "limited": true,
+        "milliseconds": 42.86580000007234,
+        "iterations": 32
+      },
+      {
+        "case": "target_is_pin",
+        "height": 3.5,
+        "target_error_height": 0.08660258072563712,
+        "pin_error_height": 1.0845767326398994e-07,
+        "length_error_height": 2.5123793567386317e-08,
+        "limited": true,
+        "milliseconds": 56.21389999942039,
+        "iterations": 32
+      }
+    ],
+    "solver_median_ms": 8.266550000371353,
+    "full_channels_restored": true,
+    "no_helper_objects": true,
+    "rotation_target_passed": true,
+    "capture_guard": true,
+    "unsafe_setup_rejected": true,
+    "whole_pose_keys": true,
+    "twist_helpers": true,
+    "lifecycle_cleanup": true,
+    "extracted_extension": true,
+    "version": "0.10.0"
+  },
+  "interaction": {
+    "passed": true,
+    "real_keymap_events": true,
+    "cases": [
+      {
+        "case": "G_confirm",
+        "changed": 0.06274643540382385,
+        "cancelled": false,
+        "native": false,
+        "passed": true,
+        "undo": true,
+        "redo": true
+      },
+      {
+        "case": "G_cancel",
+        "changed": 0.0,
+        "cancelled": true,
+        "native": false,
+        "passed": true
+      },
+      {
+        "case": "R_confirm",
+        "changed": 0.537253201007843,
+        "cancelled": false,
+        "native": false,
+        "passed": true,
+        "undo": true,
+        "redo": true
+      },
+      {
+        "case": "R_cancel",
+        "changed": 0.0,
+        "cancelled": true,
+        "native": false,
+        "passed": true
+      },
+      {
+        "case": "numeric_axis",
+        "changed": 0.07016181200742722,
+        "cancelled": false,
+        "native": false,
+        "passed": true,
+        "undo": true,
+        "redo": true
+      },
+      {
+        "case": "disabled_native_G",
+        "changed": 0.044344283640384674,
+        "cancelled": false,
+        "native": true,
+        "passed": true
+      },
+      {
+        "case": "sidebar_move_button",
+        "changed": 0.05164920911192894,
+        "cancelled": false,
+        "native": false,
+        "passed": true,
+        "undo": true,
+        "redo": true
+      },
+      {
+        "case": "disabled_during_gesture",
+        "changed": 0.0,
+        "cancelled": true,
+        "native": false,
+        "passed": true
+      },
+      {
+        "case": "no_selected_bone",
+        "changed": 0.0,
+        "cancelled": true,
+        "native": true,
+        "passed": true
+      }
+    ],
+    "blender": "5.2.0 LTS"
+  },
+  "avatar": {
+    "passed": true,
+    "samples": 60,
+    "vertices": 6598,
+    "bones": 53,
+    "max_target_error_height": 2.643207265416537e-07,
+    "full_pipeline_median_ms": 10.549350000474078,
+    "full_pipeline_p95_ms": 11.705165001148998,
+    "scope": "owned transaction solve, all bone writes, depsgraph and skinned vertex evaluation; excludes viewport drawing",
+    "no_helpers": true,
+    "action_preserved": true,
+    "cancel_restored": true,
+    "kimodo_capture_passed": true,
+    "two_pose_action_exported_profiles": [
+      "HUMANOID",
+      "GENERIC"
+    ],
+    "export_scope": "Blender bundle creation; existing Unity importer is unchanged"
+  },
+  "unity": {
+    "unity_version": "6000.3.21f1",
+    "cases": [
+      {
+        "name": "AutoPoseGENERIC",
+        "error": "",
+        "worst_bone_probe": "RightFoot@0,5833333",
+        "passed": true,
+        "human_root_delta": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "max_lbs_error_m": 2.840147317328956e-06,
+        "root_travel_m": 0.0,
+        "expected_travel_m": 0.0,
+        "hand_motion_m": 0.0,
+        "max_twist_rotation_error_degrees": 0.0,
+        "max_bone_probe_error_m": 1.1606626685534138e-05,
+        "lbs_precision_allowance_m": 3.731300967046991e-05,
+        "maximum_rest_rotation_anisotropy": 1.1177573469467461e-05,
+        "body_heading_degrees": 0.0,
+        "root_heading_degrees": 0.0,
+        "hip_rise_m": 0.0,
+        "actor_rise_m": 0.0
+      },
+      {
+        "name": "AutoPoseHUMANOID",
+        "error": "",
+        "worst_bone_probe": "",
+        "passed": true,
+        "human_root_delta": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "max_lbs_error_m": 0.0,
+        "root_travel_m": 0.0,
+        "expected_travel_m": 0.0,
+        "hand_motion_m": 0.05970185622572899,
+        "max_twist_rotation_error_degrees": 0.0,
+        "max_bone_probe_error_m": 0.0,
+        "lbs_precision_allowance_m": 3.731300967046991e-05,
+        "maximum_rest_rotation_anisotropy": 1.1177573469467461e-05,
+        "body_heading_degrees": 0.5248866677284241,
+        "root_heading_degrees": 0.0,
+        "hip_rise_m": 0.0,
+        "actor_rise_m": 0.0
+      }
+    ]
+  },
+  "failed_unity_before_explicit_root_marker": {
+    "unity_version": "6000.3.21f1",
+    "cases": [
+      {
+        "name": "AutoPoseGENERIC",
+        "error": "",
+        "worst_bone_probe": "RightFoot@0,5833333",
+        "passed": true,
+        "human_root_delta": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "max_lbs_error_m": 2.840147317328956e-06,
+        "root_travel_m": 0.0,
+        "expected_travel_m": 0.0,
+        "hand_motion_m": 0.0,
+        "max_twist_rotation_error_degrees": 0.0,
+        "max_bone_probe_error_m": 1.1606626685534138e-05,
+        "lbs_precision_allowance_m": 3.731300967046991e-05,
+        "maximum_rest_rotation_anisotropy": 1.1177573469467461e-05,
+        "body_heading_degrees": 0.0,
+        "root_heading_degrees": 0.0,
+        "hip_rise_m": 0.0,
+        "actor_rise_m": 0.0
+      },
+      {
+        "name": "AutoPoseHUMANOID",
+        "error": "System.Exception: Human root travel differs: 0,00779744 vs 0",
+        "worst_bone_probe": "",
+        "passed": false,
+        "human_root_delta": {
+          "x": 0.007232850417494774,
+          "y": -0.00020664169278461486,
+          "z": 0.002905726432800293
+        },
+        "max_lbs_error_m": 0.0,
+        "root_travel_m": 0.00779744004830718,
+        "expected_travel_m": 0.0,
+        "hand_motion_m": 0.059701815247535706,
+        "max_twist_rotation_error_degrees": 0.0,
+        "max_bone_probe_error_m": 0.0,
+        "lbs_precision_allowance_m": 3.731300967046991e-05,
+        "maximum_rest_rotation_anisotropy": 1.1177573469467461e-05,
+        "body_heading_degrees": 0.5248866677284241,
+        "root_heading_degrees": 0.5446454882621765,
+        "hip_rise_m": 0.0,
+        "actor_rise_m": 0.0
+      }
+    ]
+  },
+  "regressions": {
+    "ui_and_landmarks": {
+      "passed": true,
+      "global_preferences_used": true,
+      "legacy_settings_migrated": true,
+      "workflow_panel_has_no_runtime_fields": true,
+      "eight_front_anchors_exact": true,
+      "model_depth_preserved": true,
+      "landmarks_locked": true,
+      "source_preserved": true,
+      "sources_hidden_after_individual_step": true,
+      "original_plus_copy_rejected": true,
+      "stale_landmarks_rejected": true,
+      "cached_actual_mia_used": true,
+      "native_weight_editor_draws": true,
+      "bone_choice_updates_group": true,
+      "pose_and_joint_editors_work": true,
+      "character_selection_helper_works": true
+    },
+    "kimodo_controls": {
+      "passed": true,
+      "twist_correction_coherent": true,
+      "max_twist_dot_error": 4.76837158203125e-07,
+      "stale_twist_capture_rejected": true,
+      "invalid_interval_and_in_place_rejected": true,
+      "malformed_pose_rejected_before_allocation": true,
+      "verification_cancelled": true,
+      "negative_frame_remove_and_clear": true,
+      "negative_subframe_recall": true,
+      "cached_arrays_for_controls": true
+    }
+  },
+  "live": {
+    "passed": true,
+    "version": "0.10.0",
+    "pose_action_and_objects_preserved": true,
+    "mode": "POSE",
+    "enabled": true,
+    "active_bone": "LeftHand",
+    "objects": 2,
+    "frame": 74,
+    "keymaps": 2,
+    "overlay_registered": true,
+    "focused_panel_and_pin_overlay_visually_reviewed": true
+  },
+  "solver": "hierarchical pin-first DLS on exact rest-offset FK; CPU, no AI weights",
+  "limits": [
+    "Standard Rigmodo humanoid only",
+    "Conservative swing/twist bounds, not full anatomical hinge limits",
+    "No Auto Keying, NLA/control-rig editing, native gizmos, collision or balance",
+    "Timings exclude viewport drawing; no 30/60 Hz guarantee"
+  ],
+  "private_geometry_and_paths_excluded": true
+}

@@ -35,6 +35,12 @@ Allow about **30 GB free disk space** for 11.48 GB of checkpoints, the 3.27 GB T
 
 The actual fresh-cache three-provider avatar workflow passed on RTX 4090 24 GB in about 137 seconds. A separate sampled run observed total device usage peaking at 11,923 MiB, including other applications. This suggests consumer headroom but is not a measured 16 GB hardware guarantee. Reduce skin search beams if memory is tight. CPU SkinTokens exists but is unbenchmarked; MIA requires CUDA and packaged Kimodo uses Vulkan.
 
+## Auto Pose
+
+In Pose Mode, enable **Auto Pose**, select a body bone and use **G** to move or **R** to rotate. The body follows the target while feet stay planted by default. **X/Y/Z**, repeated local-axis constraints, numeric input and Shift precision are supported. Enter confirms; Esc restores the entire pose; confirmed gestures undo/redo in one step. Blue rings mark pins. Pin hands, feet or pelvis; rotation locking and body-follow options stay under **Pose options**.
+
+**Insert Pose Key** keys the complete pose to the assigned editable single-user Action. For Kimodo, choose the Motion tab and **Capture Pose** instead. Posing uses the existing rig and mesh and runs procedurally on the CPU. Turn off Blender Auto Keying; native transform gizmos, constrained/control rigs, NLA editing, collision/balance and full anatomical hinge limits are outside this first version. See [implementation and measured limits](docs/auto-pose-implementation.md).
+
 ## Regional skinning
 
 **Auto regions** retains AI body weights, restricts confident digits against neighboring fingers and refines their surface graph. Verified boundary seams may temporarily link render-vertex splits; position alone never joins touching fingers or garment layers. Ambiguous seams stay separate. Disable seam linking when its movement assumptions are inappropriate.

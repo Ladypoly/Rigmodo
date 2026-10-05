@@ -133,9 +133,9 @@ def draw(layout,context):
     row=layout.row(align=True);row.prop(s,'ui_step',expand=True)
     rig,meshes=scope(context)
     row=layout.row(align=True)
-    row.label(text=(meshes[0].name if len(meshes)==1 else f'{len(meshes)} mesh objects') if meshes else 'Select your avatar',icon='MESH_DATA')
+    row.label(text=context.active_object.name if context.mode=='POSE' else (meshes[0].name if len(meshes)==1 else f'{len(meshes)} mesh objects') if meshes else 'Select your avatar',icon='ARMATURE_DATA' if context.mode=='POSE' else 'MESH_DATA')
     row.operator('local_character.preferences',text='',icon='PREFERENCES')
-    if rig and not meshes:layout.operator('local_character.select_character')
+    if rig and not meshes and context.mode!='POSE':layout.operator('local_character.select_character')
     if context.mode=='PAINT_WEIGHT' and s.ui_step=='SKIN':
         mesh=context.active_object
         layout.separator();layout.label(text='Weight Editor',icon='WPAINT_HLT')
@@ -148,7 +148,15 @@ def draw(layout,context):
         message(layout,'Paint on the surface. Use Blender’s brush toolbar for Paint and Blur.')
         layout.operator('local_character.test_pose',text='Test Deformation',icon='POSE_HLT')
         layout.operator('local_character.object_mode',text='Finish Weight Editing',icon='CHECKMARK');return
-    if context.mode!='OBJECT':layout.operator('local_character.object_mode',text='Finish Pose Editing' if context.mode=='POSE' and s.ui_step=='MOTION' else 'Back to Object Mode')
+    if context.mode=='POSE':
+        from . import auto_pose
+        auto_pose.draw(layout,context)
+        if s.ui_step=='MOTION':
+            layout.operator('local_character.capture_key_pose',text='Capture Pose',icon='KEY_HLT')
+            message(layout,'Capture this pose for Kimodo, then choose another timeline frame to pose again.')
+        layout.operator('local_character.object_mode',text='Finish Pose Editing',icon='CHECKMARK')
+        return
+    if context.mode!='OBJECT':layout.operator('local_character.object_mode',text='Back to Object Mode')
     available=install_jobs.inventory(resolved)
     provider={'RIG':'Joint placement','SKIN':'AI skinning','MOTION':'Generated motion'}.get(s.ui_step)
     if provider and not available[provider]:message(layout,'Local models need setup. Open Extension Settings.',icon='INFO')

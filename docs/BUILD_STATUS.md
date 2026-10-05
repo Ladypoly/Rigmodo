@@ -1,4 +1,6 @@
-# Rigmodo 0.9.0: implemented scope and evidence
+# Rigmodo 0.10.0: implemented scope and evidence
+
+Procedural Auto Pose is implemented for the standard humanoid: opt-in owned G/R gestures, pin-first exact-FK solving, planted feet, optional body follow, conservative angular bounds, blue pin markers, full-pose Esc/undo/redo and explicit whole-pose keys. It uses the existing rig and mesh and runs on the CPU. Kimodo capture and optional twists remain coherent. Source/extracted acceptance covers 36 numerical scenarios plus real GUI event tests and the 6,598-vertex avatar. Private Unity Humanoid and Generic tests pass after marking authored Actions for the existing explicit Root export path. See [scope, usage and limits](auto-pose-implementation.md) and `auto-pose-acceptance-2026-10-05.json`. The measurements below describe the unchanged 0.9 workflow and earlier releases.
 
 Fresh Unity 6000.3.21f1 validation of the committed skin and armature-only motion passes both Humanoid and Generic profiles. Generic maximum rendered-surface LBS discrepancy is 5.5466e-6 m; bone probes are within the measured FBX rest-precision budget. Both profiles reproduce 3.168163 m Root travel. This uses a private project and leaves the user's open Unity project unchanged.
 

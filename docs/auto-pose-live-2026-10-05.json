@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "version": "0.10.0",
+  "pose_action_and_objects_preserved": true,
+  "mode": "POSE",
+  "enabled": true,
+  "active_bone": "LeftHand",
+  "objects": 2,
+  "frame": 74,
+  "keymaps": 2,
+  "overlay_registered": true,
+  "focused_panel_and_pin_overlay_visually_reviewed": true
+}

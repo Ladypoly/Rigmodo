@@ -31,6 +31,8 @@ def validate_basis(rig,p):
         if skeleton.canonical_name(name) not in {'Root','Hips'} and np.linalg.norm(loc)>1e-5:raise ValueError('Only Root/Hips movement is supported in key poses')
 
 def capture(context,rig):
+    from . import auto_pose
+    if auto_pose._sessions:raise ValueError('Confirm or cancel the Auto Pose gesture before capturing a pose')
     # Pose Mode is the author's editing context; validate the rig without
     # changing mode, selection, its Action or the current timeline position.
     from types import SimpleNamespace
@@ -204,7 +206,9 @@ class LC_OT_capture_key_pose(Operator):
     bl_idname='local_character.capture_key_pose';bl_label='Capture Pose';bl_options={'REGISTER','UNDO'}
     bl_description='Capture this humanoid pose at the current timeline frame; the original Action remains unchanged'
     @classmethod
-    def poll(cls,context):return context.mode in {'OBJECT','POSE'} and not skinning._jobs
+    def poll(cls,context):
+        from . import auto_pose
+        return context.mode in {'OBJECT','POSE'} and not skinning._jobs and not auto_pose._sessions
     def execute(self,context):
         try:
             rig=motion_jobs.selected_rig(context);p=capture(context,rig)
@@ -219,7 +223,9 @@ class LC_OT_key_pose(Operator):
     remove:bpy.props.BoolProperty(default=False,options={'HIDDEN'})
     clear:bpy.props.BoolProperty(default=False,options={'HIDDEN'})
     @classmethod
-    def poll(cls,context):return context.mode in {'OBJECT','POSE'} and not skinning._jobs
+    def poll(cls,context):
+        from . import auto_pose
+        return context.mode in {'OBJECT','POSE'} and not skinning._jobs and not auto_pose._sessions
     def execute(self,context):
         try:
             rig=motion_jobs.selected_rig(context);keys=data(rig)
