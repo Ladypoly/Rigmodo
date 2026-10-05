@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "version": "0.11.0",
+  "scene_preserved": true,
+  "objects": 5,
+  "active": "Rigmodo_Rig_Motion",
+  "frame": 58,
+  "provider_runtime_installed": true,
+  "approved_checkpoints_available": false,
+  "scoped_native_drop_adapter": true
+}

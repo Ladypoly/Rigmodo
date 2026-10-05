@@ -1,5 +1,12 @@
 Local Character
 
+Optional Pose from Image uses SAM 3D Body and DINOv3 as separate local providers.
+SAM sources/checkpoints are governed by Meta's SAM License, not this extension's
+GPL. Provider installation retains their licenses in the external cache; images
+are processed locally. Rigmodo's image-pose interchange and retargeter are
+independently authored. See docs/image-pose-implementation.md and upstream
+https://github.com/facebookresearch/sam-3d-body/blob/main/LICENSE.
+
 soma30.json contains the SOMA-30 skeleton definitions from NVIDIA Kimodo,
 distributed under Apache License 2.0, and the parent-local rest offsets
 distributed by localai-org/kimodo.cpp at revision

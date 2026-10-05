@@ -1,0 +1,154 @@
+{
+  "passed": true,
+  "version": "0.11.0",
+  "sam_neural_inference_tested": false,
+  "limitation": "Approved gated SAM checkpoints unavailable; image prediction, accuracy and VRAM/time not yet measured",
+  "source": {
+    "passed": true,
+    "version": "0.11.0",
+    "fixture": "Real public MHR skeleton with authored model parameters",
+    "sam_neural_inference_tested": false,
+    "cases": [
+      {
+        "height": 0.875,
+        "arm_angle": 0,
+        "length_error": 8.4446928529301e-08,
+        "basis_error": 4.172325134277344e-07,
+        "direction_error_rad": 0.0
+      },
+      {
+        "height": 1.75,
+        "arm_angle": 20,
+        "length_error": 6.417619924370399e-08,
+        "basis_error": 4.917383193969727e-07,
+        "direction_error_rad": 0.0
+      },
+      {
+        "height": 3.5,
+        "arm_angle": 45,
+        "length_error": 7.3641233365253e-08,
+        "basis_error": 4.76837158203125e-07,
+        "direction_error_rad": 0.0
+      }
+    ],
+    "stale_frame_rejected": true,
+    "malformed_results_atomic": true,
+    "same_objects_and_action": true,
+    "root_placement_preserved": true,
+    "hands_opt_out": true,
+    "capture_pose": true,
+    "scoped_drop_poll": true,
+    "lifecycle_cleanup": true,
+    "avatar": {
+      "vertices": 6598,
+      "finite_deformation": true,
+      "source_geometry_preserved": true,
+      "action_preserved": true
+    },
+    "extracted_extension": false
+  },
+  "extracted": {
+    "passed": true,
+    "version": "0.11.0",
+    "fixture": "Real public MHR skeleton with authored model parameters",
+    "sam_neural_inference_tested": false,
+    "cases": [
+      {
+        "height": 0.875,
+        "arm_angle": 0,
+        "length_error": 8.4446928529301e-08,
+        "basis_error": 4.172325134277344e-07,
+        "direction_error_rad": 0.0
+      },
+      {
+        "height": 1.75,
+        "arm_angle": 20,
+        "length_error": 6.417619924370399e-08,
+        "basis_error": 4.917383193969727e-07,
+        "direction_error_rad": 0.0
+      },
+      {
+        "height": 3.5,
+        "arm_angle": 45,
+        "length_error": 7.3641233365253e-08,
+        "basis_error": 4.76837158203125e-07,
+        "direction_error_rad": 0.0
+      }
+    ],
+    "stale_frame_rejected": true,
+    "malformed_results_atomic": true,
+    "same_objects_and_action": true,
+    "root_placement_preserved": true,
+    "hands_opt_out": true,
+    "capture_pose": true,
+    "scoped_drop_poll": true,
+    "lifecycle_cleanup": true,
+    "avatar": {
+      "vertices": 6598,
+      "finite_deformation": true,
+      "source_geometry_preserved": true,
+      "action_preserved": true
+    },
+    "extracted_extension": true
+  },
+  "gui": {
+    "passed": true,
+    "version": "0.11.0",
+    "cases": [
+      "native_drop_and_async_apply",
+      "whole_pose_undo",
+      "whole_pose_redo",
+      "kimodo_capture",
+      "stale_frame_completion_rejected",
+      "cancel_preserves_pose"
+    ],
+    "actual_file_handler_dispatch": true,
+    "simulated_worker": true,
+    "sam_neural_inference_tested": false
+  },
+  "ui": {
+    "passed": true,
+    "global_preferences_used": true,
+    "legacy_settings_migrated": true,
+    "workflow_panel_has_no_runtime_fields": true,
+    "eight_front_anchors_exact": true,
+    "model_depth_preserved": true,
+    "landmarks_locked": true,
+    "source_preserved": true,
+    "sources_hidden_after_individual_step": true,
+    "original_plus_copy_rejected": true,
+    "stale_landmarks_rejected": true,
+    "cached_actual_mia_used": true,
+    "native_weight_editor_draws": true,
+    "bone_choice_updates_group": true,
+    "pose_and_joint_editors_work": true,
+    "character_selection_helper_works": true
+  },
+  "live": {
+    "passed": true,
+    "version": "0.11.0",
+    "scene_preserved": true,
+    "objects": 5,
+    "active": "Rigmodo_Rig_Motion",
+    "frame": 58,
+    "provider_runtime_installed": true,
+    "approved_checkpoints_available": false,
+    "scoped_native_drop_adapter": true
+  },
+  "auto_pose_regression": {
+    "passed": true,
+    "cases": 36
+  },
+  "runtime": {
+    "passed": true,
+    "isolated_python": "3.11",
+    "torch": "2.7.1+cu128",
+    "cuda_gpu": "RTX 4090",
+    "upstream_sam_imports": true,
+    "pinned_local_dino_constructed": true,
+    "dino_parameters": 840633600
+  },
+  "native_handler_adapter": "Only stock reference-image handler yields in selected Rigmodo Motion sidebar; original restored on unregister",
+  "fixture": "Public Apache-2.0 MHR v1.0.1, authored pose parameters; no image estimation",
+  "checkpoints": "Not bundled; Meta SAM license and approved Hugging Face access required"
+}

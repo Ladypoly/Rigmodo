@@ -1,6 +1,6 @@
 # Rigmodo
 
-Independent Blender 5.2 extension for local humanoid joint placement, AI skinning, regional correction, generated motion and Unity export. No ARP, proprietary Voxel Heat Diffusion, Mesh2Motion or cloud account is required.
+Independent Blender 5.2 extension for local humanoid joint placement, AI skinning, regional correction, generated motion and Unity export. No ARP, proprietary Voxel Heat Diffusion or Mesh2Motion is required. Optional SAM image posing needs approved checkpoint access during setup; inference stays local.
 
 ## Start
 
@@ -36,6 +36,8 @@ Allow about **30 GB free disk space** for 11.48 GB of checkpoints, the 3.27 GB T
 The actual fresh-cache three-provider avatar workflow passed on RTX 4090 24 GB in about 137 seconds. A separate sampled run observed total device usage peaking at 11,923 MiB, including other applications. This suggests consumer headroom but is not a measured 16 GB hardware guarantee. Reduce skin search beams if memory is tight. CPU SkinTokens exists but is unbenchmarked; MIA requires CUDA and packaged Kimodo uses Vulkan.
 
 ## Auto Pose
+
+**Pose from Image:** select the armature and drop a single-person image onto the **Motion** sidebar, or choose an image with its button. Review/refine the pose, then Capture Pose for Kimodo or Insert Pose Key. Configure the optional SAM 3D Body provider in Extension Settings first. Checkpoints require Hugging Face approval and use Meta's separate SAM license. See [setup, pose transfer and validation limits](docs/image-pose-implementation.md).
 
 In Pose Mode, enable **Auto Pose**, select a body bone and use **G** to move or **R** to rotate. The body follows the target while feet stay planted by default. **X/Y/Z**, repeated local-axis constraints, numeric input and Shift precision are supported. Enter confirms; Esc restores the entire pose; confirmed gestures undo/redo in one step. Blue rings mark pins. Pin hands, feet or pelvis; rotation locking and body-follow options stay under **Pose options**.
 

@@ -152,6 +152,8 @@ def draw(layout,context):
         from . import auto_pose
         auto_pose.draw(layout,context)
         if s.ui_step=='MOTION':
+            from . import image_pose
+            image_pose.draw(layout,context)
             layout.operator('local_character.capture_key_pose',text='Capture Pose',icon='KEY_HLT')
             message(layout,'Capture this pose for Kimodo, then choose another timeline frame to pose again.')
         layout.operator('local_character.object_mode',text='Finish Pose Editing',icon='CHECKMARK')
@@ -227,6 +229,8 @@ def draw(layout,context):
                 row=body.row(align=True);row.operator('local_character.protect_region',text='Protect').enabled=True;row.operator('local_character.protect_region',text='Unprotect').enabled=False
                 body.operator('local_character.clear_region',text='Clear Region Rules')
     elif s.ui_step=='MOTION':
+        from . import image_pose
+        image_pose.draw(layout,context)
         layout.prop(s,'motion_prompt',text='Motion');layout.prop(s,'motion_frames',text='Length (frames)')
         layout.prop(s,'motion_in_place')
         layout.prop(s,'motion_use_keyframes')
@@ -288,9 +292,18 @@ def draw_preferences(layout,context,prefs):
         message(layout,s.setup_status)
         box=layout.box();box.label(text='Provider locations')
         for key in ('placement_python','skin_executable','skin_models','motion_provider'):box.prop(prefs,key)
+        box=layout.box();box.label(text='Pose from Image · SAM 3D Body')
+        message(box,'NVIDIA CUDA GPU. Checkpoints require approved Hugging Face access and the SAM license.')
+        op=box.operator('wm.url_open',text='Model Access and License',icon='URL');op.url='https://huggingface.co/facebook/sam-3d-body-dinov3'
+        box.prop(prefs,'image_pose_provider');box.prop(prefs,'image_pose_models')
+        box.operator('local_character.setup_image_pose');message(box,s.image_pose_status)
+        if s.image_pose_job:
+            from . import image_pose
+            if image_pose._pending:box.operator('local_character.cancel_image_pose')
     elif prefs.page=='DEFAULTS':
         box=layout.box();box.label(text='AI inference')
         for key in ('skin_device','skin_beams','motion_steps','motion_seed'):box.prop(prefs,key)
+        box.prop(prefs,'image_pose_hands')
         box=layout.box();box.label(text='Geometric solvers')
         for key in ('refine_iterations','refine_seams','voxel_resolution'):box.prop(prefs,key)
         box=layout.box();box.label(text='Workflow behavior');box.prop(prefs,'keep_skin_copies');box.prop(prefs,'workflow_hide_sources');box.prop(prefs,'workflow_allow_strain')

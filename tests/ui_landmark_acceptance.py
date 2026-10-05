@@ -21,7 +21,9 @@ class Layout:
     def label(self,**kwargs):self.records.append(('label',kwargs.get('text','')))
     def prop(self,data,key,**kwargs):assert hasattr(data,key),key;self.records.append(('prop',key))
     def prop_search(self,data,key,search,key_search,**kwargs):assert hasattr(data,key) and hasattr(search,key_search);self.records.append(('prop',key))
-    def operator(self,key,**kwargs):assert hasattr(bpy.ops.local_character,key.split('.')[-1]);self.records.append(('operator',key));return SimpleNamespace()
+    def operator(self,key,**kwargs):
+        category,name=key.split('.');assert hasattr(getattr(bpy.ops,category),name)
+        self.records.append(('operator',key));return SimpleNamespace()
     def panel(self,key,**kwargs):return self,self if self.expanded else None
 for expanded in (False,True):
     for step in ('RIG','SKIN','MOTION','EXPORT'):
