@@ -28,3 +28,5 @@ Actual tests: two transitions / three anchors / 61 samples at 30 fps, scene FPS 
 The synthetic seam check and an actual auto-labelled Tripo animation pass (world joint seam error 2.98e-8 m). A mathematically continuous seam does not establish a convincing gait: phase, foot sliding, contacts, collisions and motion intent still require review. Choose a suitable cycle and blend width; an arbitrary attack or landing is not automatically a natural repeating motion.
 
 Sources: [MotionBricks](https://github.com/NVlabs/motionbricks), [SOMA model contract](https://github.com/NVlabs/motionbricks/blob/main/docs/soma_model.md), [ONNX inference](https://github.com/NVlabs/motionbricks/blob/main/docs/onnx_inference.md), [UniMate](https://github.com/Friedrich-M/UniMate).
+
+Authored loop Actions can set `lc_loop_period_frames`. Preview excludes the duplicate endpoint so playback does not pause for one frame at the seam; the complete Action range remains available for FBX export. Ordinary Actions retain their original preview range.

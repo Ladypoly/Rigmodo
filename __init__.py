@@ -777,6 +777,8 @@ class LC_OT_preview_motion(Operator):
             from .animation import selected_action
             rig=motion_jobs.selected_rig(context);selection=selected_action(rig,context.scene)
             scene=context.scene;scene.use_preview_range=True;scene.frame_preview_start=selection['frame_start'];scene.frame_preview_end=selection['frame_end']
+            period=selection['action'].get('lc_loop_period_frames')
+            if type(period) is int and period>=2:scene.frame_preview_end=min(scene.frame_preview_end,scene.frame_preview_start+period-1)
             scene.frame_set(selection['frame_start'])
         except (ValueError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
         return {'FINISHED'}

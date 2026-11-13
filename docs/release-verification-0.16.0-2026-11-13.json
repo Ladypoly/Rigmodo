@@ -5,8 +5,8 @@
   "private_assets_excluded": true,
   "artifacts": {
     "local_character-0.16.0.zip": {
-      "bytes": 315790,
-      "sha256": "ebc85cf4afcbac64b5491d1005b0467e7f561b3e2b869f306d56a61149b1f697"
+      "bytes": 315860,
+      "sha256": "aa4c75d2191503ee4ae7a9f600ce1986d1427ce82478ecbc35921d536ab0d1e4"
     },
     "local_character-unity-companion-0.16.0.zip": {
       "bytes": 12333,
@@ -318,6 +318,13 @@
       "manual_joint_labels_preserved": true,
       "preferences_saved": true,
       "no_active_jobs_or_effects": true
+    },
+    "viewport_loop_period": {
+      "passed": true,
+      "authored_period_respected": true,
+      "export_duplicate_endpoint_retained": true,
+      "ordinary_actions_unchanged": true,
+      "invalid_metadata_ignored": true
     }
   },
   "baseline_record": {
