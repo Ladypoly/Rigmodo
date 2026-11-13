@@ -32,7 +32,7 @@ def selected(context):
     rig=next(iter(rigs)) if rigs else None
     if rig:
         helpers={b.custom_shape for b in rig.pose.bones if b.custom_shape};meshes=[o for o in meshes if o not in helpers]
-    if not meshes:raise ValueError('Select upright humanoid geometry for joint placement')
+    if not meshes:raise ValueError('Select character geometry for joint placement')
     return rig,meshes
 
 def prepare(context,meshes,rig=None,parent=None,seed=0,provider=None,landmarks=None,hands_only=False,finger_guides=None):

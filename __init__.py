@@ -1,14 +1,19 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Rigmodo: independent local humanoid workflow."""
+"""Rigmodo: independent local character workflow."""
 import json
 import bpy
 from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures
 
 class LC_Settings(PropertyGroup):
+    rig_type: EnumProperty(name='Character',items=[('HUMANOID','Humanoid','Standard game character rig'),('CREATURE','Creature','UniRig predicts a custom hierarchy for animals and other articulated shapes')],default='HUMANOID')
+    creature_provider: StringProperty(name='UniRig provider',subtype='DIR_PATH',default=str(creatures.cache()))
+    creature_checkpoint: StringProperty(name='Existing UniRig checkpoint (optional)',subtype='FILE_PATH',default='')
+    creature_job: StringProperty(default='',options={'HIDDEN'})
+    creature_status: StringProperty(default='')
     image_pose_provider: StringProperty(name='SAM 3D Body runtime',subtype='DIR_PATH',default=str(image_pose.cache()))
     image_pose_models: StringProperty(name='Approved SAM checkpoints',subtype='DIR_PATH',default=str(image_pose.cache()/'models'))
     image_pose_hands: BoolProperty(name='Infer hand pose',default=True,description='Use the separate hand decoder; disabling preserves authored finger channels')
@@ -241,7 +246,7 @@ class WorkerModal:
         settings = self._scene.lc_settings
         setattr(settings, self.job_property, str(self._folder))
         setattr(settings, self.status_property, 'Running locally; Escape cancels')
-        kind={'placement_status':'RIG','region_status':'SKIN','motion_status':'MOTION','setup_status':'SETUP'}.get(self.status_property,'SKIN')
+        kind={'placement_status':'RIG','creature_status':'RIG','region_status':'SKIN','motion_status':'MOTION','setup_status':'SETUP'}.get(self.status_property,'SKIN')
         self._visual=processing_visuals.start(context,kind,self._folder)
         self._timer = context.window_manager.event_timer_add(.5, window=context.window)
         context.window_manager.modal_handler_add(self)
@@ -293,6 +298,7 @@ class LC_OT_skin(WorkerModal, Operator):
         settings.workflow_skin_only=False
         try:
             rig, meshes = skinning.selection(context)
+            if settings.rig_type=='CREATURE' or creatures.is_creature(rig):settings.profile='GENERIC'
             self._folder = skinning.prepare(context, rig, meshes, device=settings.skin_device, beams=settings.skin_beams)
             skinning.start(self._folder, bpy.path.abspath(settings.skin_executable), bpy.path.abspath(settings.skin_models))
         except (ValueError, OSError, RuntimeError) as exc:
@@ -420,6 +426,62 @@ class LC_OT_apply_region(Operator):
         settings.region_status = 'Skinning ready; protected weights preserved'
         self.report({'INFO'}, settings.region_status)
         return {'FINISHED'}
+
+class LC_OT_creature(WorkerModal,Operator):
+    bl_idname='local_character.generate_creature_rig';bl_label='Generate Creature Rig';bl_options={'REGISTER'}
+    status_property='creature_status';job_property='creature_job';apply_operator='apply_creature_rig'
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs and not hands._sessions and not landmarks._sessions
+    def execute(self,context):
+        try:
+            rig,meshes=placement.selected(context);settings=configuration.settings(context)
+            if not creatures.ready(settings.creature_provider):raise ValueError('Install Creature Rigging in Extension Settings → Setup')
+            self._folder=creatures.prepare(context,meshes,rig,provider=bpy.path.abspath(settings.creature_provider))
+            creatures.start(self._folder,bpy.path.abspath(settings.placement_python))
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return self.begin(context)
+
+class LC_OT_apply_creature(Operator):
+    bl_idname='local_character.apply_creature_rig';bl_label='Apply Creature Rig';bl_options={'UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs and bool(context.scene.lc_settings.creature_job)
+    def execute(self,context):
+        settings=context.scene.lc_settings
+        try:
+            from pathlib import Path
+            source=json.loads((Path(settings.creature_job)/'source.json').read_text())
+            originals=[bpy.data.objects.get(source['rig']) if source['rig'] else None,*[bpy.data.objects.get(m['name']) for m in source['meshes']]]
+            collection,rig,meshes,result=creatures.apply(context,settings.creature_job)
+            configuration.hide_sources(context,originals);workflow.select(context,rig,meshes)
+            settings.rig_type='CREATURE';settings.profile='GENERIC';settings.ui_step='SKIN'
+            settings.creature_status=f'Creature rig created · {len(result["parents"])} joints. Review in Edit Mode, then skin.'
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:
+            settings.creature_status=str(exc);self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return {'FINISHED'}
+
+class LC_OT_setup_creatures(WorkerModal,Operator):
+    bl_idname='local_character.setup_creature_rigging';bl_label='Install Creature Rigging'
+    status_property='setup_status';job_property='setup_job';apply_operator='finish_creature_setup'
+    @classmethod
+    def poll(cls,context):return not skinning._jobs and not workflow._runs
+    def execute(self,context):
+        try:
+            from pathlib import Path
+            import tempfile
+            settings=configuration.settings(context);python=Path(bpy.path.abspath(settings.placement_python))
+            if not python.is_file():raise ValueError('Install the MIA runtime first; creature rigging reuses its PyTorch')
+            directory=creatures.cache().parent.parent/'jobs';directory.mkdir(parents=True,exist_ok=True)
+            self._folder=Path(tempfile.mkdtemp(prefix='creature-setup-',dir=directory))
+            command=[str(python),'-I',str(Path(__file__).with_name('unirig_install.py')),'--provider',bpy.path.abspath(settings.creature_provider)]
+            if settings.creature_checkpoint:command+=['--checkpoint',bpy.path.abspath(settings.creature_checkpoint)]
+            image_pose.launch(self._folder,command,'Installing local creature rigging')
+        except (ValueError,OSError,RuntimeError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return self.begin(context)
+
+class LC_OT_finish_creature_setup(Operator):
+    bl_idname='local_character.finish_creature_setup';bl_label='Finish Creature Setup'
+    def execute(self,context):
+        context.scene.lc_settings.setup_status='Creature rigging is ready · UniRig';return {'FINISHED'}
 
 class LC_OT_place(WorkerModal,Operator):
     bl_idname='local_character.place_joints'
@@ -656,6 +718,7 @@ class LC_OT_build(Operator):
     def execute(self,context):
         try:
             settings=configuration.settings(context);values=workflow.options(settings,self.auto_skin,context)
+            if settings.rig_type=='CREATURE':raise ValueError('Creature rigs use Generate Rig, then Skin Avatar; the complete motion workflow is humanoid-only')
             settings.workflow_skin_only=self.auto_skin
             self._run=workflow.Run(context,values);self._run.launch(context)
             self._visual=processing_visuals.start(context,'SKIN' if self.auto_skin else 'RIG',run=self._run)
@@ -721,7 +784,7 @@ class LC_PT_main(Panel):
     bl_category = "Rigmodo"
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_Preferences, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (LC_Settings, LC_Preferences, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)

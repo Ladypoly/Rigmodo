@@ -1,11 +1,17 @@
 """Real RNA preferences, uncluttered draws, captured guides and stale rejection."""
-import addon_utils,copy,importlib,json,os,shutil,sys
+import addon_utils,copy,importlib,json,os,shutil,sys,time
 from pathlib import Path
 from types import SimpleNamespace
 import bpy
 from mathutils import Vector
 root=Path(__file__).resolve().parents[1];name='bl_ext.user_default.local_character'
-addon_utils.enable(name,default_set=True);addon=importlib.import_module(name)
+if '--staged' in sys.argv:
+    import importlib.util
+    name='rigmodo_staged_ui';spec=importlib.util.spec_from_file_location(name,root/'__init__.py',submodule_search_locations=[str(root)])
+    addon=importlib.util.module_from_spec(spec);sys.modules[name]=addon;spec.loader.exec_module(addon);addon.register()
+    bpy.context.preferences.addons.new().module=name
+else:
+    addon_utils.enable(name,default_set=True);addon=importlib.import_module(name)
 configuration,ui,placement,skinning,landmarks,workflow=(getattr(addon,n) for n in ('configuration','ui','placement','skinning','landmarks','workflow'))
 output=Path(sys.argv[sys.argv.index('--')+1]);output.mkdir(parents=True,exist_ok=True)
 s=bpy.context.scene.lc_settings;prefs=configuration.preferences(bpy.context);assert prefs
@@ -69,9 +75,19 @@ assert bpy.ops.local_character.edit_joints()=={'FINISHED'} and bpy.context.mode=
 assert bpy.ops.local_character.object_mode()=={'FINISHED'}
 workflow.select(bpy.context,rig,meshes)
 assert before==skinning._digest(rig,meshes)
-private=Path(os.environ['LOCALAPPDATA'])/'Temp';old=json.loads((private/'local-character-one-click/results.json').read_text())
-record=json.loads((Path(old['workflow_record'])/'workflow.json').read_text())
-cached=Path(next(stage['job'] for stage in record['stages'] if stage['stage']=='placement'))
+private=Path(os.environ['LOCALAPPDATA'])/'Temp';old_record=private/'local-character-one-click/results.json'
+fresh_mia=not old_record.is_file()
+if fresh_mia:
+    cached=placement.prepare(bpy.context,meshes,rig,parent=output)
+    placement.start(cached,configuration.settings(bpy.context).placement_python);started=time.monotonic()
+    while True:
+        state=skinning.poll(cached)
+        if state['status']!='running':assert state['status']=='complete',state;break
+        assert time.monotonic()-started<180,'MIA fixture generation timed out'
+        time.sleep(.1)
+else:
+    old=json.loads(old_record.read_text());record=json.loads((Path(old['workflow_record'])/'workflow.json').read_text())
+    cached=Path(next(stage['job'] for stage in record['stages'] if stage['stage']=='placement'))
 model=json.loads((cached/'output.json').read_text());predicted={n:Vector((p[0],-p[2],p[1])) for n,p in zip(model['names'],model['heads'])}
 data=dict(schema_version=1,mesh_digest=skinning._digest(None,meshes),points={})
 for bone in {n for n,_ in landmarks.STEPS}|{n for n,_ in landmarks.RIGHT}:
@@ -102,5 +118,5 @@ result=dict(passed=True,global_preferences_used=True,legacy_settings_migrated=Tr
     native_weight_editor_draws=True,bone_choice_updates_group=True,pose_and_joint_editors_work=True,character_selection_helper_works=True,
     keyposes_use_one_toggle=True,no_capture_recall_clear_buttons=True,three_workflow_tabs=True,
     export_only_in_preferences=True,legacy_export_tab_migrated=True,shared_progress_has_one_cancel=True,
-    effects_settings_only_in_preferences=True)
+    effects_settings_only_in_preferences=True,fresh_actual_mia_fixture=fresh_mia)
 (output/'results.json').write_text(json.dumps(result,indent=2));print('UI_LANDMARK_ACCEPTANCE',json.dumps(result),flush=True)

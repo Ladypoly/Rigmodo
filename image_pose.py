@@ -16,7 +16,7 @@ from bpy.types import Operator, FileHandler
 from bpy.app.handlers import persistent
 from bpy_extras.io_utils import ImportHelper
 from mathutils import Matrix, Vector
-from . import auto_pose, configuration, motion_keyframes, motion_jobs, skeleton, skinning, twists, process_tree, processing_visuals
+from . import auto_pose, configuration, motion_keyframes, motion_jobs, skeleton, skinning, twists, process_tree, processing_visuals,creatures
 from .sam_pose_protocol import SAM_REV, MAPPING, MODELS, sha
 
 EXTENSIONS={'.png','.jpg','.jpeg','.webp','.bmp','.tif','.tiff'}
@@ -262,7 +262,7 @@ class LC_OT_image_pose(Operator,ImportHelper):
     filepath:StringProperty(subtype='FILE_PATH',options={'SKIP_SAVE'})
     @classmethod
     def poll(cls,context):
-        return context.mode in {'OBJECT','POSE'} and context.active_object is not None and context.active_object.type=='ARMATURE' and not skinning._jobs and not _pending and not auto_pose._sessions
+        return context.mode in {'OBJECT','POSE'} and context.active_object is not None and context.active_object.type=='ARMATURE' and context.scene.lc_settings.rig_type!='CREATURE' and not creatures.is_creature(context.active_object) and not skinning._jobs and not _pending and not auto_pose._sessions
     def invoke(self,context,event):
         if self.filepath:return self.execute(context)
         return ImportHelper.invoke(self,context,event)

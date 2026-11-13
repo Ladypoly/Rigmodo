@@ -1,0 +1,25 @@
+{
+  "source_repo": "PozzettiAndrea/ComfyUI-UniRig",
+  "source_revision": "69ee59dc459d2da7cb0291930c1f944886c31d7c",
+  "source_files": {
+    "nodes/unirig/__init__.py": "ac7565a733e42a100d05aae0193a9b4847b54f297f455247a722f6cf49c0caa5",
+    "nodes/unirig/model_spec.py": "54a86a7d53a72c707d3b926109592f0101ad0e8e5df1fd7e26aa39c949e45a8e",
+    "nodes/unirig/unirig_ar.py": "5c7feef420672f3361dcc3b82025e9c30179a40d0f8fcd6692eb959f05849371",
+    "nodes/unirig/michelangelo_encoder.py": "d4e3a9fd15c33ca99ab81b300668d7d32da8909c19236a7fd1f38a1f9f07d974",
+    "nodes/unirig/parse_encoder.py": "175a3c1825ab237f7a62933827ec958fc0d55233a95d6fd2ace960ae20c0d2dd",
+    "nodes/unirig/tokenizer_spec.py": "d6924c4270d20dd5e6bf0cfb9025f8811a3eefd38ba1d17f9a22802f94e22bd2",
+    "nodes/unirig/tokenizer_part.py": "c072a925bf9f5df9eb0a543f3d0af81967195741b33336edb3878285e3bffea5",
+    "nodes/unirig/data_order.py": "5d66ac6490293e59932c615672355601ea9a660d66aac3784292f87f7e8a51aa",
+    "nodes/unirig/data_spec.py": "fb3de8ad3d88c610e86e57a4b1ba84e0692096228d126af5eaafb1548fd52841",
+    "nodes/unirig/configs.py": "9bab636568b5d70eae82e1da800915cf169170e76e299a6218bcc56e96f65fd8",
+    "nodes/unirig/opt_350m_config.json": "e4c244d6fbe38e826f1241bf5acf934735602f742f4159fb9046dbde50987ed0",
+    "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+  },
+  "model_repo": "apozz/UniRig-safetensors",
+  "model_revision": "d0ba4ef9784eee71dd88b47d207f0c2c8f9dd623",
+  "model_file": "skeleton.safetensors",
+  "model_bytes": 1440598432,
+  "model_sha256": "013bc852dec0ab9d5a89ce4be68d0993046f4a61f90ab1e94bdd944cb3ed6003",
+  "upstream_revision": "6793c6640ff01c8fb389f3993434124bb43d2933",
+  "upstream_license_sha256": "d6ee0be05753b9078358b9a5a2ff2e343ea94565749ddc44324f346050d9255c"
+}

@@ -22,13 +22,30 @@ with zipfile.ZipFile(extension) as archive:
     if version=='0.11.0':assert {'image_pose.py','sam_pose_worker.py','sam_pose_install.py','sam_pose_protocol.py','auto_pose.py','auto_pose_solver.py','motion_keyframes.py','character_result.py'}<=names
     if version in {'0.12.0','0.12.1'}:assert {'image_pose.py','sam_pose_worker.py','sam_pose_install.py','sam_pose_protocol.py','auto_pose.py','auto_pose_solver.py','motion_keyframes.py','character_result.py','ui.py'}<=names
     if version=='0.13.0':assert {'processing_visuals.py','ui.py','image_pose.py','sam_pose_worker.py','auto_pose.py','auto_pose_solver.py','motion_keyframes.py','character_result.py'}<=names
+    if version=='0.14.0':assert {'creatures.py','unirig_worker.py','unirig_install.py','unirig-lock.json','processing_visuals.py','ui.py','image_pose.py','auto_pose.py','motion_keyframes.py'}<=names
     assert not any(n.startswith(('tests/','tools/','native/','docs/','artifacts/','unity/','.git/')) for n in names)
     assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl'} for n in names)
     for name in names:
         if name.endswith('.py'):compile(archive.read(name),name,'exec')
-        if name.endswith('.py') or name=='blender_manifest.toml':assert archive.read(name)==(root/name).read_bytes(),name
+        if name.endswith('.py') or name in {'blender_manifest.toml','unirig-lock.json'}:assert archive.read(name)==(root/name).read_bytes(),name
 with zipfile.ZipFile(companion) as archive:
     assert {'LICENSE','README.md','Editor/LocalCharacter.Editor.asmdef','Runtime/LocalCharacter.Runtime.asmdef','Runtime/LocalCharacterTwists.cs'}<=set(archive.namelist())
+
+if version=='0.14.0':
+    checks=json.loads((root/'docs/creature-acceptance-2026-11-13.json').read_text())
+    assert checks['passed'] and checks['version']==version
+    assert checks['giraffe']['actual_unirig_inference'] and checks['scorpion_live']['original_preserved']
+    assert checks['gui']['processing_effects_cleaned_up'] and checks['fbx_roundtrip']['max_joint_world_error']<1e-4
+    baseline=root/'docs/release-verification-0.13.0-2026-10-05.json'
+    assert json.loads(baseline.read_text())['extension_zip_validated']
+    checksums={file.name:dict(bytes=file.stat().st_size,sha256=hashlib.sha256(file.read_bytes()).hexdigest()) for file in (extension,companion)}
+    record=dict(version=version,extension_zip_validated=True,source_modules_compile=True,private_assets_excluded=True,
+        artifacts=checksums,evidence=checks,baseline_record=dict(file=baseline.name,sha256=hashlib.sha256(baseline.read_bytes()).hexdigest()),
+        limits='Scorpion tail needs manual joint correction; Unity Editor import not repeated; RTX 4090 tested')
+    (root/'docs/release-verification-0.14.0-2026-11-13.json').write_text(json.dumps(record,indent=2)+'\n')
+    (artifacts/f'local_character-{version}-checksums.json').write_text(json.dumps(checksums,indent=2)+'\n')
+    print('RELEASE_PACKAGED',json.dumps(checksums),flush=True)
+    raise SystemExit(0)
 temporary=Path(os.environ['LOCALAPPDATA'])/'Temp'
 evidence={}
 sources={'fresh_install':'local-character-install-veal6fz8/results.json','fresh_inference':'local-character-fresh-inference/results.json',

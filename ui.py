@@ -3,7 +3,7 @@
 import json,textwrap
 import bpy
 from bpy.types import Operator
-from . import configuration,skinning,placement,motion_jobs,install_jobs,deformation_qa,landmarks,hands,character_result,processing_visuals
+from . import configuration,skinning,placement,motion_jobs,install_jobs,deformation_qa,landmarks,hands,character_result,processing_visuals,creatures
 
 _pose_mesh_scope={}
 
@@ -133,6 +133,7 @@ def draw(layout,context):
     row=layout.row(align=True);row.prop(s,'ui_step',expand=True)
     processing_visuals.draw_panel(layout,context)
     rig,meshes=scope(context)
+    creature=bool(rig) and (creatures.is_creature(rig) or s.rig_type=='CREATURE')
     row=layout.row(align=True)
     row.label(text=context.active_object.name if context.mode=='POSE' else (meshes[0].name if len(meshes)==1 else f'{len(meshes)} mesh objects') if meshes else 'Select your avatar',icon='ARMATURE_DATA' if context.mode=='POSE' else 'MESH_DATA')
     row.operator('local_character.preferences',text='',icon='PREFERENCES')
@@ -150,6 +151,10 @@ def draw(layout,context):
         layout.operator('local_character.test_pose',text='Test Deformation',icon='POSE_HLT')
         layout.operator('local_character.object_mode',text='Finish Weight Editing',icon='CHECKMARK');return
     if context.mode=='POSE':
+        if creature:
+            layout.label(text='Creature pose editing',icon='POSE_HLT')
+            message(layout,'Pose and keyframe bones with Blender’s native tools.')
+            layout.operator('local_character.object_mode',text='Finish Pose Editing',icon='CHECKMARK');return
         from . import auto_pose
         auto_pose.draw(layout,context)
         if s.ui_step=='MOTION':
@@ -161,9 +166,19 @@ def draw(layout,context):
     if context.mode!='OBJECT':layout.operator('local_character.object_mode',text='Back to Object Mode')
     available=install_jobs.inventory(resolved)
     provider={'RIG':'Joint placement','SKIN':'AI skinning','MOTION':'Generated motion'}.get(s.ui_step)
+    if s.rig_type=='CREATURE' and s.ui_step in {'RIG','MOTION'} or creature and s.ui_step=='MOTION':provider=None
     if provider and not available[provider]:message(layout,'Local models need setup. Open Extension Settings.',icon='INFO')
     layout.separator()
     if s.ui_step=='RIG':
+        layout.prop(s,'rig_type',expand=True)
+        if s.rig_type=='CREATURE':
+            available=creatures.ready(resolved.creature_provider)
+            if not available:message(layout,'Install Creature Rigging in Extension Settings → Setup.',icon='INFO')
+            row=layout.row();row.scale_y=1.45;row.enabled=bool(meshes) and context.mode=='OBJECT' and not skinning._jobs and available
+            row.operator('local_character.generate_creature_rig',text='Generate Rig',icon='ARMATURE_DATA')
+            if not processing_visuals.active(context.scene):message(layout,s.creature_status)
+            layout.operator('local_character.edit_joints',text='Edit Joints')
+            message(layout,'AI proposes a custom hierarchy. Review joints before skinning.');return
         layout.prop(s,'ui_rig_mode',expand=True)
         if s.ui_rig_mode=='ASSISTED':
             message(layout,'Set five landmark groups in front view. AI fills in depth and fingers.')
@@ -196,13 +211,14 @@ def draw(layout,context):
         if not rig:message(layout,'Generate a rig first, then select it with the avatar mesh.',icon='INFO')
         method=s.ui_skin_method if s.ui_skin_advanced else 'AI'
         row=layout.row();row.scale_y=1.45;row.enabled=bool(rig and meshes) and context.mode=='OBJECT' and not skinning._jobs
-        if method=='AI':row.operator('local_character.build_character',text='Skin Avatar',icon='MOD_ARMATURE').auto_skin=True
+        if method=='AI' and creature:row.operator('local_character.ai_skin',text='Skin Avatar',icon='MOD_ARMATURE')
+        elif method=='AI':row.operator('local_character.build_character',text='Skin Avatar',icon='MOD_ARMATURE').auto_skin=True
         else:row.operator('local_character.refine_regions',text='Skin Avatar',icon='MOD_ARMATURE').binding_method=method
-        if not processing_visuals.active(context.scene):message(layout,(s.workflow_status if s.workflow_skin_only else s.skin_status) if method=='AI' else s.region_status)
+        if not processing_visuals.active(context.scene):message(layout,(s.workflow_status if s.workflow_skin_only and not creature else s.skin_status) if method=='AI' else s.region_status)
         layout.prop(s,'ui_skin_advanced')
         if s.ui_skin_advanced:
             layout.prop(s,'ui_skin_method')
-            if method=='AI':layout.prop(s,'workflow_rigid',text='Rigid character parts')
+            if method=='AI' and not creature:layout.prop(s,'workflow_rigid',text='Rigid character parts')
             layout.operator('local_character.weight_editor',icon='WPAINT_HLT')
             layout.prop(s,'refine_method',text='Correction')
             layout.prop(s,'refine_strength');layout.prop(s,'refine_selected')
@@ -213,8 +229,8 @@ def draw(layout,context):
                     fallback=next((r['volume_fallback_reason'] for r in json.loads(s.region_report) if r.get('volume_fallback_reason')),None)
                     if fallback:message(layout,'Surface fallback: '+fallback,icon='INFO')
                 except (ValueError,KeyError):pass
-            layout.operator('local_character.check_deformation',text='Check Deformation')
-            if s.deformation_report:
+            if not creature:layout.operator('local_character.check_deformation',text='Check Deformation')
+            if s.deformation_report and not creature:
                 try:
                     severe,warnings=deformation_qa.findings(json.loads(s.deformation_report))
                     message(layout,(severe+warnings)[0] if severe or warnings else 'No severe strain in tested poses.',icon='ERROR' if severe else 'CHECKMARK')
@@ -224,11 +240,15 @@ def draw(layout,context):
                 message(body,'Select vertices in Edit Mode; return to Object Mode.')
                 body.prop(s,'region_kind',text='Behavior')
                 if s.region_kind=='RIGID' and rig:body.prop_search(s,'region_bone',rig.data,'bones',text='Attach to')
-                elif s.region_kind!='RIGID':body.prop(s,'region_digit',text='Finger')
+                elif s.region_kind!='RIGID' and not creature:body.prop(s,'region_digit',text='Finger')
                 body.operator('local_character.mark_region',text='Apply Region Rule')
                 row=body.row(align=True);row.operator('local_character.protect_region',text='Protect').enabled=True;row.operator('local_character.protect_region',text='Unprotect').enabled=False
                 body.operator('local_character.clear_region',text='Clear Region Rules')
     elif s.ui_step=='MOTION':
+        if creature or s.rig_type=='CREATURE':
+            message(layout,'AI motion and image posing currently support humanoids. Animate this creature in Blender or export a Unity Generic rig.')
+            row=layout.row();row.enabled=bool(rig) and not skinning._jobs
+            row.operator('local_character.test_pose',text='Pose Rig',icon='POSE_HLT');return
         from . import image_pose
         image_pose.draw(layout,context)
         layout.prop(s,'motion_prompt',text='Motion');layout.prop(s,'motion_frames',text='Length (frames)')
@@ -284,6 +304,10 @@ def draw_preferences(layout,context,prefs):
         if not processing_visuals.active(context.scene):message(layout,s.setup_status)
         box=layout.box();box.label(text='Provider locations')
         for key in ('placement_python','skin_executable','skin_models','motion_provider'):box.prop(prefs,key)
+        box=layout.box();box.label(text='Creature Rigging · UniRig')
+        box.label(text='Ready' if creatures.ready(resolved.creature_provider) else 'Setup needed',icon='CHECKMARK' if creatures.ready(resolved.creature_provider) else 'INFO')
+        box.prop(prefs,'creature_provider');box.prop(prefs,'creature_checkpoint')
+        box.operator('local_character.setup_creature_rigging')
         box=layout.box();box.label(text='Pose from Image · SAM 3D Body')
         message(box,'NVIDIA CUDA GPU. Checkpoints require approved Hugging Face access and the SAM license.')
         op=box.operator('wm.url_open',text='Model Access and License',icon='URL');op.url='https://huggingface.co/facebook/sam-3d-body-dinov3'
@@ -309,6 +333,7 @@ def draw_preferences(layout,context,prefs):
         box=layout.box();box.label(text='Complete workflow')
         for key in ('workflow_reuse_joints','workflow_rebind','workflow_rigid','workflow_twists','workflow_motion','workflow_export','workflow_loop'):box.prop(s,key)
         box.operator('local_character.build_character',text='Run Complete Workflow')
+        if s.creature_job:layout.operator('local_character.apply_creature_rig',text='Recover Creature Rig')
         box=layout.box();box.label(text='Unity export');draw_export_tools(box,context)
 
 CLASSES=(LC_OT_preferences,LC_OT_select_character,LC_OT_clean_history,LC_OT_object_mode,LC_OT_weight_editor,LC_OT_joint_editor,LC_OT_pose_editor)

@@ -1,5 +1,16 @@
 Local Character
 
+Optional creature armatures use the UniRig skeleton model from VAST-AI Research
+and the GPL-3.0 ComfyUI-UniRig inference implementation by PozzettiAndrea,
+pinned to 69ee59dc459d2da7cb0291930c1f944886c31d7c. The external provider keeps
+its original source and GPL license, with small standalone Torch/SDPA adaptations;
+no ComfyUI server or Blender Python package is required for inference.
+The safetensors conversion from apozz/UniRig-safetensors is pinned separately
+and derives from the MIT-licensed VAST-AI/UniRig model release. Both upstream
+license notices are retained. Checkpoints stay external and are not bundled.
+Rigmodo's job transport, Blender armature construction and UI integration are
+independently authored. See unirig-lock.json and docs/creature-rigging.md.
+
 Optional Pose from Image uses SAM 3D Body and DINOv3 as separate local providers.
 SAM sources/checkpoints are governed by Meta's SAM License, not this extension's
 GPL. Provider installation retains their licenses in the external cache; images
