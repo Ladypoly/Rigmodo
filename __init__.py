@@ -6,7 +6,7 @@ from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips,motion_playback
 
 class LC_Settings(PropertyGroup):
     rig_type: EnumProperty(name='Character',items=[('HUMANOID','Humanoid','Standard game character rig'),('CREATURE','Creature','UniRig predicts a custom hierarchy for animals and other articulated shapes')],default='HUMANOID')
@@ -776,10 +776,7 @@ class LC_OT_preview_motion(Operator):
         try:
             from .animation import selected_action
             rig=motion_jobs.selected_rig(context);selection=selected_action(rig,context.scene)
-            scene=context.scene;scene.use_preview_range=True;scene.frame_preview_start=selection['frame_start'];scene.frame_preview_end=selection['frame_end']
-            period=selection['action'].get('lc_loop_period_frames')
-            if type(period) is int and period>=2:scene.frame_preview_end=min(scene.frame_preview_end,scene.frame_preview_start+period-1)
-            scene.frame_set(selection['frame_start'])
+            motion_playback.preview(context,rig,selection)
         except (ValueError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
         return {'FINISHED'}
 
@@ -938,6 +935,7 @@ def register():
     bpy.app.timers.register(migrate_workflow_tab,first_interval=0)
     bpy.app.handlers.load_post.append(migrate_workflow_tab)
     motion_clips.register()
+    motion_playback.register()
     auto_pose.register()
     image_pose.register()
     processing_visuals.register()
@@ -945,6 +943,7 @@ def register():
 def unregister():
     if hasattr(bpy.types.Bone,'lc_unimate_label'):del bpy.types.Bone.lc_unimate_label
     if hasattr(bpy.types.Object,'lc_unimate_forward'):del bpy.types.Object.lc_unimate_forward
+    motion_playback.unregister()
     motion_clips.unregister()
     processing_visuals.unregister()
     if bpy.app.timers.is_registered(migrate_workflow_tab):bpy.app.timers.unregister(migrate_workflow_tab)

@@ -62,6 +62,7 @@ def loop(context,rig,blend_frames=8):
             curve.update()
     original.use_fake_user=True
     rig.animation_data.action=action;rig.animation_data.action_slot=slot
+    action['lc_clip_loop']=True
     action['lc_loop_finished']=True;action['lc_loop_blend_frames']=blend_frames;action['lc_loop_seam_velocity']='matched_one_frame'
     context.scene.frame_set(context.scene.frame_current,subframe=context.scene.frame_subframe)
     return action

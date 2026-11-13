@@ -185,6 +185,8 @@ def apply(context, folder, hand_curl=0.,contacts=False,heading=False,hands=None)
         rig['lc_motion_job']=request['job_id']; rig['lc_motion_diagnostics']=json.dumps(result['diagnostics'])
         rig['lc_motion_prompt']=(__import__('pathlib').Path(folder)/'prompt.txt').read_text(encoding='utf-8')
         rig['lc_motion_provider']='motionbricks_soma30' if request['provider']=='motionbricks' else 'kimodo_soma30'
+        from .motion_playback import stamp
+        stamp(action,rig['lc_motion_prompt'])
         skinning._state(folder,'applied',collection=collection.name)
     except Exception:
         orphan_action=action or (rig.animation_data.action if 'rig' in locals() and rig.animation_data else None)

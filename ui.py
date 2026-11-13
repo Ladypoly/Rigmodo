@@ -304,7 +304,10 @@ def draw_export_tools(layout,context):
     except ValueError:rig,meshes=None,[]
     layout.prop(s,'character_name',text='Name');layout.prop(s,'export_directory',text='Folder');layout.prop(s,'profile',text='Unity rig')
     layout.prop(s,'include_action',text='Include animation')
-    if s.include_action:layout.prop(s,'loop_action',text='Loop in Unity')
+    if s.include_action:
+        action=rig.animation_data.action if rig and rig.animation_data else None
+        if action:layout.prop(action,'lc_clip_loop',text='Loop in Unity')
+        else:layout.prop(s,'loop_action',text='Loop in Unity')
     if not meshes:
         message(layout,'Select the rig and character meshes to export.')
         if rig:layout.operator('local_character.select_character')

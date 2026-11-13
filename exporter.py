@@ -127,6 +127,9 @@ def export_bundle(context, rig, meshes, directory, character_name, profile="HUMA
     if report["errors"]:
         raise ValueError("; ".join(report["errors"]))
     selection = selected_action(rig, context.scene) if include_action else None
+    if selection:
+        from .motion_playback import export_loop
+        loop=export_loop(selection['action'],loop)
     name = safe_name(character_name)
     parent = Path(bpy.path.abspath(directory)).resolve()
     parent.mkdir(parents=True, exist_ok=True)

@@ -5,7 +5,7 @@ import math
 import bpy
 from bpy.props import EnumProperty, PointerProperty, StringProperty
 from bpy.types import Operator
-from . import animation, motion_jobs, skinning
+from . import animation, motion_jobs, skinning, motion_playback
 
 _enum_cache={}
 
@@ -68,13 +68,13 @@ def select(context,rig,action,slot):
     times=[p.co.x for c in curves for p in (*c.keyframe_points,*c.sampled_points)]
     start,end=(action.frame_start,action.frame_end) if action.use_frame_range else (min(times),max(times)) if times else (1,1)
     if not all(math.isfinite(v) for v in (start,end)):raise ValueError('Animation has an invalid frame range')
+    motion_playback.stop(context)
     previous=rig.animation_data.action if rig.animation_data else None
     if previous and previous.library is None:previous.use_fake_user=True
     if action.library is None:action.use_fake_user=True
     animation.attach_action(rig,{'action':action,'slot':slot})
-    scene=context.scene;scene.use_preview_range=True;scene.frame_preview_start=math.floor(start);scene.frame_preview_end=max(math.floor(start),math.ceil(end))
-    period=action.get('lc_loop_period_frames')
-    if type(period) is int and period>=2:scene.frame_preview_end=min(scene.frame_preview_end,scene.frame_preview_start+period-1)
+    scene=context.scene
+    motion_playback.range_for(scene,{'action':action,'frame_start':math.floor(start),'frame_end':max(math.floor(start),math.ceil(end))})
     scene.frame_set(scene.frame_preview_start)
     scene.lc_settings.motion_status=''
     context.view_layer.update()
@@ -99,6 +99,7 @@ def deletable(rig,action):
 
 def delete(context,rig,action):
     deletable(rig,action)
+    motion_playback.stop(context)
     choices=[(a,s) for a,s in available(rig) if a!=action]
     rig.animation_data.action=None
     for bone in rig.pose.bones:bone.matrix_basis.identity()
@@ -177,6 +178,7 @@ def draw(layout,context,rig):
     row.operator('local_character.new_motion_clip',text='',icon='ADD')
     row.operator('local_character.delete_motion_clip',text='',icon='TRASH')
     if action:
+        playback=box.row();playback.enabled=action.library is None;playback.prop(action,'lc_clip_loop')
         if not any(c.keyframe_points or c.sampled_points for c in slot_curves(action,rig.animation_data.action_slot)):
             box.label(text='Empty clip · add pose keyframes',icon='INFO')
 

@@ -140,6 +140,8 @@ def bake(context,rig,request,positions,rotations):
                 points=curve.keyframe_points;points.add(len(times));points.foreach_set('co',np.column_stack([times,data[:,index]]).astype(np.float32).ravel())
                 points.foreach_set('interpolation',np.full(len(times),interpolation,dtype=np.int32));curve.update()
     action['lc_source_fps']=30;action['lc_in_place']=request['in_place'];action['lc_motion_provider']='unimate'
+    from .motion_playback import stamp
+    stamp(action,request['prompt'])
     return action
 
 def apply(context,folder):

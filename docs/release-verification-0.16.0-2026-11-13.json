@@ -5,8 +5,8 @@
   "private_assets_excluded": true,
   "artifacts": {
     "local_character-0.16.0.zip": {
-      "bytes": 318845,
-      "sha256": "23914791aec31a04d4aa40e1d0247727ba4fad3b8677b1f83e0799a06692b2d9"
+      "bytes": 320751,
+      "sha256": "7e9f011e6bd90b64c0b0f8c032fbabe45c59140b02b710911bb5711bc71ea6bc"
     },
     "local_character-unity-companion-0.16.0.zip": {
       "bytes": 12333,
@@ -348,6 +348,24 @@
         "new_clip_and_delete": true,
         "source_preserved": true,
         "ui_visually_checked": true
+      }
+    },
+    "one_shot_playback": {
+      "passed": true,
+      "attack_and_death_default_once": true,
+      "walk_default_loop": true,
+      "explicit_override": true,
+      "full_endpoint_for_one_shot": true,
+      "loop_duplicate_endpoint_excluded": true,
+      "per_clip_export_loop": true,
+      "legacy_export_fallback_preserved": true,
+      "generated_prompt_stamped": true,
+      "handlers_registered_once": true,
+      "live_blender": {
+        "passed": true,
+        "attack_stopped_at_frame": 25,
+        "death_stopped_at_frame": 31,
+        "walk_kept_repeating": true
       }
     }
   },

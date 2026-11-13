@@ -24,7 +24,7 @@ with zipfile.ZipFile(extension) as archive:
     if version=='0.13.0':assert {'processing_visuals.py','ui.py','image_pose.py','sam_pose_worker.py','auto_pose.py','auto_pose_solver.py','motion_keyframes.py','character_result.py'}<=names
     if version=='0.14.0':assert {'creatures.py','unirig_worker.py','unirig_install.py','unirig-lock.json','processing_visuals.py','ui.py','image_pose.py','auto_pose.py','motion_keyframes.py'}<=names
     if version=='0.15.0':assert {'unimate.py','unimate_geometry.py','unimate_worker.py','unimate_install.py','unimate-lock.json','processing_visuals.py','creatures.py'}<=names
-    if version=='0.16.0':assert {'creature_annotation.py','motionbricks.py','motionbricks_worker.py','motionbricks_install.py','motionbricks-lock.json','model_storage.py','unimate.py','motion_finish.py','motion_clips.py'}<=names
+    if version=='0.16.0':assert {'creature_annotation.py','motionbricks.py','motionbricks_worker.py','motionbricks_install.py','motionbricks-lock.json','model_storage.py','unimate.py','motion_finish.py','motion_clips.py','motion_playback.py'}<=names
     assert not any(n.startswith(('tests/','tools/','native/','docs/','artifacts/','unity/','.git/')) for n in names)
     assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl'} for n in names)
     for name in names:
@@ -36,7 +36,7 @@ with zipfile.ZipFile(companion) as archive:
 if version=='0.16.0':
     checks=json.loads((root/'docs/acceptance-0.16.0-2026-11-13.json').read_text())
     assert checks['passed'] and checks['version']==version
-    for name in ('annotation','motionbricks','creature','gui','loop','model_storage','human_ui','kimodo_shared','skinning_shared','animation_library'):assert checks[name]['passed'],name
+    for name in ('annotation','motionbricks','creature','gui','loop','model_storage','human_ui','kimodo_shared','skinning_shared','animation_library','one_shot_playback'):assert checks[name]['passed'],name
     assert checks['motionbricks']['artist_anchor_max_matrix_error']<1e-5 and checks['creature']['loop_pose_max_error']<1e-5
     assert checks['gui']['real_worker_cancelled'] and checks['gui']['effects_cleaned_up'] and checks['sam_shared_checkpoint_verification']
     baseline=root/'docs/release-verification-0.15.0-2026-11-13.json'
