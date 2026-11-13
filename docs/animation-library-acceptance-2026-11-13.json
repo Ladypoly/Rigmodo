@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "existing_clips_discovered": true,
+  "select_and_loop_range": true,
+  "new_empty_clip": true,
+  "old_clips_retained": true,
+  "empty_clips_scoped_to_owner": true,
+  "shared_delete_protected": true,
+  "nla_delete_protected": true,
+  "compatible_slot_selected": true,
+  "enum_stable_on_reordering": true,
+  "delete_only_action": true,
+  "invalid_name_rejected": true,
+  "empty_clip_survives_save_reload": true,
+  "registration_cycle_passed": true,
+  "live_blender": {
+    "passed": true,
+    "compatible_scorpion_clips": 12,
+    "arcade_clip_switching": true,
+    "new_clip_and_delete": true,
+    "source_preserved": true,
+    "ui_visually_checked": true
+  }
+}

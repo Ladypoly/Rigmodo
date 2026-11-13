@@ -5,8 +5,8 @@
   "private_assets_excluded": true,
   "artifacts": {
     "local_character-0.16.0.zip": {
-      "bytes": 315860,
-      "sha256": "aa4c75d2191503ee4ae7a9f600ce1986d1427ce82478ecbc35921d536ab0d1e4"
+      "bytes": 318845,
+      "sha256": "23914791aec31a04d4aa40e1d0247727ba4fad3b8677b1f83e0799a06692b2d9"
     },
     "local_character-unity-companion-0.16.0.zip": {
       "bytes": 12333,
@@ -325,6 +325,30 @@
       "export_duplicate_endpoint_retained": true,
       "ordinary_actions_unchanged": true,
       "invalid_metadata_ignored": true
+    },
+    "animation_library": {
+      "passed": true,
+      "existing_clips_discovered": true,
+      "select_and_loop_range": true,
+      "new_empty_clip": true,
+      "old_clips_retained": true,
+      "empty_clips_scoped_to_owner": true,
+      "shared_delete_protected": true,
+      "nla_delete_protected": true,
+      "compatible_slot_selected": true,
+      "enum_stable_on_reordering": true,
+      "delete_only_action": true,
+      "invalid_name_rejected": true,
+      "empty_clip_survives_save_reload": true,
+      "registration_cycle_passed": true,
+      "live_blender": {
+        "passed": true,
+        "compatible_scorpion_clips": 12,
+        "arcade_clip_switching": true,
+        "new_clip_and_delete": true,
+        "source_preserved": true,
+        "ui_visually_checked": true
+      }
     }
   },
   "baseline_record": {

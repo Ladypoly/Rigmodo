@@ -245,6 +245,8 @@ def draw(layout,context):
                 row=body.row(align=True);row.operator('local_character.protect_region',text='Protect').enabled=True;row.operator('local_character.protect_region',text='Unprotect').enabled=False
                 body.operator('local_character.clear_region',text='Clear Region Rules')
     elif s.ui_step=='MOTION':
+        from . import motion_clips
+        motion_clips.draw(layout,context,rig)
         if creature or s.rig_type=='CREATURE':
             from . import unimate
             layout.prop(s,'motion_prompt',text='Motion');layout.prop(s,'unimate_frames',text='Frames (30 fps)')

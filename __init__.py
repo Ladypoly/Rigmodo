@@ -6,7 +6,7 @@ from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips
 
 class LC_Settings(PropertyGroup):
     rig_type: EnumProperty(name='Character',items=[('HUMANOID','Humanoid','Standard game character rig'),('CREATURE','Creature','UniRig predicts a custom hierarchy for animals and other articulated shapes')],default='HUMANOID')
@@ -919,7 +919,7 @@ class LC_PT_main(Panel):
     bl_category = "Rigmodo"
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (LC_Settings, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, *motion_clips.CLASSES, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
@@ -937,6 +937,7 @@ def register():
     bpy.types.Scene.lc_settings = PointerProperty(type=LC_Settings)
     bpy.app.timers.register(migrate_workflow_tab,first_interval=0)
     bpy.app.handlers.load_post.append(migrate_workflow_tab)
+    motion_clips.register()
     auto_pose.register()
     image_pose.register()
     processing_visuals.register()
@@ -944,6 +945,7 @@ def register():
 def unregister():
     if hasattr(bpy.types.Bone,'lc_unimate_label'):del bpy.types.Bone.lc_unimate_label
     if hasattr(bpy.types.Object,'lc_unimate_forward'):del bpy.types.Object.lc_unimate_forward
+    motion_clips.unregister()
     processing_visuals.unregister()
     if bpy.app.timers.is_registered(migrate_workflow_tab):bpy.app.timers.unregister(migrate_workflow_tab)
     if migrate_workflow_tab in bpy.app.handlers.load_post:bpy.app.handlers.load_post.remove(migrate_workflow_tab)
