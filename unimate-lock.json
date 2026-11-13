@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "source_repo": "Friedrich-M/UniMate",
+  "source_revision": "b78c7807df7cf4231d4e67f8d0ece29c5e11025b",
+  "source_url": "https://codeload.github.com/Friedrich-M/UniMate/zip/b78c7807df7cf4231d4e67f8d0ece29c5e11025b",
+  "source_sha256": "a67f68d4dd84c36f856d470cb6b45a6303e3b09bc2c0acb67b9e29b50a75d9c8",
+  "model_license": "CC-BY-NC-4.0",
+  "files": [
+    {
+      "path": "weights/unimate_uniml3d_f60_v3/config.json",
+      "url": "https://huggingface.co/Linzhan/UniMate/resolve/174fc755ec248d0c98f27759b7a95648e7f05905/unimate_uniml3d_f60_v3/config.json",
+      "sha256": "1ffbd379d3667de7d701ed6f3418f1c9d1a66f35d2653776255008c07c051aaa",
+      "size": 3530
+    },
+    {
+      "path": "weights/unimate_uniml3d_f60_v3/dataset_stats.npy",
+      "url": "https://huggingface.co/Linzhan/UniMate/resolve/174fc755ec248d0c98f27759b7a95648e7f05905/unimate_uniml3d_f60_v3/dataset_stats.npy",
+      "sha256": "0ff2b9ef3ea9a15b024ab0670e55f659478251501e5596f9011d5bca4cf67773",
+      "size": 950
+    },
+    {
+      "path": "weights/unimate_uniml3d_f60_v3/checkpoints/checkpoint_step_150000.pt",
+      "url": "https://huggingface.co/Linzhan/UniMate/resolve/174fc755ec248d0c98f27759b7a95648e7f05905/unimate_uniml3d_f60_v3/checkpoints/checkpoint_step_150000.pt",
+      "sha256": "f991ddd87262c251f4681d18297a6163ab4f139daa28c86d5ef0a66771df7bc6",
+      "size": 1185836040
+    },
+    {
+      "path": "weights/LICENSE",
+      "url": "https://huggingface.co/Linzhan/UniMate/resolve/174fc755ec248d0c98f27759b7a95648e7f05905/LICENSE",
+      "sha256": "40e6800e2b27ed556a89a342e6570cce73fcfd8463aa16d45e113bc20a2e987e",
+      "size": 19994
+    },
+    {
+      "path": "weights/README.md",
+      "url": "https://huggingface.co/Linzhan/UniMate/resolve/174fc755ec248d0c98f27759b7a95648e7f05905/README.md",
+      "sha256": "783ef607d465a9437e772bf2af262fca9ceb40dafc0f25e39be9e12a79ef8fed",
+      "size": 9002
+    },
+    {
+      "path": "text_encoder/config.json",
+      "url": "https://huggingface.co/google/flan-t5-base/resolve/7bcac572ce56db69c1ea7c8af255c5d7c9672fc2/config.json",
+      "sha256": "7c1853dbfa0e4aac093eb109a358b6ab25fe86b7c15185a91322f0ed26f0f940",
+      "size": 1404
+    },
+    {
+      "path": "text_encoder/model.safetensors",
+      "url": "https://huggingface.co/google/flan-t5-base/resolve/7bcac572ce56db69c1ea7c8af255c5d7c9672fc2/model.safetensors",
+      "sha256": "1dfb70afdcedceb9f9fae2f9b68e004ad934361fb35b9b2bd50b45ea90790fc8",
+      "size": 990345061
+    },
+    {
+      "path": "text_encoder/spiece.model",
+      "url": "https://huggingface.co/google/flan-t5-base/resolve/7bcac572ce56db69c1ea7c8af255c5d7c9672fc2/spiece.model",
+      "sha256": "d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86",
+      "size": 791656
+    },
+    {
+      "path": "text_encoder/tokenizer_config.json",
+      "url": "https://huggingface.co/google/flan-t5-base/resolve/7bcac572ce56db69c1ea7c8af255c5d7c9672fc2/tokenizer_config.json",
+      "sha256": "4c55124402e4ce48c7125d04b9af152a125eda9e7c80829f8f99f2ec69f3f68d",
+      "size": 2537
+    },
+    {
+      "path": "text_encoder/special_tokens_map.json",
+      "url": "https://huggingface.co/google/flan-t5-base/resolve/7bcac572ce56db69c1ea7c8af255c5d7c9672fc2/special_tokens_map.json",
+      "sha256": "5c87151ef0f72a99d1f766a4c418bd2a1f90aaa30a8e22fe5eca9641daebb64f",
+      "size": 2201
+    }
+  ],
+  "dependencies": [
+    "numpy==2.2.6",
+    "scipy==1.15.2",
+    "transformers==4.51.3",
+    "huggingface-hub==0.30.2",
+    "safetensors==0.5.3",
+    "sentencepiece==0.2.1",
+    "torch-geometric==2.7.0",
+    "torchdiffeq==0.2.5",
+    "loguru==0.7.3",
+    "einops==0.8.1",
+    "rich==14.3.3"
+  ]
+}

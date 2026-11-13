@@ -43,3 +43,37 @@ The original Make-It-Animatable model code is MIT licensed. Its models_ae.py
 derives from 1zb/3DShape2VecSet, MIT licensed. The selected original MIA
 checkpoint model card identifies its weights as Apache-2.0. Neither ARP nor
 the original Blender, UI, dataset or pose modules are imported by our adapter.
+
+Optional Creature Motion runs Friedrich-M/UniMate at revision
+b78c7807df7cf4231d4e67f8d0ece29c5e11025b (MIT) as an external provider.
+The released Linzhan/UniMate checkpoint is CC BY-NC 4.0, not GPL;
+this optional integration is for noncommercial use. The FLAN-T5 text encoder
+is Apache-2.0. Weights, dataset assets and external runtimes are not bundled.
+No UniML3D dataset, commercial Truebones files, cloud LLM or API token is needed.
+Canonicalization, FK recovery and conditioning adapt the MIT-licensed
+UniMate-B3D addon/motion.py and backend/worker.py by nopeburger, with changes
+for Rigmodo's transactions, validation, offline setup and owned workers.
+Upstream: https://github.com/Friedrich-M/UniMate
+Blender reference: https://github.com/nopeburger/UniMate-B3D
+
+MIT License
+
+Copyright (c) 2026 Linzhan Mou
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

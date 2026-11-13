@@ -1,0 +1,115 @@
+{
+  "version": "0.15.0",
+  "passed": true,
+  "unit": {
+    "passed": true,
+    "rest_bake_max_error": 5.960464477539063e-08,
+    "stale_labels_rejected": true,
+    "stale_action_rejected": true,
+    "source_preserved": true,
+    "virtual_tips": true
+  },
+  "scorpion": {
+    "schema_version": 1,
+    "provider": "unimate",
+    "request_sha256": "9003c6f37020bafe6c9e572bf6238bfffd7fda48cfac4d96a8d41ec26ba2407a",
+    "output_sha256": "3f842b9f1461d58fcacba7e68924f4b77187c172f18f66f80e8b365cd062d9de",
+    "frames": 60,
+    "joints": 64,
+    "fps": 30,
+    "elapsed_seconds": 12.955627899999854,
+    "peak_gpu_bytes": 466751488,
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "prompt": "An object walks forward.",
+    "passed": true,
+    "source_preserved": true,
+    "source_objects": 6,
+    "created_objects": 2,
+    "action": "UniMate \u00b7 An object walks forward.",
+    "animated_joint_variation": 0.4039670526981354
+  },
+  "gui": {
+    "passed": true,
+    "real_worker_cancelled": true,
+    "source_preserved": true,
+    "no_scene_objects_added_on_cancel": true,
+    "processing_effects_cleaned_up": true,
+    "armature_only_selection": true,
+    "real_modal_generation": true
+  },
+  "fbx_roundtrip": {
+    "passed": true,
+    "neural_fk_max_joint_error": 1.5141368979887348e-07,
+    "fbx_animation_max_joint_error": 4.5491270787935696e-07,
+    "joints_preserved": true,
+    "bones": 52,
+    "sampled_frames": [
+      1.0,
+      13.0,
+      25.0,
+      37.0,
+      49
+    ],
+    "unity_editor_import_tested": false
+  },
+  "human_ui": {
+    "passed": true,
+    "global_preferences_used": true,
+    "legacy_settings_migrated": true,
+    "workflow_panel_has_no_runtime_fields": true,
+    "eight_front_anchors_exact": true,
+    "model_depth_preserved": true,
+    "landmarks_locked": true,
+    "source_preserved": true,
+    "sources_hidden_after_individual_step": true,
+    "original_plus_copy_rejected": true,
+    "stale_landmarks_rejected": true,
+    "cached_actual_mia_used": true,
+    "native_weight_editor_draws": true,
+    "bone_choice_updates_group": true,
+    "pose_and_joint_editors_work": true,
+    "character_selection_helper_works": true,
+    "keyposes_use_one_toggle": true,
+    "no_capture_recall_clear_buttons": true,
+    "three_workflow_tabs": true,
+    "export_only_in_preferences": true,
+    "legacy_export_tab_migrated": true,
+    "shared_progress_has_one_cancel": true,
+    "effects_settings_only_in_preferences": true,
+    "fresh_actual_mia_fixture": true
+  },
+  "limits": [
+    "Early model: review contacts and anatomy",
+    "Scorpion tail rig needs correction",
+    "No fresh Unity Editor import",
+    "Only RTX 4090 tested"
+  ],
+  "live": {
+    "passed": true,
+    "version": "0.15.0",
+    "active": "Rigmodo_Creature_Rig.001_UniMate",
+    "action": "UniMate \u00b7 An object walks forward.",
+    "frames": 60,
+    "elapsed_seconds": 12.571660600000541,
+    "peak_gpu_bytes": 466751488,
+    "original_six_object_and_data_identities_preserved": true,
+    "original_tripo_rig_mesh_pose_weights_preserved": true,
+    "source_rig_skin_action_preserved": true,
+    "processing_effects_cleaned_up": true,
+    "timeline_frame_preserved": true,
+    "preview_bounds": [
+      1,
+      49
+    ],
+    "objects": 8,
+    "source_file_not_overwritten": true
+  },
+  "extracted_archive": {
+    "passed": true,
+    "rest_bake_max_error": 5.960464477539063e-08,
+    "stale_labels_rejected": true,
+    "stale_action_rejected": true,
+    "source_preserved": true,
+    "virtual_tips": true
+  }
+}

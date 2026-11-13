@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "version": "0.15.0",
+  "active": "Rigmodo_Creature_Rig.001_UniMate",
+  "action": "UniMate \u00b7 An object walks forward.",
+  "frames": 60,
+  "elapsed_seconds": 12.571660600000541,
+  "peak_gpu_bytes": 466751488,
+  "original_six_object_and_data_identities_preserved": true,
+  "original_tripo_rig_mesh_pose_weights_preserved": true,
+  "source_rig_skin_action_preserved": true,
+  "processing_effects_cleaned_up": true,
+  "timeline_frame_preserved": true,
+  "preview_bounds": [
+    1,
+    49
+  ],
+  "objects": 8,
+  "source_file_not_overwritten": true
+}

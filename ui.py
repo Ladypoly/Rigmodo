@@ -246,9 +246,26 @@ def draw(layout,context):
                 body.operator('local_character.clear_region',text='Clear Region Rules')
     elif s.ui_step=='MOTION':
         if creature or s.rig_type=='CREATURE':
-            message(layout,'AI motion and image posing currently support humanoids. Animate this creature in Blender or export a Unity Generic rig.')
-            row=layout.row();row.enabled=bool(rig) and not skinning._jobs
-            row.operator('local_character.test_pose',text='Pose Rig',icon='POSE_HLT');return
+            from . import unimate
+            layout.prop(s,'motion_prompt',text='Motion');layout.prop(s,'unimate_frames',text='Frames (30 fps)')
+            layout.prop(s,'motion_in_place')
+            row=layout.row();row.scale_y=1.45;row.enabled=bool(rig) and context.mode=='OBJECT' and not skinning._jobs
+            row.operator('local_character.generate_creature_motion',text='Generate Motion',icon='ACTION')
+            if rig and rig.animation_data and rig.animation_data.action:layout.operator('local_character.preview_motion',text='Preview Motion',icon='PREVIEW_RANGE')
+            if not processing_visuals.active(context.scene):message(layout,s.motion_status)
+            if not unimate.ready(configuration.settings(context).unimate_provider):message(layout,'Install Creature Motion in Extension Settings → Setup.')
+            body=details(layout,'lc_motion_options','Motion options')
+            if body:
+                message(body,'UniMate · short English prompts work best: An object walks forward.')
+                body.prop(s,'unimate_guidance')
+                if rig:
+                    body.prop(rig,'lc_unimate_forward')
+                    body.prop_search(s,'unimate_bone',rig.data,'bones',text='Joint')
+                    bone=rig.data.bones.get(s.unimate_bone)
+                    if bone:body.prop(bone,'lc_unimate_label')
+                    message(body,'Numbered bones benefit from anatomical labels. Check facing and contact quality.')
+                body.operator('local_character.test_pose',text='Pose Rig',icon='POSE_HLT')
+            return
         from . import image_pose
         image_pose.draw(layout,context)
         layout.prop(s,'motion_prompt',text='Motion');layout.prop(s,'motion_frames',text='Length (frames)')
@@ -308,6 +325,12 @@ def draw_preferences(layout,context,prefs):
         box.label(text='Ready' if creatures.ready(resolved.creature_provider) else 'Setup needed',icon='CHECKMARK' if creatures.ready(resolved.creature_provider) else 'INFO')
         box.prop(prefs,'creature_provider');box.prop(prefs,'creature_checkpoint')
         box.operator('local_character.setup_creature_rigging')
+        from . import unimate
+        box=layout.box();box.label(text='Creature Motion · UniMate')
+        box.label(text='Ready' if unimate.ready(resolved.unimate_provider) else 'Setup needed',icon='CHECKMARK' if unimate.ready(resolved.unimate_provider) else 'INFO')
+        message(box,'Local NVIDIA CUDA inference. Preview model · 5–71 joints including tips, up to 60 frames at 30 fps. Weights: CC BY-NC 4.0 (noncommercial).')
+        box.prop(prefs,'unimate_provider');box.operator('local_character.setup_creature_motion')
+        op=box.operator('wm.url_open',text='Model and License',icon='URL');op.url='https://huggingface.co/Linzhan/UniMate'
         box=layout.box();box.label(text='Pose from Image · SAM 3D Body')
         message(box,'NVIDIA CUDA GPU. Checkpoints require approved Hugging Face access and the SAM license.')
         op=box.operator('wm.url_open',text='Model Access and License',icon='URL');op.url='https://huggingface.co/facebook/sam-3d-body-dinov3'
@@ -328,7 +351,7 @@ def draw_preferences(layout,context,prefs):
         box.operator('local_character.clean_history')
     else:
         message(layout,'Finished results are applied automatically. Recovery is for interrupted sessions.')
-        for key,op in (('placement_job','apply_placement_job'),('skin_job','apply_skin_job'),('region_job','apply_region_job'),('motion_job','apply_motion_job')):
+        for key,op in (('placement_job','apply_placement_job'),('skin_job','apply_skin_job'),('region_job','apply_region_job'),('motion_job','apply_motion_job'),('unimate_job','apply_creature_motion')):
             if getattr(s,key):layout.operator('local_character.'+op)
         box=layout.box();box.label(text='Complete workflow')
         for key in ('workflow_reuse_joints','workflow_rebind','workflow_rigid','workflow_twists','workflow_motion','workflow_export','workflow_loop'):box.prop(s,key)

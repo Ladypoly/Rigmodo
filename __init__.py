@@ -6,10 +6,15 @@ from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate
 
 class LC_Settings(PropertyGroup):
     rig_type: EnumProperty(name='Character',items=[('HUMANOID','Humanoid','Standard game character rig'),('CREATURE','Creature','UniRig predicts a custom hierarchy for animals and other articulated shapes')],default='HUMANOID')
+    unimate_provider: StringProperty(name='UniMate provider',subtype='DIR_PATH',default=str(unimate.cache()))
+    unimate_frames: IntProperty(name='Frames at 30 fps',default=60,min=15,max=60)
+    unimate_guidance: FloatProperty(name='Prompt guidance',default=3.,min=1.1,max=10.)
+    unimate_bone: StringProperty(name='Joint')
+    unimate_job: StringProperty(default='',options={'HIDDEN'})
     creature_provider: StringProperty(name='UniRig provider',subtype='DIR_PATH',default=str(creatures.cache()))
     creature_checkpoint: StringProperty(name='Existing UniRig checkpoint (optional)',subtype='FILE_PATH',default='')
     creature_job: StringProperty(default='',options={'HIDDEN'})
@@ -570,6 +575,65 @@ class LC_OT_lock_joints(Operator):
         return {'FINISHED'}
 
 
+class LC_OT_unimate(WorkerModal,Operator):
+    bl_idname='local_character.generate_creature_motion';bl_label='Generate Creature Motion';bl_options={'REGISTER'}
+    status_property='motion_status';job_property='unimate_job';apply_operator='apply_creature_motion'
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
+    def execute(self,context):
+        settings=configuration.settings(context)
+        try:
+            rig=motion_jobs.selected_rig(context)
+            if not unimate.ready(settings.unimate_provider):raise ValueError('Install Creature Motion in Extension Settings → Setup')
+            self._folder=unimate.prepare(context,rig,settings.motion_prompt,settings.unimate_frames,settings.motion_seed,
+                settings.motion_in_place,rig.lc_unimate_forward,settings.unimate_guidance,bpy.path.abspath(settings.unimate_provider))
+            unimate.start(self._folder)
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return self.begin(context)
+
+class LC_OT_apply_unimate(Operator):
+    bl_idname='local_character.apply_creature_motion';bl_label='Create Copy from Creature Motion';bl_options={'REGISTER','UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs and bool(context.scene.lc_settings.unimate_job)
+    def execute(self,context):
+        settings=context.scene.lc_settings
+        try:
+            from pathlib import Path
+            request=json.loads((Path(settings.unimate_job)/'request.json').read_text())
+            sources=[bpy.data.objects.get(request['rig']),*[bpy.data.objects.get(m['name']) for m in request['meshes']]]
+            collection,rig,meshes,action,report=unimate.apply(context,settings.unimate_job)
+            configuration.hide_sources(context,sources)
+            for obj in context.selected_objects:obj.select_set(False)
+            for obj in [rig,*meshes]:obj.select_set(True)
+            context.view_layer.objects.active=rig
+            settings.motion_status=f'UniMate motion ready · {report["frames"]} frames at 30 fps. Review movement and contacts.'
+            settings.include_action=True
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:settings.motion_status=str(exc);self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        self.report({'INFO'},f'Created {collection.name}; source rig and Action preserved');return {'FINISHED'}
+
+class LC_OT_setup_unimate(WorkerModal,Operator):
+    bl_idname='local_character.setup_creature_motion';bl_label='Install Creature Motion'
+    status_property='setup_status';job_property='setup_job';apply_operator='finish_unimate_setup'
+    @classmethod
+    def poll(cls,context):return not skinning._jobs and not workflow._runs
+    def execute(self,context):
+        try:
+            from pathlib import Path
+            import tempfile
+            settings=configuration.settings(context);python=Path(bpy.path.abspath(settings.placement_python))
+            if not python.is_file():raise ValueError('Install the MIA runtime first; UniMate reuses its CUDA PyTorch')
+            directory=unimate.cache().parent.parent/'jobs';directory.mkdir(parents=True,exist_ok=True)
+            self._folder=Path(tempfile.mkdtemp(prefix='unimate-setup-',dir=directory))
+            image_pose.launch(self._folder,[str(python),'-I',str(Path(__file__).with_name('unimate_install.py')),
+                '--provider',bpy.path.abspath(settings.unimate_provider)],'Installing local creature motion · UniMate')
+        except (ValueError,OSError,RuntimeError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return self.begin(context)
+
+class LC_OT_finish_unimate_setup(Operator):
+    bl_idname='local_character.finish_unimate_setup';bl_label='Finish Creature Motion Setup'
+    def execute(self,context):
+        context.scene.lc_settings.setup_status='Creature motion is ready · UniMate';return {'FINISHED'}
+
 class LC_OT_motion(WorkerModal, Operator):
     bl_idname='local_character.generate_motion'
     bl_label='Generate Local Motion'
@@ -784,7 +848,7 @@ class LC_PT_main(Panel):
     bl_category = "Rigmodo"
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_Preferences, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (LC_Settings, LC_Preferences, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
@@ -796,6 +860,8 @@ def migrate_workflow_tab(_=None):
         if settings.get('ui_step') in (3,'EXPORT'):settings.ui_step='MOTION'
 
 def register():
+    bpy.types.Bone.lc_unimate_label=StringProperty(name='Joint label',description='Anatomical name used by UniMate, such as Left Front Knee or Tail; empty uses the bone name',maxlen=128)
+    bpy.types.Object.lc_unimate_forward=EnumProperty(name='Facing direction',items=[('-Y','−Y','Faces world −Y'),('Y','+Y','Faces world +Y'),('X','+X','Faces world +X'),('-X','−X','Faces world −X')],default='-Y')
     for cls in CLASSES: bpy.utils.register_class(cls)
     bpy.types.Scene.lc_settings = PointerProperty(type=LC_Settings)
     bpy.app.timers.register(migrate_workflow_tab,first_interval=0)
@@ -805,6 +871,8 @@ def register():
     processing_visuals.register()
 
 def unregister():
+    if hasattr(bpy.types.Bone,'lc_unimate_label'):del bpy.types.Bone.lc_unimate_label
+    if hasattr(bpy.types.Object,'lc_unimate_forward'):del bpy.types.Object.lc_unimate_forward
     processing_visuals.unregister()
     if bpy.app.timers.is_registered(migrate_workflow_tab):bpy.app.timers.unregister(migrate_workflow_tab)
     if migrate_workflow_tab in bpy.app.handlers.load_post:bpy.app.handlers.load_post.remove(migrate_workflow_tab)
