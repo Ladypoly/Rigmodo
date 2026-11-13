@@ -77,3 +77,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Humanoid pose transitions optionally use the official NVlabs/MotionBricks SOMA
+ONNX model at revision 54fc563aeaaf819a753d72cc9fdc6713989cdd43.
+Rigmodo's NumPy pose encoding, model-space alignment, boundary trimming and
+endpoint correction follow motionbricks/model/soma/kernels.py and pose_utils.py,
+copyright 2026 NVIDIA CORPORATION & AFFILIATES, under Apache-2.0.
+See licenses/Apache-2.0.txt. The full external source notice and ONNX model
+license are retained with the model download. Weights are governed by the
+NVIDIA Open Model Agreement; they do not become GPL. NVIDIA's sample motion
+dataset and Smart Primitive/demo assets are not bundled or needed here.

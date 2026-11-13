@@ -24,13 +24,29 @@ with zipfile.ZipFile(extension) as archive:
     if version=='0.13.0':assert {'processing_visuals.py','ui.py','image_pose.py','sam_pose_worker.py','auto_pose.py','auto_pose_solver.py','motion_keyframes.py','character_result.py'}<=names
     if version=='0.14.0':assert {'creatures.py','unirig_worker.py','unirig_install.py','unirig-lock.json','processing_visuals.py','ui.py','image_pose.py','auto_pose.py','motion_keyframes.py'}<=names
     if version=='0.15.0':assert {'unimate.py','unimate_geometry.py','unimate_worker.py','unimate_install.py','unimate-lock.json','processing_visuals.py','creatures.py'}<=names
+    if version=='0.16.0':assert {'creature_annotation.py','motionbricks.py','motionbricks_worker.py','motionbricks_install.py','motionbricks-lock.json','model_storage.py','unimate.py','motion_finish.py'}<=names
     assert not any(n.startswith(('tests/','tools/','native/','docs/','artifacts/','unity/','.git/')) for n in names)
     assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl'} for n in names)
     for name in names:
         if name.endswith('.py'):compile(archive.read(name),name,'exec')
-        if name.endswith('.py') or name in {'blender_manifest.toml','unirig-lock.json','unimate-lock.json'}:assert archive.read(name)==(root/name).read_bytes(),name
+        if name.endswith('.py') or name in {'blender_manifest.toml','unirig-lock.json','unimate-lock.json','motionbricks-lock.json'}:assert archive.read(name)==(root/name).read_bytes(),name
 with zipfile.ZipFile(companion) as archive:
     assert {'LICENSE','README.md','Editor/LocalCharacter.Editor.asmdef','Runtime/LocalCharacter.Runtime.asmdef','Runtime/LocalCharacterTwists.cs'}<=set(archive.namelist())
+
+if version=='0.16.0':
+    checks=json.loads((root/'docs/acceptance-0.16.0-2026-11-13.json').read_text())
+    assert checks['passed'] and checks['version']==version
+    for name in ('annotation','motionbricks','creature','gui','loop','model_storage','human_ui','kimodo_shared','skinning_shared'):assert checks[name]['passed'],name
+    assert checks['motionbricks']['artist_anchor_max_matrix_error']<1e-5 and checks['creature']['loop_pose_max_error']<1e-5
+    assert checks['gui']['real_worker_cancelled'] and checks['gui']['effects_cleaned_up'] and checks['sam_shared_checkpoint_verification']
+    baseline=root/'docs/release-verification-0.15.0-2026-11-13.json'
+    assert json.loads(baseline.read_text())['extension_zip_validated']
+    checksums={file.name:dict(bytes=file.stat().st_size,sha256=hashlib.sha256(file.read_bytes()).hexdigest()) for file in (extension,companion)}
+    record=dict(version=version,extension_zip_validated=True,source_modules_compile=True,private_assets_excluded=True,
+        artifacts=checksums,evidence=checks,baseline_record=dict(file=baseline.name,sha256=hashlib.sha256(baseline.read_bytes()).hexdigest()),limits=checks['limits'])
+    (root/'docs/release-verification-0.16.0-2026-11-13.json').write_text(json.dumps(record,indent=2)+'\n')
+    (artifacts/f'local_character-{version}-checksums.json').write_text(json.dumps(checksums,indent=2)+'\n')
+    print('RELEASE_PACKAGED',json.dumps(checksums),flush=True);raise SystemExit(0)
 
 if version=='0.15.0':
     checks=json.loads((root/'docs/unimate-acceptance-2026-11-13.json').read_text())

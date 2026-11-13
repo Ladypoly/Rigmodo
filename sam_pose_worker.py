@@ -7,6 +7,7 @@ import sys
 import time
 
 sys.path.insert(0, str(Path(__file__).parent))
+import model_storage
 from sam_pose_protocol import SAM_REV, DINO_REV, HF_REV, MODELS, MAPPING, DIRECTIONS, sha, source_files
 
 def verify(provider):
@@ -15,7 +16,7 @@ def verify(provider):
         raise ValueError('Install the pinned SAM 3D Body image-pose provider')
     if source_files(provider) != manifest['sources']:
         raise ValueError('Image-pose provider sources changed; reinstall the runtime')
-    models = Path(manifest['models'])
+    models = model_storage.resolve(manifest['models'])
     for name, expected in MODELS.items():
         if sha(models/name) != expected: raise ValueError('SAM checkpoint verification failed: '+name)
     if sha(models/'model_config.yaml') != manifest['config_sha256']:

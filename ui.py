@@ -260,18 +260,26 @@ def draw(layout,context):
                 body.prop(s,'unimate_guidance')
                 if rig:
                     body.prop(rig,'lc_unimate_forward')
+                    body.operator('local_character.detect_creature_joints',text='Detect Facing & Joints')
                     body.prop_search(s,'unimate_bone',rig.data,'bones',text='Joint')
                     bone=rig.data.bones.get(s.unimate_bone)
                     if bone:body.prop(bone,'lc_unimate_label')
-                    message(body,'Numbered bones benefit from anatomical labels. Check facing and contact quality.')
+                    message(body,'Names and rest geometry are detected automatically. Manual labels take priority.')
+                    try:
+                        for note in json.loads(rig.get('lc_creature_annotation','{}')).get('notes',[])[:2]:message(body,note)
+                    except (ValueError,TypeError):pass
                 body.operator('local_character.test_pose',text='Pose Rig',icon='POSE_HLT')
+                body.prop(s,'motion_loop_blend');body.operator('local_character.finish_loop',text='Make Loop Copy')
             return
         from . import image_pose
         image_pose.draw(layout,context)
-        layout.prop(s,'motion_prompt',text='Motion');layout.prop(s,'motion_frames',text='Length (frames)')
+        layout.prop(s,'motion_engine',text='Method')
+        if s.motion_engine=='KIMODO':
+            layout.prop(s,'motion_prompt',text='Motion');layout.prop(s,'motion_frames',text='Length (frames)')
+            layout.prop(s,'motion_use_keyframes')
+        else:message(layout,'Insert pose keys 0.5–2 seconds apart. Timing follows the active Action.')
         layout.prop(s,'motion_in_place')
-        layout.prop(s,'motion_use_keyframes')
-        if s.motion_use_keyframes:
+        if s.motion_engine=='KIMODO' and s.motion_use_keyframes:
             fps=context.scene.render.fps/context.scene.render.fps_base
             message(layout,f'Pose keys from frames {context.scene.frame_start:g}–{context.scene.frame_start+(s.motion_frames-1)*fps/30:g} guide the motion.')
         row=layout.row();row.scale_y=1.45;row.enabled=bool(rig) and context.mode=='OBJECT' and not skinning._jobs
@@ -316,6 +324,9 @@ def draw_preferences(layout,context,prefs):
     layout.prop(prefs,'page',expand=True)
     processing_visuals.draw_panel(layout,context)
     if prefs.page=='SETUP':
+        box=layout.box();box.label(text='Shared model storage')
+        box.prop(prefs,'models_directory');box.operator('local_character.use_shared_model_folder')
+        message(box,'Copies are verified before switching paths and removing managed cache copies. Runtimes stay in their own cache.')
         for name,ready in install_jobs.inventory(resolved).items():layout.label(text=name+(': ready' if ready else ': setup needed'),icon='CHECKMARK' if ready else 'ERROR')
         layout.prop(prefs,'setup_python');layout.prop(prefs,'setup_archive');layout.operator('local_character.install_providers')
         if not processing_visuals.active(context.scene):message(layout,s.setup_status)
@@ -325,7 +336,11 @@ def draw_preferences(layout,context,prefs):
         box.label(text='Ready' if creatures.ready(resolved.creature_provider) else 'Setup needed',icon='CHECKMARK' if creatures.ready(resolved.creature_provider) else 'INFO')
         box.prop(prefs,'creature_provider');box.prop(prefs,'creature_checkpoint')
         box.operator('local_character.setup_creature_rigging')
-        from . import unimate
+        from . import unimate,motionbricks
+        box=layout.box();box.label(text='Humanoid Key Poses · MotionBricks')
+        box.label(text='Ready' if motionbricks.ready(bpy.path.abspath(resolved.motionbricks_provider)) else 'Setup needed',icon='CHECKMARK' if motionbricks.ready(bpy.path.abspath(resolved.motionbricks_provider)) else 'INFO')
+        message(box,'Official SOMA model · local NVIDIA CUDA. Generates transitions between pose keys; no text input.')
+        box.prop(prefs,'motionbricks_provider');box.operator('local_character.setup_motionbricks')
         box=layout.box();box.label(text='Creature Motion · UniMate')
         box.label(text='Ready' if unimate.ready(resolved.unimate_provider) else 'Setup needed',icon='CHECKMARK' if unimate.ready(resolved.unimate_provider) else 'INFO')
         message(box,'Local NVIDIA CUDA inference. Preview model · 5–71 joints including tips, up to 60 frames at 30 fps. Weights: CC BY-NC 4.0 (noncommercial).')

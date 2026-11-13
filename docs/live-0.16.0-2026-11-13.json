@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "version": "0.16.0",
+  "objects": 4,
+  "active": "Armature_UniMate",
+  "frame": 1,
+  "scene_objects_data_pose_action_selection_preserved": true,
+  "models_root": "R:\\AI\\Models\\Rigmodo",
+  "provider_inventory": {
+    "Joint placement": true,
+    "AI skinning": true,
+    "Generated motion": true
+  },
+  "facing": "AUTO",
+  "manual_joint_labels_preserved": true,
+  "preferences_saved": true,
+  "no_active_jobs_or_effects": true
+}

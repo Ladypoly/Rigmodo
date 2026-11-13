@@ -2,6 +2,9 @@
 """Standalone CUDA skeleton inference; no Blender or ComfyUI imports."""
 import copy,hashlib,json,os,sys,time
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent))
+import model_storage
+
 
 def sha(path):
     with Path(path).open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
@@ -12,7 +15,7 @@ def run(folder):
     installation=json.loads((provider/'installation.json').read_text())
     lock=json.loads(Path(__file__).with_name('unirig-lock.json').read_text())
     if installation['source_revision']!=lock['source_revision']:raise ValueError('Install the pinned UniRig provider')
-    checkpoint=Path(installation['checkpoint'])
+    checkpoint=model_storage.component('unirig',Path(installation['checkpoint']).parent)/Path(installation['checkpoint']).name
     if checkpoint.stat().st_size!=lock['model_bytes'] or sha(checkpoint)!=lock['model_sha256']:raise ValueError('UniRig checkpoint changed')
     for path,expected in installation['source_hashes'].items():
         if sha(provider/path)!=expected:raise ValueError('UniRig source changed: '+path)

@@ -2,7 +2,7 @@
 """Editable loop finishing on a new Action; preserve ground travel and source keys."""
 import json
 import math
-from mathutils import Quaternion
+from mathutils import Quaternion,Vector
 from .animation import selected_action
 
 
@@ -23,7 +23,7 @@ def loop(context,rig,blend_frames=8):
     for curve in curves:
         if not curve.data_path.endswith(('rotation_quaternion','location')):continue
         name=json.loads(curve.data_path.split('[')[1].split(']')[0])
-        if name.rsplit(':',1)[-1]=='Root':continue
+        if name.rsplit(':',1)[-1]=='Root' and not rig.data.bones[name].use_deform and not original.get('lc_in_place'):continue
         groups.setdefault(curve.data_path,{})[curve.array_index]=curve
     for path,axes in groups.items():
         if path.endswith('rotation_quaternion') and set(axes)!=set(range(4)):
@@ -32,15 +32,23 @@ def loop(context,rig,blend_frames=8):
         quaternion=path.endswith('rotation_quaternion')
         if not quaternion and not path.endswith('location'):continue
         first=Quaternion([axes[i].evaluate(start) for i in range(4)]).normalized() if quaternion else None
+        if quaternion:
+            next_pose=Quaternion([axes[i].evaluate(start+1) for i in range(4)]).normalized()
+            if first.dot(next_pose)<0:next_pose.negate()
+            velocity=(first.conjugated()@next_pose).to_exponential_map()
+        else:velocity={i:curve.evaluate(start+1)-curve.evaluate(start) for i,curve in axes.items()}
         raw={frame:{i:curve.evaluate(frame) for i,curve in axes.items()} for frame in range(end-blend_frames,end+1)}
         for frame in range(end-blend_frames,end+1):
             t=(frame-(end-blend_frames))/blend_frames;t=t*t*(3-2*t)
             if quaternion:
                 current=Quaternion([raw[frame][i] for i in range(4)]).normalized()
-                if current.dot(first)<0:target=-first
-                else:target=first
+                target=first@Quaternion(velocity*(frame-end))
+                if current.dot(target)<0:target.negate()
                 value=current.slerp(target,t)
-            else:value={i:raw[frame][i]*(1-t)+curve.evaluate(start)*t for i,curve in axes.items()}
+                if frame>=end-1:value=target
+            else:
+                value={i:raw[frame][i]*(1-t)+(curve.evaluate(start)+velocity[i]*(frame-end))*t for i,curve in axes.items()}
+                if frame>=end-1:value={i:curve.evaluate(start)+velocity[i]*(frame-end) for i,curve in axes.items()}
             for i,curve in axes.items():
                 key=curve.keyframe_points.insert(frame,value[i],options={'FAST'});key.interpolation='LINEAR'
         for curve in axes.values():curve.update()
@@ -52,7 +60,8 @@ def loop(context,rig,blend_frames=8):
                 if end-blend_frames<key.co.x<end and abs(key.co.x-round(key.co.x))>1e-5:
                     curve.keyframe_points.remove(key)
             curve.update()
+    original.use_fake_user=True
     rig.animation_data.action=action;rig.animation_data.action_slot=slot
-    action['lc_loop_finished']=True;action['lc_loop_blend_frames']=blend_frames
-    context.scene.frame_set(context.scene.frame_current)
+    action['lc_loop_finished']=True;action['lc_loop_blend_frames']=blend_frames;action['lc_loop_seam_velocity']='matched_one_frame'
+    context.scene.frame_set(context.scene.frame_current,subframe=context.scene.frame_subframe)
     return action

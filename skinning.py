@@ -14,6 +14,7 @@ import uuid
 import bpy
 from mathutils import Matrix
 from .skin_glb import write_input, read_binding
+from . import model_storage
 
 PROVIDER_REVISION = '46dbfecda3d9c2dcd87301c9f1127e1f437ed0ed'
 MODEL_REVISION = '2c55d38ffe01871c6956103926cc4a40bd7acc8a'
@@ -173,7 +174,7 @@ def _state(folder, status, **values):
 
 
 def start(folder, executable, models):
-    folder, executable, models = Path(folder).resolve(), Path(executable).resolve(), Path(models).resolve()
+    folder, executable, models = Path(folder).resolve(), Path(executable).resolve(), model_storage.resolve(models).resolve()
     request = json.loads((folder / 'request.json').read_text())
     if request['provider_revision'] != PROVIDER_REVISION or request['model_revision'] != MODEL_REVISION:
         raise ValueError('Job uses a different provider or model revision')

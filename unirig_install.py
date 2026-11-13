@@ -2,6 +2,9 @@
 """Install the pinned inference-only UniRig provider beside existing providers."""
 import argparse,hashlib,json,os,subprocess,sys,urllib.request
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent))
+import model_storage
+
 
 def sha(path):
     with Path(path).open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
@@ -20,6 +23,7 @@ def download(url,path,expected):
     finally:part.unlink(missing_ok=True)
 
 def install(provider,checkpoint=None):
+    model_storage.ensure()
     lock=json.loads(Path(__file__).with_name('unirig-lock.json').read_text())
     provider=provider.resolve();source=provider/'unirig_model';source.mkdir(parents=True,exist_ok=True)
     download(f"https://raw.githubusercontent.com/VAST-AI-Research/UniRig/{lock['upstream_revision']}/LICENSE",provider/'UNIRIG-LICENSE',lock['upstream_license_sha256'])
@@ -52,7 +56,13 @@ def comfy_attention(q,k,v,heads):
         candidates=[Path('C:/Tools/AI/ComfyUI_windows_portable/ComfyUI/models/unirig/skeleton.safetensors'),
             Path.home()/'ComfyUI/models/unirig/skeleton.safetensors']
         checkpoint=next((p for p in candidates if p.is_file() and sha(p)==lock['model_sha256']),provider/'models'/lock['model_file'])
-    checkpoint=checkpoint.resolve()
+    shared=model_storage.component('unirig',checkpoint.parent)/checkpoint.name
+    if shared!=checkpoint and checkpoint.is_file() and not shared.exists():
+        import shutil
+        shared.parent.mkdir(parents=True,exist_ok=True)
+        try:os.link(checkpoint,shared)
+        except OSError:shutil.copyfile(checkpoint,shared)
+    checkpoint=shared.resolve()
     download(f"https://huggingface.co/{lock['model_repo']}/resolve/{lock['model_revision']}/{lock['model_file']}",checkpoint,lock['model_sha256'])
     hashes={p.relative_to(provider).as_posix():sha(p) for p in source.iterdir() if p.is_file()}
     record=dict(schema_version=1,source_revision=lock['source_revision'],checkpoint=str(checkpoint),

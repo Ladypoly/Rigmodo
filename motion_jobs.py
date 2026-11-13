@@ -10,7 +10,7 @@ import time
 import uuid
 import bpy
 import numpy as np
-from . import skinning, skeleton, motion_data
+from . import skinning, skeleton, motion_data,model_storage
 
 PIN = '5679ff19ba0a522c0b0516e9a9d402fe1af2c027'
 FILES = {
@@ -110,8 +110,9 @@ def finish(folder):
             for j,parent in enumerate(motion_data.PARENTS):target[j]=p['root'] if parent<0 else target[parent]+rot[parent]@motion_data.OFFSETS[j]
             distance=np.linalg.norm(positions[p['index']]-target,axis=-1)
             errors.append(dict(frame=p['frame'],model_index=p['index'],mean_joint_error_m=float(distance.mean()),max_joint_error_m=float(distance.max())))
-        result['diagnostics']['keyposes']=dict(native_sampler='conditioned_DDIM',anchors=errors,exact_artist_anchors=True,
+        result['diagnostics']['keyposes']=dict(native_sampler='MotionBricks_ONNX' if request['provider']=='motionbricks' else 'conditioned_DDIM',anchors=errors,exact_artist_anchors=True,
             unsupported_fingers='interpolated_artist_channels',settling_frames=4)
+    if request['provider']=='motionbricks':result['diagnostics']['motionbricks']=json.loads((folder/'motionbricks-result.json').read_text())
     (folder/'result.json').write_text(json.dumps(result,indent=2,allow_nan=False))
 
 
@@ -143,7 +144,7 @@ def start(folder, provider=None):
     native=native_files(provider/'bin',manifest['binaries'],'kimodo-5679ff1')
     if keys and not (provider/'bin/kmd-keyframes.exe').is_file():raise ValueError('Install the updated local provider for key pose generation')
     # The binary build is recorded independently of the editable source checkout.
-    files=[dict(path=str(provider/'weights'/name),sha256=value) for name,value in FILES.items()]
+    files=[dict(path=str(model_storage.resolve(provider/'weights'/name)),sha256=value) for name,value in FILES.items()]
     files.extend(native)
     pending=[]
     for entry in files:
@@ -181,8 +182,8 @@ def _launch(folder,provider):
     environment.update(KIMODO_BACKEND='vulkan',KIMODO_TEXT_LAYER_CHUNK='8',KIMODO_PROFILE='1',
         GGML_VK_DISABLE_COOPMAT='1',GGML_VK_DISABLE_COOPMAT2='1',GGML_VK_DISABLE_F16='1')
     log=(folder/'worker.log').open('ab')
-    command=[str(executable),str(provider/'weights/models/kimodo-soma-rp-v1.1-f32.gguf'),
-        str(provider/'weights/Llama-3-Kimodo-Q8_0.gguf'),str(folder/'prompt.txt'),
+    command=[str(executable),str(model_storage.resolve(provider/'weights/models/kimodo-soma-rp-v1.1-f32.gguf')),
+        str(model_storage.resolve(provider/'weights/Llama-3-Kimodo-Q8_0.gguf')),str(folder/'prompt.txt'),
         str(request['frames']),str(request['steps']),str(request['seed'])]
     if keys:command.extend([str(folder/'observed.f32'),str(folder/'observed_mask.f32'),str(keys['first_heading'])])
     command.append(str(folder))
@@ -200,7 +201,8 @@ def validated(context, folder):
     folder=Path(folder).resolve()
     if skinning.poll(folder)['status'] not in {'complete','applied'}: raise ValueError('Motion worker has not completed')
     request=json.loads((folder/'request.json').read_text()); result=json.loads((folder/'result.json').read_text())
-    if request['provider']!='kimodo.cpp' or request['provider_revision']!=PIN: raise ValueError('Not a supported motion job')
+    from . import motionbricks
+    if (request['provider'],request['provider_revision']) not in {('kimodo.cpp',PIN),('motionbricks',motionbricks.PIN)}:raise ValueError('Not a supported motion job')
     keys=check_inputs(folder,request)
     if result.get('request_sha256') and result['request_sha256']!=sha(folder/'request.json'):raise ValueError('Motion request no longer matches its result')
     for name,expected in result['hashes'].items():

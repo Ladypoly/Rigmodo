@@ -5,14 +5,14 @@ from pathlib import Path
 import bpy
 import numpy as np
 from mathutils import Matrix,Vector
-from . import placement,skinning
+from . import placement,skinning,model_storage
 
 def cache():return skinning.provider_cache().parent/'unirig-69ee59d'
 def is_creature(rig):return bool(rig and rig.get('lc_rig_type')=='CREATURE')
 def ready(provider):
     try:
         root=Path(bpy.path.abspath(provider));record=json.loads((root/'installation.json').read_text())
-        return Path(record['checkpoint']).is_file() and (root/'python/transformers').is_dir()
+        return (model_storage.component('unirig',Path(record['checkpoint']).parent)/Path(record['checkpoint']).name).is_file() and (root/'python/transformers').is_dir()
     except (OSError,ValueError,KeyError,TypeError):return False
 
 def prepare(context,meshes,rig=None,parent=None,provider=None,seed=101):

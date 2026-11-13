@@ -1,0 +1,334 @@
+{
+  "version": "0.16.0",
+  "extension_zip_validated": true,
+  "source_modules_compile": true,
+  "private_assets_excluded": true,
+  "artifacts": {
+    "local_character-0.16.0.zip": {
+      "bytes": 315790,
+      "sha256": "ebc85cf4afcbac64b5491d1005b0467e7f561b3e2b869f306d56a61149b1f697"
+    },
+    "local_character-unity-companion-0.16.0.zip": {
+      "bytes": 12333,
+      "sha256": "9c079e5b22fdd4ebcb8ab76bb7f90352284522d3ba22f0248cbe3a38c9ef2b7e"
+    }
+  },
+  "evidence": {
+    "version": "0.16.0",
+    "passed": true,
+    "annotation": {
+      "passed": true,
+      "rotated_named_heading": true,
+      "ambiguous_radial_requires_review": true,
+      "manual_labels_preserved": true,
+      "source_rest_preserved": true,
+      "unnamed_tripo_scanned": true,
+      "tripo_labels": {
+        "tripo::Root": "Pelvis",
+        "bone_1": "Spine",
+        "bone_2": "Tail",
+        "bone_3": "Tail",
+        "bone_4": "Tail",
+        "bone_4.001": "Tail",
+        "bone_7": "Tail",
+        "bone_8": "Tail",
+        "bone_9": "Tail End",
+        "bone_10": "Spine",
+        "bone_11": "Spine",
+        "bone_12": "Spine",
+        "bone_13": "Head",
+        "bone_14": "Right Mandible",
+        "bone_15": "Left Mandible",
+        "bone_16": "Left Shoulder",
+        "bone_17": "Left Elbow",
+        "bone_18": "Left Wrist",
+        "bone_19": "Left Claw",
+        "bone_20": "Right Shoulder",
+        "bone_21": "Right Elbow",
+        "bone_22": "Right Wrist",
+        "bone_23": "Right Claw",
+        "bone_24": "Left Front Hip",
+        "bone_25": "Left Front Knee",
+        "bone_26": "Left Front Foot",
+        "bone_27": "Right Front Hip",
+        "bone_28": "Right Front Knee",
+        "bone_29": "Right Front Foot",
+        "bone_30": "Left Middle Hip",
+        "bone_31": "Left Middle Knee",
+        "bone_32": "Left Middle Foot",
+        "bone_33": "Right Middle Hip",
+        "bone_34": "Right Middle Knee",
+        "bone_35": "Right Middle Foot",
+        "bone_36": "Left Hind Hip",
+        "bone_37": "Left Hind Knee",
+        "bone_38": "Left Hind Foot",
+        "bone_39": "Right Hind Hip",
+        "bone_40": "Right Hind Knee",
+        "bone_41": "Right Hind Foot",
+        "bone_42": "Spine",
+        "tripo::Spine_0": "Spine 0",
+        "tripo::Spine_1": "Spine 1"
+      },
+      "tripo_forward": [
+        0.9999999999999891,
+        -1.4797819779179041e-07,
+        0.0
+      ]
+    },
+    "motionbricks": {
+      "passed": true,
+      "actual_motionbricks_inference": true,
+      "diagnostics": {
+        "frames": 61,
+        "fps": 30,
+        "source_floor_estimate_m": 0.049886212882019894,
+        "travel_m": 0.3792666494846344,
+        "contact_frames": [
+          2,
+          1
+        ],
+        "contact_max_speed_m_s": 0.11318739192958066,
+        "source_height_range_m": [
+          0.9453635811805725,
+          0.9934753179550171
+        ],
+        "keyposes": {
+          "native_sampler": "MotionBricks_ONNX",
+          "anchors": [
+            {
+              "frame": 1.0,
+              "model_index": 0,
+              "mean_joint_error_m": 8.167784056116497e-08,
+              "max_joint_error_m": 3.200660780115896e-07
+            },
+            {
+              "frame": 25.0,
+              "model_index": 30,
+              "mean_joint_error_m": 7.943772924162866e-08,
+              "max_joint_error_m": 3.187018123780216e-07
+            },
+            {
+              "frame": 49.0,
+              "model_index": 60,
+              "mean_joint_error_m": 8.311062844982016e-08,
+              "max_joint_error_m": 3.1733924298990396e-07
+            }
+          ],
+          "exact_artist_anchors": true,
+          "unsupported_fingers": "interpolated_artist_channels",
+          "settling_frames": 4
+        },
+        "motionbricks": {
+          "provider": "motionbricks",
+          "elapsed_seconds": 2.891168000000107,
+          "transitions": 2,
+          "native_frames": [
+            58,
+            58
+          ],
+          "backend": "CUDAExecutionProvider",
+          "gpu": "NVIDIA GeForce RTX 4090"
+        }
+      },
+      "artist_anchor_max_matrix_error": 2.384185791015625e-07,
+      "source_action_rest_preserved": true,
+      "changed_request_rejected_before_allocation": true,
+      "scene_fps_preserved": true,
+      "source_frames": 61,
+      "real_avatar": true,
+      "fbx_export": true
+    },
+    "creature": {
+      "schema_version": 1,
+      "provider": "unimate",
+      "frames": 60,
+      "joints": 56,
+      "fps": 30,
+      "elapsed_seconds": 18.120622399999775,
+      "peak_gpu_bytes": 465720320,
+      "gpu": "NVIDIA GeForce RTX 4090",
+      "prompt": "An object attacks forward.",
+      "passed": true,
+      "automatic_original_tripo": true,
+      "automatic_heading": [
+        0.9999999999999891,
+        -1.479782077664744e-07,
+        0.0
+      ],
+      "labelled_bones": 44,
+      "source_preserved": true,
+      "loop_pose_max_error": 2.9802322387695312e-08,
+      "unlooped_action_retained": true
+    },
+    "gui": {
+      "passed": true,
+      "real_modal_motionbricks": true,
+      "real_worker_cancelled": true,
+      "no_objects_added_on_cancel": true,
+      "source_preserved": true,
+      "armature_only_selection": true,
+      "effects_cleaned_up": true,
+      "real_avatar": true
+    },
+    "loop": {
+      "passed": true,
+      "exact_pose_seam": true,
+      "angular_and_linear_sample_velocities_matched": true,
+      "in_place_root_closed": true,
+      "original_action_preserved": true
+    },
+    "model_storage": {
+      "passed": true,
+      "verified_content": true,
+      "managed_original_removed_only_after_switch": true,
+      "idempotent": true,
+      "subsequent_root_move": true,
+      "conflicts_preserve_source": true,
+      "nested_provider_target_rejected": true
+    },
+    "human_ui": {
+      "passed": true,
+      "global_preferences_used": true,
+      "legacy_settings_migrated": true,
+      "workflow_panel_has_no_runtime_fields": true,
+      "eight_front_anchors_exact": true,
+      "model_depth_preserved": true,
+      "landmarks_locked": true,
+      "source_preserved": true,
+      "sources_hidden_after_individual_step": true,
+      "original_plus_copy_rejected": true,
+      "stale_landmarks_rejected": true,
+      "cached_actual_mia_used": true,
+      "native_weight_editor_draws": true,
+      "bone_choice_updates_group": true,
+      "pose_and_joint_editors_work": true,
+      "character_selection_helper_works": true,
+      "keyposes_use_one_toggle": true,
+      "no_capture_recall_clear_buttons": true,
+      "three_workflow_tabs": true,
+      "export_only_in_preferences": true,
+      "legacy_export_tab_migrated": true,
+      "shared_progress_has_one_cancel": true,
+      "effects_settings_only_in_preferences": true,
+      "fresh_actual_mia_fixture": true
+    },
+    "kimodo_shared": {
+      "passed": true,
+      "actual_kimodo_inference": true,
+      "shared_models": true,
+      "frames": 15
+    },
+    "skinning_shared": {
+      "passed": true,
+      "actual_native_skinning": true,
+      "shared_models": true,
+      "source_paint_preserved": true
+    },
+    "sam_shared_checkpoint_verification": true,
+    "model_bytes": 18663334758,
+    "limits": [
+      "Ambiguous or unusual creature anatomy needs manual overrides",
+      "Review contacts and loop suitability",
+      "MotionBricks pose transitions are humanoid-only",
+      "No fresh Unity Editor import",
+      "Only RTX 4090 tested"
+    ],
+    "extracted": {
+      "annotation": {
+        "passed": true,
+        "rotated_named_heading": true,
+        "ambiguous_radial_requires_review": true,
+        "manual_labels_preserved": true,
+        "source_rest_preserved": true,
+        "unnamed_tripo_scanned": true,
+        "tripo_labels": {
+          "tripo::Root": "Pelvis",
+          "bone_1": "Spine",
+          "bone_2": "Tail",
+          "bone_3": "Tail",
+          "bone_4": "Tail",
+          "bone_4.001": "Tail",
+          "bone_7": "Tail",
+          "bone_8": "Tail",
+          "bone_9": "Tail End",
+          "bone_10": "Spine",
+          "bone_11": "Spine",
+          "bone_12": "Spine",
+          "bone_13": "Head",
+          "bone_14": "Right Mandible",
+          "bone_15": "Left Mandible",
+          "bone_16": "Left Shoulder",
+          "bone_17": "Left Elbow",
+          "bone_18": "Left Wrist",
+          "bone_19": "Left Claw",
+          "bone_20": "Right Shoulder",
+          "bone_21": "Right Elbow",
+          "bone_22": "Right Wrist",
+          "bone_23": "Right Claw",
+          "bone_24": "Left Front Hip",
+          "bone_25": "Left Front Knee",
+          "bone_26": "Left Front Foot",
+          "bone_27": "Right Front Hip",
+          "bone_28": "Right Front Knee",
+          "bone_29": "Right Front Foot",
+          "bone_30": "Left Middle Hip",
+          "bone_31": "Left Middle Knee",
+          "bone_32": "Left Middle Foot",
+          "bone_33": "Right Middle Hip",
+          "bone_34": "Right Middle Knee",
+          "bone_35": "Right Middle Foot",
+          "bone_36": "Left Hind Hip",
+          "bone_37": "Left Hind Knee",
+          "bone_38": "Left Hind Foot",
+          "bone_39": "Right Hind Hip",
+          "bone_40": "Right Hind Knee",
+          "bone_41": "Right Hind Foot",
+          "bone_42": "Spine",
+          "tripo::Spine_0": "Spine 0",
+          "tripo::Spine_1": "Spine 1"
+        },
+        "tripo_forward": [
+          0.9999999999999891,
+          -1.4797819779179041e-07,
+          0.0
+        ]
+      },
+      "loop": {
+        "passed": true,
+        "exact_pose_seam": true,
+        "angular_and_linear_sample_velocities_matched": true,
+        "in_place_root_closed": true,
+        "original_action_preserved": true
+      }
+    },
+    "live": {
+      "passed": true,
+      "version": "0.16.0",
+      "objects": 4,
+      "active": "Armature_UniMate",
+      "frame": 1,
+      "scene_objects_data_pose_action_selection_preserved": true,
+      "models_root": "R:\\AI\\Models\\Rigmodo",
+      "provider_inventory": {
+        "Joint placement": true,
+        "AI skinning": true,
+        "Generated motion": true
+      },
+      "facing": "AUTO",
+      "manual_joint_labels_preserved": true,
+      "preferences_saved": true,
+      "no_active_jobs_or_effects": true
+    }
+  },
+  "baseline_record": {
+    "file": "release-verification-0.15.0-2026-11-13.json",
+    "sha256": "c985cffc23887d43d1f1ff674835594bb7f19243df9cec8011a024008cc99984"
+  },
+  "limits": [
+    "Ambiguous or unusual creature anatomy needs manual overrides",
+    "Review contacts and loop suitability",
+    "MotionBricks pose transitions are humanoid-only",
+    "No fresh Unity Editor import",
+    "Only RTX 4090 tested"
+  ]
+}

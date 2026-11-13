@@ -11,6 +11,9 @@ import sys
 import urllib.request
 import venv
 import zipfile
+sys.path.insert(0,str(Path(__file__).parent))
+import model_storage
+
 HIDDEN=getattr(subprocess,'CREATE_NO_WINDOW',0)
 
 class SilentVenv(venv.EnvBuilder):
@@ -118,11 +121,12 @@ def main():
     parser.add_argument('--cache',type=Path,default=Path(os.environ['LOCALAPPDATA'])/'LocalCharacter/providers')
     parser.add_argument('--seed-cache',type=Path);parser.add_argument('--skip-runtime',action='store_true')
     args=parser.parse_args();root=Path(__file__).resolve().parent
+    model_storage.ensure()
     if os.name!='nt':raise ValueError('This provider archive targets Windows x64')
     args.cache.mkdir(parents=True,exist_ok=True);lock=json.loads((root/'provider-release-lock.json').read_text())
     extract(args.archive,args.cache,lock);print('Verified native providers and inference source',flush=True)
     for entry in lock['models']:
-        destination=args.cache/entry['path'];seed=args.seed_cache/entry['path'] if args.seed_cache else None
+        destination=model_storage.resolve(args.cache/entry['path']);seed=args.seed_cache/entry['path'] if args.seed_cache else None
         if not destination.is_file() and not seed and shutil.disk_usage(args.cache).free<entry['bytes']+5*1024**3:raise ValueError('Insufficient model cache disk space')
         download(entry,destination,seed);print('Verified model',entry['path'],flush=True)
     if not args.skip_runtime:runtime(args.cache,json.loads((root/'mia-runtime-lock.json').read_text()),args.seed_cache)

@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Global runtime preferences with legacy scene compatibility for old files."""
+from . import model_storage
+
 KEYS=('placement_python','skin_executable','skin_models','skin_device','skin_beams','motion_provider',
       'motion_steps','motion_seed','refine_iterations','refine_seams','voxel_resolution',
       'workflow_hide_sources','keep_skin_copies','workflow_allow_strain','setup_python','setup_archive',
-      'image_pose_provider','image_pose_models','image_pose_hands','creature_provider','creature_checkpoint','unimate_provider')
+      'image_pose_provider','image_pose_models','image_pose_hands','creature_provider','creature_checkpoint','unimate_provider','motionbricks_provider','models_directory')
 
 def preferences(context):
     addon=context.preferences.addons.get(__package__)
@@ -19,7 +21,9 @@ def settings(context):
 
 class Settings:
     def __init__(self,scene,prefs):object.__setattr__(self,'scene',scene);object.__setattr__(self,'prefs',prefs)
-    def __getattr__(self,key):return getattr(self.prefs if self.prefs and key in KEYS else self.scene,key)
+    def __getattr__(self,key):
+        value=getattr(self.prefs if self.prefs and key in KEYS else self.scene,key)
+        return str(model_storage.resolve(value)) if key in {'skin_models','image_pose_models'} and value and not value.startswith('//') else value
     def __setattr__(self,key,value):setattr(self.prefs if self.prefs and key in KEYS else self.scene,key,value)
 
 def hide_sources(context,objects):

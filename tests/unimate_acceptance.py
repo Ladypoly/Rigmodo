@@ -39,10 +39,11 @@ def unit():
     np.savez(folder/'motion.npz',positions=positions,rotations=rotations)
     report=dict(schema_version=1,provider='unimate',request_sha256=u.sha(folder/'request.json'),output_sha256=u.sha(folder/'motion.npz'),fps=30,frames=30)
     (folder/'result.json').write_text(json.dumps(report));addon.skinning._state(folder,'complete')
+    old_label=rig.data.bones['Joint1'].lc_unimate_label
     rig.data.bones['Joint1'].lc_unimate_label='Changed'
     try:u.apply(bpy.context,folder);raise AssertionError('Stale labels accepted')
     except ValueError:pass
-    rig.data.bones['Joint1'].lc_unimate_label=''
+    rig.data.bones['Joint1'].lc_unimate_label=old_label
     curve=curves(source_action)[0];key=curve.keyframe_points[0];old=key.co.y;key.co.y=old+.1
     try:u.apply(bpy.context,folder);raise AssertionError('Changed Action accepted')
     except ValueError:pass

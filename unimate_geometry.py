@@ -20,7 +20,9 @@ def canonicalize(skeleton):
     if heads.shape!=(n,3) or not 5<=n<=71 or not np.isfinite(heads).all():raise ValueError('UniMate needs 5–71 finite joints, including end tips')
     if parents[0]!=-1 or any(p<0 or p>=j for j,p in enumerate(parents[1:],1)):raise ValueError('UniMate needs one parent-first tree')
     if len(skeleton['bone_names'])!=n or len(skeleton['labels'])!=n:raise ValueError('Incomplete skeleton labels')
-    forward=np.asarray(AXES[skeleton['forward']],dtype=float)
+    forward=np.asarray(skeleton['forward_vector'] if 'forward_vector' in skeleton else AXES[skeleton['forward']],dtype=float)
+    if forward.shape!=(3,) or not np.isfinite(forward).all() or abs(forward[2])>1e-6 or np.linalg.norm(forward)<1e-6:raise ValueError('Invalid detected facing direction')
+    forward=forward/np.linalg.norm(forward)
     basis=np.stack([np.cross((0,0,1),forward),(0,0,1),forward]);pos=heads@basis.T
     origin=np.array([pos[0,0],pos[:,1].min(),pos[0,2]])
     neighbors=[[] for _ in parents]

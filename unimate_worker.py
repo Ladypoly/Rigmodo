@@ -3,6 +3,9 @@
 # Conditioning adapted from UniMate-B3D backend/worker.py (MIT); see NOTICE.
 import hashlib,json,os,sys,time
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent))
+import model_storage
+
 
 def sha(path):
     with path.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
@@ -13,11 +16,11 @@ def run(folder):
     lock=json.loads(Path(__file__).with_name('unimate-lock.json').read_text())
     record=json.loads((provider/'installation.json').read_text())
     if sha(folder/'request.json')!=(folder/'request.sha256').read_text():raise ValueError('Motion request changed')
-    if record['source_revision']!=lock['source_revision'] or record['lock_sha256']!=sha(Path(__file__).with_name('unimate-lock.json')):raise ValueError('Reinstall the pinned UniMate provider')
+    if record['source_revision']!=lock['source_revision'] or not model_storage.lock_matches(record,Path(__file__).with_name('unimate-lock.json')):raise ValueError('Reinstall the pinned UniMate provider')
     for name,expected in record['source_hashes'].items():
         if sha(provider/name)!=expected:raise ValueError('UniMate source changed: '+name)
     for entry in lock['files']:
-        if sha(provider/entry['path'])!=entry['sha256']:raise ValueError('UniMate model changed: '+entry['path'])
+        if sha(model_storage.resolve(provider/entry['path']))!=entry['sha256']:raise ValueError('UniMate model changed: '+entry['path'])
     os.environ.update(HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',TOKENIZERS_PARALLELISM='false')
     sys.path.insert(0,str(Path(__file__).parent));sys.path.insert(0,str(provider/'source'))
     import numpy as np
@@ -36,7 +39,7 @@ def run(folder):
     if not torch.cuda.is_available():raise ValueError('UniMate requires the installed NVIDIA CUDA runtime')
     device=torch.device('cuda');torch.manual_seed(request['seed']);np.random.seed(request['seed'])
     torch.cuda.reset_peak_memory_stats()
-    exp=provider/'weights/unimate_uniml3d_f60_v3';config=MainConfig.from_json(exp/'config.json')
+    exp=model_storage.resolve(provider/'weights/unimate_uniml3d_f60_v3');config=MainConfig.from_json(exp/'config.json')
     if config.dataset.feature_len!=12 or config.dataset.topology_condition_type!='tpos' or config.training.diff_model!='flow':raise ValueError('Unsupported UniMate model protocol')
     skeleton=request['skeleton'];canonical=canonicalize(skeleton);parents=canonical['parents'];n=len(parents)
     if n>config.dataset.max_joints or not 15<=request['frames']<=config.dataset.max_motion_length:raise ValueError('Motion exceeds checkpoint joint/frame limit')
@@ -50,8 +53,8 @@ def run(folder):
     if mean.shape!=(n,12) or not np.isfinite(mean).all() or not np.isfinite(std).all() or np.any(std<=0):raise ValueError('Invalid normalization statistics')
     tpose=np.zeros((n,12),np.float32);tpose[:,:3]=canonical['positions'];tpose[:,3:9]=[1,0,0,0,1,0];tpose=(tpose-mean)/std
     print('Encoding prompt and joint labels locally',flush=True)
-    tokenizer=T5Tokenizer.from_pretrained(provider/'text_encoder',local_files_only=True)
-    encoder=T5EncoderModel.from_pretrained(provider/'text_encoder',local_files_only=True).to(device).eval()
+    tokenizer=T5Tokenizer.from_pretrained(model_storage.resolve(provider/'text_encoder'),local_files_only=True)
+    encoder=T5EncoderModel.from_pretrained(model_storage.resolve(provider/'text_encoder'),local_files_only=True).to(device).eval()
     with torch.inference_mode():
         tokens=tokenizer([request['prompt'],*skeleton['labels']],padding=True,return_tensors='pt').to(device)
         hidden=encoder(**tokens).last_hidden_state.float();mask=tokens['attention_mask'].bool()

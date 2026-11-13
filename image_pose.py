@@ -153,7 +153,9 @@ def apply(context,rig,result,hands=True):
 def launch(folder,command,phase):
     log=(folder/'worker.log').open('wb');process=None;job=None
     try:
-        process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,
+        from . import configuration
+        environment=os.environ.copy();environment['RIGMODO_MODEL_DIRECTORY']=configuration.settings(bpy.context).models_directory
+        process=subprocess.Popen(command,env=environment,stdout=log,stderr=subprocess.STDOUT,
                                  creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
         if os.name=='nt':job=process_tree.WindowsJob(process)
         skinning._jobs[str(folder)]=dict(process=process,log=log,job_object=job,started=time.monotonic(),phase=phase)

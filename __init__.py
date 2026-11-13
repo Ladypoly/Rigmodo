@@ -6,10 +6,13 @@ from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage
 
 class LC_Settings(PropertyGroup):
     rig_type: EnumProperty(name='Character',items=[('HUMANOID','Humanoid','Standard game character rig'),('CREATURE','Creature','UniRig predicts a custom hierarchy for animals and other articulated shapes')],default='HUMANOID')
+    models_directory: StringProperty(name='Shared model folder',subtype='DIR_PATH',default=str(model_storage.preferred()))
+    motion_engine: EnumProperty(name='Generate from',items=[('KIMODO','Text · Kimodo','Generate motion from a text prompt, optionally guided by pose keys'),('MOTIONBRICKS','Key poses · MotionBricks','Generate human motion between ordinary pose keyframes')],default='KIMODO')
+    motionbricks_provider: StringProperty(name='MotionBricks provider',subtype='DIR_PATH',default=str(motionbricks.cache()))
     unimate_provider: StringProperty(name='UniMate provider',subtype='DIR_PATH',default=str(unimate.cache()))
     unimate_frames: IntProperty(name='Frames at 30 fps',default=60,min=15,max=60)
     unimate_guidance: FloatProperty(name='Prompt guidance',default=3.,min=1.1,max=10.)
@@ -575,6 +578,67 @@ class LC_OT_lock_joints(Operator):
         return {'FINISHED'}
 
 
+class LC_OT_model_storage(WorkerModal,Operator):
+    bl_idname='local_character.use_shared_model_folder';bl_label='Use Shared Model Folder'
+    status_property='setup_status';job_property='setup_job';apply_operator='finish_shared_model_folder'
+    @classmethod
+    def poll(cls,context):return not skinning._jobs and not workflow._runs
+    def execute(self,context):
+        try:
+            from pathlib import Path
+            import tempfile
+            settings=configuration.settings(context);python=Path(bpy.path.abspath(settings.placement_python))
+            if not python.is_file():python=Path(bpy.app.binary_path_python) if hasattr(bpy.app,'binary_path_python') else Path(bpy.app.binary_path).parent/'5.2/python/bin/python.exe'
+            directory=model_storage.BASE/'jobs';directory.mkdir(parents=True,exist_ok=True)
+            self._folder=Path(tempfile.mkdtemp(prefix='model-storage-',dir=directory))
+            image_pose.launch(self._folder,[str(python),'-I',str(Path(__file__).with_name('model_storage.py')),
+                '--root',bpy.path.abspath(settings.models_directory)],'Copying and verifying shared model storage')
+        except (ValueError,OSError,RuntimeError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return self.begin(context)
+
+class LC_OT_finish_model_storage(Operator):
+    bl_idname='local_character.finish_shared_model_folder';bl_label='Finish Shared Model Storage'
+    def execute(self,context):
+        settings=configuration.settings(context);settings.models_directory=str(model_storage.current())
+        settings.skin_models=str(model_storage.resolve(settings.skin_models));settings.image_pose_models=str(model_storage.resolve(settings.image_pose_models))
+        if not settings.creature_checkpoint:settings.creature_checkpoint=str(model_storage.current()/'unirig/skeleton.safetensors')
+        context.scene.lc_settings.setup_status='All managed models use '+str(model_storage.current())
+        bpy.ops.wm.save_userpref();return {'FINISHED'}
+
+class LC_OT_annotate_creature(Operator):
+    bl_idname='local_character.detect_creature_joints';bl_label='Detect Facing and Joint Labels';bl_options={'REGISTER','UNDO'}
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and not skinning._jobs
+    def execute(self,context):
+        try:
+            rig=motion_jobs.selected_rig(context);report=creature_annotation.annotate(rig);rig.lc_unimate_forward='AUTO'
+            context.scene.lc_settings.motion_status='Creature labels updated. '+(' '.join(report['notes']) or 'Facing detected; ready for motion.')
+        except (ValueError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return {'FINISHED'}
+
+class LC_OT_setup_motionbricks(WorkerModal,Operator):
+    bl_idname='local_character.setup_motionbricks';bl_label='Install MotionBricks'
+    status_property='setup_status';job_property='setup_job';apply_operator='finish_motionbricks_setup'
+    @classmethod
+    def poll(cls,context):return not skinning._jobs and not workflow._runs
+    def execute(self,context):
+        try:
+            from pathlib import Path
+            import tempfile
+            settings=configuration.settings(context);python=Path(bpy.path.abspath(settings.placement_python))
+            if not python.is_file():raise ValueError('Install the MIA runtime first; MotionBricks shares its CUDA libraries')
+            directory=motionbricks.cache().parent.parent/'jobs';directory.mkdir(parents=True,exist_ok=True)
+            self._folder=Path(tempfile.mkdtemp(prefix='motionbricks-setup-',dir=directory))
+            image_pose.launch(self._folder,[str(python),'-I',str(Path(__file__).with_name('motionbricks_install.py')),
+                '--provider',bpy.path.abspath(settings.motionbricks_provider)],'Installing humanoid key-pose motion · MotionBricks')
+        except (ValueError,OSError,RuntimeError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return self.begin(context)
+
+class LC_OT_finish_motionbricks_setup(Operator):
+    bl_idname='local_character.finish_motionbricks_setup';bl_label='Finish MotionBricks Setup'
+    def execute(self,context):
+        context.scene.lc_settings.setup_status='MotionBricks is ready · humanoid pose transitions';return {'FINISHED'}
+
 class LC_OT_unimate(WorkerModal,Operator):
     bl_idname='local_character.generate_creature_motion';bl_label='Generate Creature Motion';bl_options={'REGISTER'}
     status_property='motion_status';job_property='unimate_job';apply_operator='apply_creature_motion'
@@ -647,9 +711,14 @@ class LC_OT_motion(WorkerModal, Operator):
         settings=configuration.settings(context)
         try:
             rig=motion_jobs.selected_rig(context)
-            self._folder=motion_jobs.prepare(context,rig,settings.motion_prompt,settings.motion_frames,
-                settings.motion_steps,settings.motion_seed,settings.motion_in_place,keyframes=settings.motion_use_keyframes,start_frame=context.scene.frame_start)
-            motion_jobs.start(self._folder,bpy.path.abspath(settings.motion_provider))
+            if settings.motion_engine=='MOTIONBRICKS':
+                if not motionbricks.ready(bpy.path.abspath(settings.motionbricks_provider)):raise ValueError('Install MotionBricks in Extension Settings → Setup')
+                self._folder=motionbricks.prepare(context,rig,settings.motion_seed,settings.motion_in_place,bpy.path.abspath(settings.motionbricks_provider))
+                motionbricks.start(self._folder)
+            else:
+                self._folder=motion_jobs.prepare(context,rig,settings.motion_prompt,settings.motion_frames,
+                    settings.motion_steps,settings.motion_seed,settings.motion_in_place,keyframes=settings.motion_use_keyframes,start_frame=context.scene.frame_start)
+                motion_jobs.start(self._folder,bpy.path.abspath(settings.motion_provider))
         except (ValueError,OSError,RuntimeError,KeyError) as exc: self.report({'ERROR'},str(exc)); return {'CANCELLED'}
         return self.begin(context)
 
@@ -848,7 +917,7 @@ class LC_PT_main(Panel):
     bl_category = "Rigmodo"
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_Preferences, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (LC_Settings, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
@@ -861,7 +930,7 @@ def migrate_workflow_tab(_=None):
 
 def register():
     bpy.types.Bone.lc_unimate_label=StringProperty(name='Joint label',description='Anatomical name used by UniMate, such as Left Front Knee or Tail; empty uses the bone name',maxlen=128)
-    bpy.types.Object.lc_unimate_forward=EnumProperty(name='Facing direction',items=[('-Y','−Y','Faces world −Y'),('Y','+Y','Faces world +Y'),('X','+X','Faces world +X'),('-X','−X','Faces world −X')],default='-Y')
+    bpy.types.Object.lc_unimate_forward=EnumProperty(name='Facing direction',items=[('-Y','−Y','Faces world −Y'),('Y','+Y','Faces world +Y'),('X','+X','Faces world +X'),('-X','−X','Faces world −X'),('AUTO','Automatic','Infer facing from anatomical names and rest geometry; ambiguous rigs need a manual direction')],default='AUTO')
     for cls in CLASSES: bpy.utils.register_class(cls)
     bpy.types.Scene.lc_settings = PointerProperty(type=LC_Settings)
     bpy.app.timers.register(migrate_workflow_tab,first_interval=0)

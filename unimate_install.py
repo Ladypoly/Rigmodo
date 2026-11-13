@@ -2,6 +2,9 @@
 """Pinned inference-only UniMate installation; reuse the existing CUDA Torch."""
 import argparse,hashlib,json,subprocess,sys,urllib.request,venv,zipfile
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent))
+import model_storage
+
 
 def sha(path):
     with Path(path).open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
@@ -21,6 +24,7 @@ def download(url,path,expected):
     finally:part.unlink(missing_ok=True)
 
 def install(provider):
+    model_storage.ensure()
     import sysconfig
     lock=json.loads(Path(__file__).with_name('unimate-lock.json').read_text())
     provider=provider.resolve();provider.mkdir(parents=True,exist_ok=True)
@@ -42,7 +46,7 @@ def install(provider):
     # A separate venv supplies small dependencies; the .pth reuses MIA's 3 GB CUDA runtime.
     Path(purelib,'rigmodo_shared_torch.pth').write_text(sysconfig.get_path('purelib')+'\n')
     subprocess.run([str(python),'-I','-m','pip','install','--disable-pip-version-check',*lock['dependencies']],check=True)
-    for entry in lock['files']:download(entry['url'],provider/entry['path'],entry['sha256'])
+    for entry in lock['files']:download(entry['url'],model_storage.resolve(provider/entry['path']),entry['sha256'])
     code='import torch,torch_geometric,torchdiffeq,sentencepiece,transformers;assert torch.cuda.is_available();from transformers import T5EncoderModel,T5Tokenizer;print(torch.cuda.get_device_name(),torch.__version__)'
     subprocess.run([str(python),'-I','-c',code],check=True)
     record=dict(schema_version=1,source_revision=lock['source_revision'],source_hashes=hashes,

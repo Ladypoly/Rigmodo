@@ -11,6 +11,7 @@ import urllib.request
 import venv
 import zipfile
 sys.path.insert(0,str(Path(__file__).parent))
+import model_storage
 from sam_pose_protocol import SAM_REV,DINO_REV,HF_REV,MODEL_REPO,MODELS,ARCHIVES,sha,source_files
 
 def run(command):
@@ -48,6 +49,7 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--provider',type=Path,required=True);ap.add_argument('--models',type=Path,required=True)
     ap.add_argument('--runtime-only',action='store_true');args=ap.parse_args()
     if sys.version_info[:2]!=(3,11):raise ValueError('Use Python 3.11 for SAM provider installation')
+    model_storage.ensure()
     provider=args.provider.resolve();provider.mkdir(parents=True,exist_ok=True)
     sources(provider)
     runtime=provider/'runtime';python=runtime/'Scripts/python.exe'
@@ -60,7 +62,7 @@ def main():
          'timm==1.0.20','roma==1.5.4','omegaconf==2.3.0','braceexpand==0.1.7','huggingface-hub==0.35.3','termcolor==3.1.0'])
     if args.runtime_only:
         print('RIGMODO_SAM_RUNTIME_READY; approved checkpoints still required',flush=True);return
-    models=args.models.resolve();models.mkdir(parents=True,exist_ok=True)
+    models=model_storage.resolve(args.models).resolve();models.mkdir(parents=True,exist_ok=True)
     if not all((models/n).is_file() for n in (*MODELS,'model_config.yaml')):
         # Uses the user's existing HF authentication. Never requests/accepts gated access for them.
         code='from huggingface_hub import snapshot_download; snapshot_download(repo_id='+repr(MODEL_REPO)+', revision='+repr(HF_REV)+', local_dir='+repr(str(models))+', allow_patterns='+repr([*MODELS,'model_config.yaml','LICENSE'])+')'

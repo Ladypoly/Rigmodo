@@ -14,6 +14,9 @@ import sys
 import time
 import types
 import zipfile
+sys.path.insert(0,str(Path(__file__).parent))
+import model_storage
+
 
 import numpy as np
 import torch
@@ -110,7 +113,7 @@ def sample_box_surface(vertices,triangles,center,extent,count,rng):
 
 
 def load_model(PCAE, cache, name, **options):
-    path=cache/'models'/name
+    path=model_storage.resolve(cache/'models'/name)
     with path.open('rb') as stream:
         if hashlib.file_digest(stream,'sha256').hexdigest()!=MODEL_HASHES[name]:raise ValueError('Original MIA checkpoint hash mismatch')
     # Known inert training arguments are allowed; arbitrary checkpoint classes

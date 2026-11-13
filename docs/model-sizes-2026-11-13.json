@@ -1,0 +1,61 @@
+{
+  "bytes": 18663334758,
+  "files": [
+    {
+      "file": "kimodo/Llama-3-Kimodo-Q8_0.gguf",
+      "bytes": 8142058752
+    },
+    {
+      "file": "kimodo/models/kimodo-soma-rp-v1.1-f32.gguf",
+      "bytes": 1133166784
+    },
+    {
+      "file": "kimodo/tokenizer.gguf",
+      "bytes": 7295054
+    },
+    {
+      "file": "mia/joints.pth",
+      "bytes": 525833771
+    },
+    {
+      "file": "mia/joints_coarse.pth",
+      "bytes": 424706373
+    },
+    {
+      "file": "motionbricks/mmm_v6_soma_fp32.onnx",
+      "bytes": 757864273
+    },
+    {
+      "file": "sam-3d-body/assets/mhr_model.pt",
+      "bytes": 696110248
+    },
+    {
+      "file": "sam-3d-body/model.ckpt",
+      "bytes": 2109129346
+    },
+    {
+      "file": "skintokens/F16/mesh-encoder.gguf",
+      "bytes": 57813184
+    },
+    {
+      "file": "skintokens/F16/skin-vae.gguf",
+      "bytes": 244014784
+    },
+    {
+      "file": "skintokens/F16/tokenrig.gguf",
+      "bytes": 948562656
+    },
+    {
+      "file": "unimate/text_encoder/model.safetensors",
+      "bytes": 990345061
+    },
+    {
+      "file": "unimate/weights/unimate_uniml3d_f60_v3/checkpoints/checkpoint_step_150000.pt",
+      "bytes": 1185836040
+    },
+    {
+      "file": "unirig/skeleton.safetensors",
+      "bytes": 1440598432
+    }
+  ]
+}

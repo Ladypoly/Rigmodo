@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import time
 import bpy
-from . import skinning,process_tree
+from . import skinning,process_tree,model_storage,configuration
 
 def start(python,archive):
     if skinning._jobs:raise ValueError('Finish or cancel the current local job before provider setup')
@@ -17,8 +17,9 @@ def start(python,archive):
     folder=Path(tempfile.mkdtemp(prefix='setup-',dir=directory)).resolve();log=(folder/'worker.log').open('wb')
     process=None;job=None
     try:
+        environment=os.environ.copy();environment['RIGMODO_MODEL_DIRECTORY']=configuration.settings(bpy.context).models_directory
         process=subprocess.Popen([str(python),'-I',str(Path(__file__).with_name('provider_install.py')),'--archive',str(archive)],
-            cwd=python.parent,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+            cwd=python.parent,env=environment,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
         job=process_tree.WindowsJob(process)
         skinning._jobs[str(folder)]=dict(process=process,log=log,job_object=job,started=time.monotonic(),phase='Installing local providers')
         skinning._state(folder,'running',pid=process.pid)
@@ -33,7 +34,7 @@ def inventory(settings):
     from . import motion_jobs,placement
     joint_cache=Path(bpy.path.abspath(settings.placement_python)).parent.parent.parent
     checks={
-        'Joint placement':Path(bpy.path.abspath(settings.placement_python)).is_file() and all((joint_cache/'models'/name).is_file() for name in ('joints.pth','joints_coarse.pth')) and all((joint_cache/'source'/name).is_file() for name in placement.SOURCE_HASHES),
+        'Joint placement':Path(bpy.path.abspath(settings.placement_python)).is_file() and all(model_storage.resolve(joint_cache/'models'/name).is_file() for name in ('joints.pth','joints_coarse.pth')) and all((joint_cache/'source'/name).is_file() for name in placement.SOURCE_HASHES),
         'AI skinning':Path(settings.skin_executable).is_file() and all((Path(settings.skin_models)/name).is_file() for name in skinning.MODEL_HASHES),
-        'Generated motion':(Path(settings.motion_provider)/'bin/kmd-generate.exe').is_file() and all((Path(settings.motion_provider)/'weights'/name).is_file() for name in motion_jobs.FILES)}
+        'Generated motion':(Path(settings.motion_provider)/'bin/kmd-generate.exe').is_file() and all(model_storage.resolve(Path(settings.motion_provider)/'weights'/name).is_file() for name in motion_jobs.FILES)}
     return checks

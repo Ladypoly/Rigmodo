@@ -5,7 +5,7 @@ from pathlib import Path
 import bpy
 import numpy as np
 from mathutils import Matrix,Vector
-from . import skinning,motion_jobs,weight_copy,unimate_geometry as geometry
+from . import skinning,motion_jobs,weight_copy,unimate_geometry as geometry,model_storage
 
 def cache():return skinning.provider_cache().parent/'unimate-b78c780'
 def sha(path):return motion_jobs.sha(path)
@@ -13,7 +13,7 @@ def sha(path):return motion_jobs.sha(path)
 def ready(provider):
     try:
         root=Path(bpy.path.abspath(provider));record=json.loads((root/'installation.json').read_text())
-        return Path(record['python']).is_file() and record['lock_sha256']==sha(Path(__file__).with_name('unimate-lock.json')) and all((root/f['path']).is_file() for f in json.loads(Path(__file__).with_name('unimate-lock.json').read_text())['files'])
+        return Path(record['python']).is_file() and model_storage.lock_matches(record,Path(__file__).with_name('unimate-lock.json')) and all(model_storage.resolve(root/f['path']).is_file() for f in json.loads(Path(__file__).with_name('unimate-lock.json').read_text())['files'])
     except (OSError,ValueError,KeyError,TypeError):return False
 
 def skeleton(context,rig,forward):
@@ -38,10 +38,13 @@ def skeleton(context,rig,forward):
             bones.append(bone)
             for child in bone.children:visit(child)
     visit(root);indices={b.name:i for i,b in enumerate(bones)}
-    # shortcut: unnamed joints need artist labels; add local annotation if automatic semantics becomes necessary.
     result=dict(forward=forward,bone_names=[b.name for b in bones],parents=[indices.get(b.parent.name,-1) if b.parent else -1 for b in bones],
         heads=[(linear@np.asarray(b.head_local)).tolist() for b in bones],
         labels=[b.lc_unimate_label.strip() or geometry.label(b.name) for b in bones],structural_root=excluded)
+    if forward=='AUTO':
+        detected=json.loads(rig.get('lc_creature_annotation','{}'))
+        if detected.get('confidence') not in {'named','geometry'}:raise ValueError('Facing is ambiguous. Choose Facing direction in Motion options, then generate again.')
+        result['forward_vector']=detected['forward']
     # Virtual end tips let UniMate represent rotations on terminal bones without editing the rig.
     for bone in bones:
         if not any(c in included for c in bone.children):
@@ -64,6 +67,8 @@ def source_signature(rig):
 
 def prepare(context,rig,prompt,frames,seed,in_place,forward,guidance,provider,parent=None):
     context.view_layer.update()
+    from . import creature_annotation
+    creature_annotation.annotate(rig)
     spec=skeleton(context,rig,forward);meshes=motion_jobs.character_meshes(context,rig)
     for mesh in meshes:
         if mesh.parent_type!='OBJECT' or mesh.constraints or any(m.type=='ARMATURE' and m.object!=rig for m in mesh.modifiers):raise ValueError('Motion review meshes need ordinary parenting and one armature')
