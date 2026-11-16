@@ -88,3 +88,7 @@ Video capture currently supports one visible humanoid in a continuous shot. Cuts
 On 2026-11-16, the supplied eight-second MiniMax video produced 240 samples at 30 Hz, with all 30 finger joints articulating. Capture, library save and target retargeting completed in about 64 seconds on the RTX 4090; peak PyTorch allocation was 5.68 GiB. Native-to-BVH joint-position error was below one micrometre. Target foot correction reported 393 contact samples and zero unreachable samples. These are measured solver/integration results, not ground-truth accuracy guarantees.
 
 The stylized subject caused 86 detector gaps; the provider interpolated their boxes and inferred every frame. The UI retains a capture-review warning. Native Blender playback passed, and the final review copy contains the skinned body, game rig and a rigid staff attachment. The staff was calibrated upright at frame 1; its two-hand grip still needs manual polish. Video world heading can differ from Blender Front, so the review uses the camera-facing Back view. The original video and model were not overwritten. See [the acceptance record](rgbmocap-acceptance-2026-11-16.json).
+
+### Actual physics refinement experiment
+
+The local ProtoMotions/MuJoCo mummy test completed, but was not promoted to an addon control: its controller changed the fast staff strike substantially and raw target foot placement regressed. The original and experimental comparison remain available. See the [measured experiment and limitations](protomotions-mummy-experiment.md).

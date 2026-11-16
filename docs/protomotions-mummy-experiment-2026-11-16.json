@@ -1,0 +1,293 @@
+{
+  "date": "2026-11-16",
+  "experiment_completed": true,
+  "runtime_validation_passed": true,
+  "integration_gate_passed": false,
+  "decision": "Keep a review-only comparison; do not add a production physics-refinement control",
+  "provider": {
+    "repository": "https://github.com/NVlabs/ProtoMotions",
+    "revision": "13de0cccd06f53ce5c9cf9ec7d1932c7da73610f",
+    "version": "3.1.0",
+    "tracker": "anatomic_soma_bones_fsq",
+    "checkpoint_sha256": "c13e56e85494f8c93fe9eed5b07cadef7281c2eb1188231755f858e1d0f340f0",
+    "checkpoint_bytes": 114675901,
+    "model_license": "NVIDIA Open Model License",
+    "source_license": "Apache-2.0",
+    "upstream_model_license_check_passed": true
+  },
+  "runtime": {
+    "python": "3.11.9",
+    "mujoco": "3.17.0",
+    "torch": "2.8.0+cpu",
+    "device": "CPU",
+    "fabric_strategy": "SingleDeviceStrategy",
+    "torch_compile": false,
+    "policy_weights_modified": false,
+    "simulation_checks_disabled": false,
+    "pyroki_revision": "388e43e1fc0d0ee382968d3dd72970fd62a0450c",
+    "jaxls_revision": "50a58be88c5ef74532f09e3f55268b4f02c490e3",
+    "jax_version": "0.10.2"
+  },
+  "source": {
+    "action": "Mummy Staff",
+    "seconds": 7.966666666666667,
+    "native_samples": 240,
+    "blender_frames_checked": 193,
+    "includes_motionbricks": false
+  },
+  "baseline": {
+    "logs": {
+      "eval/num_evaluated": 10,
+      "eval/gt_error/failure_rate": 0.0,
+      "eval/success_rate": 1.0,
+      "eval/gt_error/mean": 0.044499486684799194,
+      "eval/gt_error/min": 0.006162908859550953,
+      "eval/gt_error/max": 0.14149706065654755,
+      "eval/gr_error/mean": 0.18653082847595215,
+      "eval/gr_error/min": 0.034569043666124344,
+      "eval/gr_error/max": 0.7622784376144409,
+      "eval/max_joint_error/mean": 0.11157757043838501,
+      "eval/max_joint_error/min": 0.011159186251461506,
+      "eval/max_joint_error/max": 0.4841984808444977,
+      "eval/normalized_jerk_mean": 194.66134643554688,
+      "eval/high_jerk_frame_percentage_mean": 8.66876345127821,
+      "eval/action_delta_mean_rad": 0.08479991517961025,
+      "eval/action_delta_max_rad": 0.42749278992414474,
+      "eval/action_rate_mean_rad_s": 2.5439974553883076,
+      "eval/action_delta_mean_deg": 4.858681346811597,
+      "eval/action_delta_max_deg": 24.493553323745637
+    },
+    "num_items": 10,
+    "score": 1.0,
+    "elapsed_seconds": 30.57800000000134
+  },
+  "simulation": {
+    "frames": 240,
+    "elapsed_seconds": 4.531999999999243,
+    "terminated_frames": [],
+    "maximum_floor_penetration_m": 0.0074199009664616625,
+    "maximum_self_penetration_m": 0.00269736738427025,
+    "physics_hz": 960.0,
+    "control_hz": 30.0,
+    "mujoco_version": "3.17.0",
+    "torch_version": "2.8.0+cpu",
+    "external_root_forces": 0.0
+  },
+  "transport_controls": {
+    "Transport only": {
+      "mean_body_position_error_m": 1.028885549203551e-06,
+      "max_body_position_error_m": 8.519532457285095e-06,
+      "mean_rotation_error_deg": 0.0378415547311306,
+      "max_rotation_error_deg": 0.20935672521591187,
+      "hand_max_m": {
+        "Left": 1.3879406424166518e-06,
+        "Right": 1.2798527677659877e-06
+      }
+    },
+    "Anatomical fit only": {
+      "mean_body_position_error_m": 0.013303843326866627,
+      "max_body_position_error_m": 0.08404497802257538,
+      "mean_rotation_error_deg": 4.015888214111328,
+      "max_rotation_error_deg": 42.87196731567383,
+      "hand_max_m": {
+        "Left": 0.016837893053889275,
+        "Right": 0.012380103580653667
+      }
+    }
+  },
+  "canonical_proxy": {
+    "Anatomical reference": {
+      "maximum_self_penetration_m": 0.029099976443961617,
+      "frames_over_5mm": 21,
+      "frames_over_1mm": 30
+    },
+    "Physics": {
+      "maximum_self_penetration_m": 0.00269736738427025,
+      "frames_over_5mm": 0,
+      "frames_over_1mm": 230
+    },
+    "physics_contract": {
+      "gravity": [
+        0.0,
+        0.0,
+        -9.81
+      ],
+      "root_free_joint": true,
+      "unactuated_root": true,
+      "source_body_mass_kg": 42.46682696544699,
+      "self_collisions_enabled": true,
+      "comparison_is_canonical_proxy": true
+    }
+  },
+  "target_metrics": {
+    "Original": {
+      "stationary_sole_absolute_max_m": 0.0011876958888024092,
+      "stationary_sole_absolute_mean_m": 0.00030596310780687603,
+      "stationary_sole_min_m": -0.0011876958888024092,
+      "stationary_sole_max_m": 0.0003957627632189542,
+      "body_rotation_second_difference_rms": 0.004745745565742254,
+      "body_rotation_third_difference_rms": 0.004037126433104277
+    },
+    "Physics raw": {
+      "stationary_sole_absolute_max_m": 0.02490023896098137,
+      "stationary_sole_absolute_mean_m": 0.0075798796227814205,
+      "stationary_sole_min_m": -0.02490023896098137,
+      "stationary_sole_max_m": 0.013684584759175777,
+      "body_rotation_second_difference_rms": 0.006109190173447132,
+      "body_rotation_third_difference_rms": 0.005811551585793495
+    },
+    "Physics corrected": {
+      "stationary_sole_absolute_max_m": 0.0013620750978589058,
+      "stationary_sole_absolute_mean_m": 0.00015456927287189193,
+      "stationary_sole_min_m": -0.0006598371546715498,
+      "stationary_sole_max_m": 0.0013620750978589058,
+      "body_rotation_second_difference_rms": 0.006109189707785845,
+      "body_rotation_third_difference_rms": 0.005811544135212898
+    }
+  },
+  "hand_position_changes": {
+    "Left": {
+      "mean_m": 0.033977873623371124,
+      "max_m": 0.26854854822158813
+    },
+    "Right": {
+      "mean_m": 0.051735732704401016,
+      "max_m": 0.3085137903690338
+    }
+  },
+  "target_intersection_check": {
+    "records": {
+      "Original": {
+        "frames_with_cross_region_intersections": 0,
+        "total_triangle_pairs": 0,
+        "regions": {
+          "Torso/LeftForeArm": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "Torso/RightForeArm": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "Torso/LeftHand": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "Torso/RightHand": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "LeftThigh/RightThigh": {
+            "frames": 0,
+            "pairs": 0
+          }
+        }
+      },
+      "Physics raw": {
+        "frames_with_cross_region_intersections": 0,
+        "total_triangle_pairs": 0,
+        "regions": {
+          "Torso/LeftForeArm": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "Torso/RightForeArm": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "Torso/LeftHand": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "Torso/RightHand": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "LeftThigh/RightThigh": {
+            "frames": 0,
+            "pairs": 0
+          }
+        }
+      },
+      "Physics corrected": {
+        "frames_with_cross_region_intersections": 0,
+        "total_triangle_pairs": 0,
+        "regions": {
+          "Torso/LeftForeArm": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "Torso/RightForeArm": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "Torso/LeftHand": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "Torso/RightHand": {
+            "frames": 0,
+            "pairs": 0
+          },
+          "LeftThigh/RightThigh": {
+            "frames": 0,
+            "pairs": 0
+          }
+        }
+      }
+    },
+    "positive_control_triangle_pairs": 32,
+    "region_triangle_counts": {
+      "Torso": 514,
+      "LeftForeArm": 94,
+      "RightForeArm": 96,
+      "LeftHand": 532,
+      "RightHand": 534,
+      "LeftThigh": 154,
+      "RightThigh": 152
+    },
+    "method": "Cross-region evaluated triangle intersections, excluding two-ring neighbors and rest-pose overlap; counts are not penetration depths or a containment test"
+  },
+  "live_review": {
+    "original_action_preserved": true,
+    "original_selected": "Mummy Staff",
+    "comparison_clip": "Mummy Staff \u00b7 Physics test",
+    "review": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\Mummy-ProtoMotions\\Mummy-Physics-Comparison.blend",
+    "objects": 3,
+    "working_sources": 1,
+    "rest_weights_and_mesh_preserved": true,
+    "native_blender_preview_completed": true,
+    "no_production_ui_pass_added": true
+  },
+  "reasons": [
+    "Controller changes wrist trajectories substantially during the staff strike (peak 26.9 cm left / 30.9 cm right around 5.3 seconds)",
+    "Raw retargeted physics worsens stationary sole placement; Rigmodo contact IK is still required",
+    "Upper-body high-frequency rotation-change proxy rises about 44%; this is a numerical proxy, not a perceptual score",
+    "Canonical proxy self-penetration improves, but the sampled target-mesh regions have no detected surface intersections in the original, so this fixture demonstrates no target-mesh collision improvement"
+  ],
+  "limits": [
+    "The simulated body is the pretrained 42.47 kg anatomical SOMA proxy, not a physical reconstruction of the mummy",
+    "Staff mass, prop collision and two-hand grasp constraints are not simulated",
+    "Target triangle check excludes rest overlaps and two-ring neighbors; it is not a containment or complete collision-free guarantee",
+    "No retraining, alternative policy, creature test or Unity export was performed"
+  ],
+  "artifacts": {
+    "folder": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\Mummy-ProtoMotions",
+    "scripts": {
+      "rigmodo-proto-blender-test.py": "d46254854c5c44b50b3cd568743babe5381dd574ec0c499faa5adab67fe2fbea",
+      "rigmodo-proto-collision-check.py": "f87f2f3882df83dd0011f7acf43c4a1d224137c9ce6c537cae8690038ba60089",
+      "rigmodo-proto-export.py": "1fe0a8946c96325387dbf25d37292047b1802241e28a3bec6438291df06a32bd",
+      "rigmodo-proto-ik-input.py": "bd625c00133daf8da00ab4bae38b33ccf77a72a99f359c8afc7da23b22c13b26",
+      "rigmodo-proto-native-output.py": "4a294ac41ec3ae1bdc78bb7c5d6711a9dc5ef72843039ab97bb4fcbf0b4144bb",
+      "rigmodo-proto-proxy-metrics.py": "85c3382bc13bf18c9aba6e11806b491fd849fe329f029f75a5302b03aa5e5304",
+      "rigmodo-proto-reference.py": "4820626c93d0f90e26f6b4d00b28f4e5a602e7254bce7f5016b36115a2d658c0",
+      "rigmodo-proto-roundtrip.py": "c523c43ca48aeb61fc82def5eb82ac49ff5ae9c111d3aae779b447df8b819ddf",
+      "rigmodo-proto-run.py": "52eb14f0a8100c4c71b0327c1fc3b35ac656d6e83b19589f437bb83cfc84ac27"
+    },
+    "runtime_locks": [
+      "runtime-mujoco.lock.txt",
+      "runtime-retarget.lock.txt"
+    ],
+    "original_and_physics_review": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\Mummy-ProtoMotions\\Mummy-Physics-Comparison.blend"
+  }
+}
