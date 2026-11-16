@@ -1,6 +1,6 @@
 # Rigmodo
 
-Version 0.20.0 adds optional ExMR body-and-hand capture through a pinned local RGB MoCap installation. Video capture shows measured stage counters and stage estimates. The Retarget source list contains only motions you explicitly load or create; the full collection stays in the external Asset Browser. GEM-X remains available, with optional target-motion stabilization and improved floor-drift/contact handling. See [the animation workflow](docs/animation-workflow.md).
+Version 0.21.0 levels stationary soles, preserves toe support and shows lightweight live foot-contact indicators. Optional **Retarget → Motion adjustments → Refine current clip with MotionBricks…** regenerates free body transitions on a new clip, preserving source travel, planted-leg poses and fingers, then solves contacts again. The original remains available. MotionBricks is learned resynthesis, not physics simulation or a guaranteed quality improvement. See [the animation workflow](docs/animation-workflow.md).
 
 Independent Blender 5.2 extension for local humanoid and creature joint placement, AI skinning, regional correction, humanoid motion and Unity export. No ARP, proprietary Voxel Heat Diffusion or Mesh2Motion is required. Optional SAM image posing needs approved checkpoint access during setup; inference stays local.
 

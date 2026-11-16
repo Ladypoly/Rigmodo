@@ -6,13 +6,14 @@ from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty, CollectionProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips,motion_playback,motion_store,motion_retarget,motion_library,character_context,animation_ui,rig_mapping,motion_contacts,animation_transfer,video_motion,reference_render,video_setup,motion_sources
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips,motion_playback,motion_store,motion_retarget,motion_library,character_context,animation_ui,rig_mapping,motion_contacts,animation_transfer,video_motion,reference_render,video_setup,motion_sources,contact_visuals,motion_refine
 
 class LC_Settings(PropertyGroup):
     motion_system:EnumProperty(name='System',items=[('KIMODO','Kimodo','Text to humanoid motion'),('MOTIONBRICKS','MotionBricks','Pose-key transitions'),('VIDEO','Video to Motion','Reusable video motion capture'),('UNIMATE','UniMate','Skeleton-conditioned creature motion')],default='VIDEO')
     pose_source_rig:PointerProperty(name='Pose source',type=bpy.types.Object,poll=lambda self,obj:obj.type=='ARMATURE' and not obj.get('lc_source_preview'))
     source_name:StringProperty(name='Motion name',maxlen=120)
     source_job:StringProperty(options={'HIDDEN'})
+    refine_motion_job:StringProperty(options={'HIDDEN'})
     source_loop:BoolProperty(name='Loop',default=False)
     source_in_place:BoolProperty(name='In place',default=False)
     video_input:EnumProperty(name='Input',items=[('FILES','Video files','Capture existing videos'),('COMFY','ComfyUI','Generate a video, then capture it')])
@@ -42,6 +43,7 @@ class LC_Settings(PropertyGroup):
     comfy_bindings:StringProperty(name='Workflow bindings (JSON)',default='{}')
     comfy_shot_rules:BoolProperty(name='Add capture shot instructions',default=True)
 
+    show_contact_indicators:BoolProperty(name='Show foot contacts',default=True,description='Viewport-only discs for grounded, rolling and airborne feet; red flags expected contacts off the floor',update=lambda self,context:contact_visuals.clear())
     ground_height:FloatProperty(name='Ground height (m)',default=0.)
     mapping_role:EnumProperty(name='Role',items=[(r,r,'') for r in rig_mapping.ROLES],update=rig_mapping.role_changed)
     mapping_bone:StringProperty(name='Bone')
@@ -353,6 +355,14 @@ class WorkerModal:
             if hasattr(self,'cancel_external'):self.cancel_external()
             skinning.cancel(self._folder)
         self._finish(context)
+
+
+class LC_OT_motion_refine_job(WorkerModal,Operator):
+    bl_idname='local_character.run_motion_refine_job';bl_label='Refine Current Animation'
+    status_property='motion_status';job_property='refine_motion_job';apply_operator='finish_motion_refine'
+    def execute(self,context):
+        from pathlib import Path
+        self._folder=Path(context.scene.lc_settings.refine_motion_job);return self.begin(context)
 
 
 class LC_OT_source_motion_job(WorkerModal,Operator):
@@ -1048,7 +1058,7 @@ class LC_PT_main(Panel):
     bl_ui_units_x = 18
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (*character_context.CLASSES, LC_Settings, *animation_ui.CLASSES,*motion_sources.CLASSES,LC_OT_source_motion_job,*rig_mapping.CLASSES,*motion_contacts.CLASSES,*animation_transfer.CLASSES,*video_motion.CLASSES,*reference_render.CLASSES,LC_OT_capture_setup,LC_OT_capture_setup_finish,LC_OT_video_job, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, *motion_clips.CLASSES, *motion_library.CLASSES, LC_OT_library_job, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (*character_context.CLASSES, LC_Settings, *animation_ui.CLASSES,*motion_sources.CLASSES,*motion_refine.CLASSES,LC_OT_motion_refine_job,LC_OT_source_motion_job,*rig_mapping.CLASSES,*motion_contacts.CLASSES,*animation_transfer.CLASSES,*video_motion.CLASSES,*reference_render.CLASSES,LC_OT_capture_setup,LC_OT_capture_setup_finish,LC_OT_video_job, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, *motion_clips.CLASSES, *motion_library.CLASSES, LC_OT_library_job, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
@@ -1073,9 +1083,11 @@ def register():
     auto_pose.register()
     image_pose.register()
     processing_visuals.register()
+    contact_visuals.register()
     bpy.app.timers.register(motion_sources.initial_refresh,first_interval=.1)
 
 def unregister():
+    contact_visuals.unregister()
     video_motion.cleanup()
     motion_sources.cleanup()
     if hasattr(bpy.types.Bone,'lc_unimate_label'):del bpy.types.Bone.lc_unimate_label

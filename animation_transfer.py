@@ -28,7 +28,7 @@ def loop_diagnostics(context,rig,action):
 
 def finish(context,rig,data,name,metadata=None,controls=None):
     if 'provenance' in data:
-        allowed={'lc_contact_overrides','lc_capture_provenance','lc_capture_video','lc_capture_offset_seconds','lc_motion_prompt','lc_library_source','lc_library_license','lc_capture_stabilized'}
+        allowed={'lc_contact_overrides','lc_capture_provenance','lc_capture_video','lc_capture_offset_seconds','lc_motion_prompt','lc_library_source','lc_library_license','lc_capture_stabilized','lc_refinement_provider','lc_refinement_strength','lc_refinement_source'}
         inherited={k:v for k,v in json.loads(str(data['provenance'][0])).items() if k in allowed};inherited.update(metadata or {});metadata=inherited
     s=context.scene.lc_settings;old=rig.animation_data
     previous=(old.action,old.action_slot,old.use_nla,old.action_blend_type,old.action_influence) if old else None
@@ -67,9 +67,9 @@ def finish(context,rig,data,name,metadata=None,controls=None):
         if 'contact_probabilities' in contact_data:
             action['lc_contact_samples']=json.dumps(dict(times=contact_data['times'].tolist(),probabilities=contact_data['contact_probabilities'].tolist()))
         action['lc_clip_loop']=bool(s.create_loop);action.lc_clip_owner=rig
-        action.name=name+(' · Loop' if s.create_loop else '')
         for item in created:
-            if item!=action:item['lc_internal_variant']=True
+            if item!=action:item['lc_internal_variant']=True;item.name=name+' · Source'
+        action.name=name+(' · Loop' if s.create_loop else '')
         if len(created)>1 and not action.lc_contact_source:action.lc_contact_source=created[0]
         motion_clips.select(context,rig,action,action.slots[0])
         if s.create_loop:action['lc_loop_report']=json.dumps(loop_diagnostics(context,rig,action))
@@ -99,7 +99,8 @@ def periodic_contacts(context,rig,action,ground,contact_data=None):
         for i in range(count):poses.append([transform@Matrix(m.tolist()) for m in data['poses'][i]]);times.append(cycle*duration+float(data['times'][i]))
     poses.append([delta@delta@delta@Matrix(m.tolist()) for m in data['poses'][0]]);times.append(3*duration)
     repeated=dict(data,poses=np.asarray(poses,dtype=np.float32),times=np.asarray(times,dtype=np.float32))
-    if contact_data is not None and 'contact_probabilities' in contact_data:
+    if contact_data is None:contact_data=data
+    if 'contact_probabilities' in contact_data:
         probabilities=np.column_stack([np.interp(data['times'],contact_data['times'],contact_data['contact_probabilities'][:,i]) for i in range(2)])
         repeated['contact_probabilities']=np.concatenate([probabilities[:-1]]*3+[probabilities[:1]])
     edits=motion_contacts.contact_overrides(action,duration)
@@ -107,6 +108,8 @@ def periodic_contacts(context,rig,action,ground,contact_data=None):
     clean,report=motion_contacts.solve(context,rig,repeated,ground,bool(action.get('lc_in_place')),edits)
     inverse=delta.inverted();result=dict(data)
     result['poses']=np.array([[inverse@Matrix(m.tolist()) for m in row] for row in clean['poses'][count:2*count+1]],dtype=np.float32)
+    for field in ('intervals','flat_intervals'):
+        report[field]=[dict(e,start=max(0.,e['start']-duration),end=min(duration,e['end']-duration)) for e in report[field] if e['end']>duration and e['start']<2*duration]
     report['periodic_three_cycle_solve']=True
     return result,report
 

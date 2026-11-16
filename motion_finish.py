@@ -67,16 +67,18 @@ def loop(context,rig,blend_frames=8):
     return action
 
 
-def stabilize_capture(context,rig,action):
-    """A centered 33 ms filter on local channels, before target foot locking."""
+def stabilize_capture(context,rig,action,seconds=1/30,bones=None):
+    """A centered temporal filter on local channels, before target foot locking."""
+    if not math.isfinite(seconds) or not 0<seconds<=.25:raise ValueError("Filter width must be between 0 and 250 ms")
     import numpy as np
     from . import motion_clips,motion_store
     slot=rig.animation_data.action_slot;lo,hi=motion_store.bounds(action,slot)
     fps=context.scene.render.fps/context.scene.render.fps_base
     frames=np.linspace(lo,hi,max(2,round((hi-lo)/fps*30)+1));groups={}
     for curve in motion_clips.slot_curves(action,slot):
+        if bones is not None and not any(curve.data_path.startswith(rig.pose.bones[name].path_from_id()+'.') for name in bones):continue
         if curve.data_path.endswith(('rotation_quaternion','location')):groups.setdefault(curve.data_path,{})[curve.array_index]=curve
-    kernel=np.exp(-np.arange(-3,4,dtype=float)**2/2);kernel/=kernel.sum()
+    sigma=seconds*30;radius=max(1,math.ceil(sigma*3));kernel=np.exp(-np.arange(-radius,radius+1,dtype=float)**2/(2*sigma*sigma));kernel/=kernel.sum()
     for path,axes in groups.items():
         count=4 if path.endswith('rotation_quaternion') else 3
         if set(axes)!=set(range(count)):raise ValueError('Capture stabilization needs complete transform channels')
@@ -84,7 +86,7 @@ def stabilize_capture(context,rig,action):
         if count==4:
             for i in range(1,len(values)):
                 if np.dot(values[i-1],values[i])<0:values[i]*=-1
-        filtered=np.column_stack([np.convolve(np.pad(values[:,i],(3,3),mode='edge'),kernel,mode='valid') for i in range(count)])
+        filtered=np.column_stack([np.convolve(np.pad(values[:,i],(radius,radius),mode='edge'),kernel,mode='valid') for i in range(count)])
         filtered[0]=values[0];filtered[-1]=values[-1]
         if count==4:filtered/=np.maximum(np.linalg.norm(filtered,axis=1,keepdims=True),1e-12)
         for i,curve in axes.items():

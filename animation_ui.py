@@ -73,12 +73,13 @@ def draw(layout,context,rig=None,creature=False):
         if adjustments:
             controls=context.window_manager.lc_motion_library
             adjustments.prop(s,'stabilize_video')
+            if target:adjustments.operator('local_character.refine_motion',text='Refine current clip with MotionBricks…')
             adjustments.prop(controls,'speed');adjustments.prop(controls,'mirror');adjustments.prop(controls,'spacing')
             if len(motion_sources.chosen(context))==1:
                 row=adjustments.row(align=True);row.prop(controls,'trim_start');row.prop(controls,'trim_end')
         options=ui.details(body,'lc_retarget_options','Retarget options')
         if options:
-            options.prop(s,'motion_contacts',text='Automatic foot placement');options.prop(s,'ground_height')
+            options.prop(s,'motion_contacts',text='Automatic foot placement');options.prop(s,'ground_height');options.prop(s,'show_contact_indicators')
             if target:
                 options.operator('local_character.detect_motion_mapping',text='Suggest bone mapping');options.operator('local_character.accept_motion_mapping',text='Accept reviewed mapping')
                 proposals=json.loads(target.get('lc_role_suggestions','{}'))

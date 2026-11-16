@@ -139,7 +139,7 @@ def capture(context,rig,action,slot):
         if samples:
             values=json.loads(samples)
             data['contact_probabilities']=np.column_stack([np.interp(data['times'],values['times'],np.asarray(values['probabilities'])[:,i]) for i in range(2)]).astype(np.float32)
-        metadata={key:action[key] for key in ('lc_contact_overrides','lc_capture_provenance','lc_capture_video','lc_capture_offset_seconds','lc_motion_prompt','lc_library_source','lc_library_license','lc_capture_stabilized') if key in action}
+        metadata={key:action[key] for key in ('lc_contact_overrides','lc_capture_provenance','lc_capture_video','lc_capture_offset_seconds','lc_motion_prompt','lc_library_source','lc_library_license','lc_capture_stabilized','lc_refinement_provider','lc_refinement_strength','lc_refinement_source') if key in action}
         if metadata:data['provenance']=np.asarray([json.dumps(metadata)])
         validate(data);return data
     finally:

@@ -36,6 +36,7 @@ def soles(context,rig,roles):
             if direction.length<1e-6:direction=Vector((0,-1,0))
             values=points@np.array(direction.normalized());order=np.argsort(values);k=max(1,len(order)//4)
             markers=[Vector(points[order[:k]].mean(0)),Vector(points[order[-k:]].mean(0))]
+            for marker in markers:marker.z=min(float(p.z) for p in candidates)
         else:
             a=rest.translation.copy();b=world@(toe.tail_local if toe else foot.tail_local)
             z=min((world@foot.tail_local).z,b.z);a.z=z;b.z=z;markers=[a,b]
@@ -60,83 +61,108 @@ def floor_drift(samples,probabilities,times,length,overrides):
     return np.clip(np.interp(times,grid,smooth),-length*.45,length*.45)
 
 
+def contact_weight(frame,first,last,count):
+    before=1. if first==0 else min(1.,(frame-first+1)/3)
+    after=1. if last==count-1 else min(1.,(last-frame+1)/3)
+    value=min(before,after)
+    return value*value*(3-2*value)
+
+
 def solve(context,rig,data,ground=0.,in_place=False,overrides=()):
     if not math.isfinite(ground):raise ValueError('Ground height must be finite')
+    motion_store.validate(data)
     role_names=rig_mapping.names(rig);roles={r:b.name for r,b in zip(role_names,rig.data.bones)}
     missing=set(['Hips',*[s+p for s in ('Left','Right') for p in ('UpLeg','Leg','Foot')]])-roles.keys()
     if missing:raise ValueError('Map hips and both leg chains before grounding: '+', '.join(sorted(missing)))
     index={str(n):i for i,n in enumerate(data['names'])};world=rig.matrix_world.copy();inverse=world.inverted();markers=soles(context,rig,roles)
-    poses=[[world@Matrix(m.tolist()) for m in row] for row in data['poses']];times=data['times'].astype(float)
+    poses=[[world@Matrix(m.tolist()) for m in row] for row in data['poses']];times=data['times'].astype(float);count=len(times)
+    rest={b.name:world@b.matrix_local for b in rig.data.bones}
     samples={s:np.array([[m[index[roles[s+'Foot']]]@p for p in markers[s]] for m in poses]) for s in markers}
     lengths={s:sum((world@rig.data.bones[roles[s+p]].tail_local-world@rig.data.bones[roles[s+p]].head_local).length for p in ('UpLeg','Leg')) for s in markers}
-    reference=min(float(np.quantile(v[:,:,2].min(1),.08)) for v in samples.values())
-    # One constant floor alignment retains jumps; never lower each airborne frame.
-    shift=ground-reference
+    reference=min(float(np.quantile(v[:,:,2].min(1),.08)) for v in samples.values());shift=ground-reference
     if abs(shift)>max(lengths.values())*.6:raise ValueError('Estimated floor is too far away; review sole markers and ground height')
     drift=floor_drift(samples,data.get('contact_probabilities'),times,max(lengths.values()),overrides)
-    masks={};tracks={};count=0
+    masks={};tracks={};flats={};flat_tracks={};chains={}
     for side,points in samples.items():
-        heights=points[:,:,2].min(1)-reference-drift
-        center=points.mean(1);velocity=np.linalg.norm(np.gradient(center[:,:2],times,axis=0),axis=1)
+        upper,lower,foot=(rig.data.bones[roles[side+p]] for p in ('UpLeg','Leg','Foot'))
+        if lower.parent!=upper or foot.parent!=lower:raise ValueError('Foot correction needs direct upper leg, lower leg and foot chains')
+        chains[side]=([index[b.name] for b in (upper,lower,foot)],foot)
+        heights=points[:,:,2].min(1)-reference-drift;center=points.mean(1)
+        velocity=np.linalg.norm(np.gradient(center[:,:2],times,axis=0),axis=1);vertical=np.abs(np.gradient(center[:,2],times))
         mask=(heights<lengths[side]*.045)&((velocity<lengths[side]*.55)|in_place)
+        quiet=(heights<lengths[side]*.20)&((velocity<lengths[side]*.12)|in_place)&(vertical<lengths[side]*.12)
         if 'contact_probabilities' in data:
             probability=data['contact_probabilities'][:,0 if side=='Left' else 1]
             mask=(heights<lengths[side]*.08)&(((probability>.6)&((velocity<lengths[side]*.8)|in_place))|(mask&(probability>.2)))
+            quiet&=(probability>.2)|(heights<lengths[side]*.09)
+        for lo,hi in intervals(quiet):
+            if times[hi]-times[lo]<.15:quiet[lo:hi+1]=False
+        mask|=quiet
         for lo,hi in intervals(~mask):
-            if lo>0 and hi+1<len(mask) and times[hi]-times[lo]<.05:mask[lo:hi+1]=True
+            if lo>0 and hi+1<count and times[hi]-times[lo]<.05:mask[lo:hi+1]=True
         for lo,hi in intervals(mask):
             if times[hi]-times[lo]<.045:mask[lo:hi+1]=False
         for edit in overrides:
             if edit['side']!=side:continue
-            active=(times>=edit['start'])&(times<=edit['end']);mask[active]=edit['mode']!='AIR'
-        masks[side]=mask;tracks[side]=intervals(mask)
-    root_indices={i for i,n in enumerate(data['names']) if str(n)==roles.get('Root') and not rig.data.bones[str(n)].use_deform}
+            active=(times>=edit['start'])&(times<=edit['end']);mask[active]=edit['mode']!='AIR';quiet[active]=edit['mode']!='AIR'
+        masks[side]=mask;tracks[side]=intervals(mask);flats[side]=quiet&mask;flat_tracks[side]=intervals(flats[side])
+    roots={i for i,n in enumerate(data['names']) if str(n)==roles.get('Root') and not rig.data.bones[str(n)].use_deform}
     for f,row in enumerate(poses):
         for i,m in enumerate(row):
-            if i not in root_indices:m.translation.z+=shift-drift[f]
-    stats=dict(contact_frames=0,unreachable_frames=0,ground_alignment_m=shift,maximum_floor_drift_m=float(np.abs(drift).max()),contacts={s:len(v) for s,v in tracks.items()})
-    anchors={};report=[]
+            if i not in roots:m.translation.z+=shift-drift[f]
+    stats=dict(contact_frames=0,flat_contact_frames=0,unreachable_frames=0,ground_alignment_m=shift,maximum_floor_drift_m=float(np.abs(drift).max()),contacts={s:len(v) for s,v in tracks.items()})
+    anchors={};up=Vector((0,0,1));pole=world.to_quaternion()@Vector((0,-1,0))
+    if set(rig_mapping.CORE)<=set(roles):
+        pole=-(world.to_quaternion()@motion_retarget.body_frame([b.matrix_local for b in rig.data.bones],{r:i for i,r in enumerate(role_names)}).col[1])
     for f,row in enumerate(poses):
         goals={};lowering=0.
-        for side in masks:
-            if not masks[side][f]:anchors.pop(side,None);continue
-            upper,lower,foot=(rig.data.bones[roles[side+p]] for p in ('UpLeg','Leg','Foot'))
-            if lower.parent!=upper or foot.parent!=lower:raise ValueError('Foot correction needs direct upper leg, lower leg and foot chains')
-            ids=[index[b.name] for b in (upper,lower,foot)];hip,knee,end=[row[i].translation.copy() for i in ids]
-            points=[row[ids[2]]@p for p in markers[side]];lowest=min(points,key=lambda p:p.z)
-            lo,hi=next((a,b) for a,b in tracks[side] if a<=f<=b);strength=min(1.,(f-lo+1)/3,(hi-f+1)/3)
-            if side not in anchors:
-                candidates=np.asarray([[pose[index[foot.name]]@p for p in markers[side]] for pose in poses[lo:hi+1]])
-                point=int(np.argmin(np.var(candidates[:,:,:2],axis=0).sum(1)));chosen=points[point]
-                anchors[side]=(point,Vector((chosen.x,chosen.y,ground)))
-            point,anchor=anchors[side]
-            edits=[e for e in overrides if e['side']==side and e['start']<=times[f]<=e['end']]
-            sliding=(edits[-1]['mode']=='SLIDE') if edits else in_place
-            correction=Vector((0,0,ground-lowest.z)) if sliding else anchor-points[point]
+        for side,mask in masks.items():
+            if not mask[f]:anchors.pop(side,None);continue
+            ids,foot=chains[side];hip,knee,end=[row[i].translation.copy() for i in ids]
+            lo,hi=next((a,b) for a,b in tracks[side] if a<=f<=b);strength=contact_weight(f,lo,hi,count)
+            is_flat=bool(flats[side][f]);flat_strength=0.;target=row[ids[2]].copy()
+            if side not in anchors or anchors[side]['flat']!=is_flat:
+                rotation=target.to_quaternion()
+                if is_flat:
+                    normal=(rotation@rest[foot.name].to_quaternion().inverted())@up
+                    rotation=normal.rotation_difference(up)@rotation
+                points=[end+rotation@(p*target.to_scale().x) for p in markers[side]]
+                center=sum(points,Vector())/len(points)
+                anchors[side]=dict(flat=is_flat,rotation=rotation,position=Vector((center.x,center.y,ground)))
+            anchor=anchors[side]
+            if is_flat:
+                a,b=next((a,b) for a,b in flat_tracks[side] if a<=f<=b);flat_strength=contact_weight(f,a,b,count)
+                target=target.to_quaternion().slerp(anchor['rotation'],flat_strength).to_matrix().to_4x4()@Matrix.Diagonal((*target.to_scale(),1.));target.translation=end
+            points=[target@p for p in markers[side]];lowest=min(p.z for p in points);center=sum(points,Vector())/len(points)
+            edits=[e for e in overrides if e['side']==side and e['start']<=times[f]<=e['end']];sliding=edits[-1]['mode']=='SLIDE' if edits else in_place
+            correction=Vector((0,0,ground-lowest))
+            if not sliding:correction.x=anchor['position'].x-center.x;correction.y=anchor['position'].y-center.y
             goal=end+correction*strength
-            horizontal=(Vector((hip.x,hip.y,0))-Vector((goal.x,goal.y,0))).length;length=lengths[side]
+            horizontal=Vector((hip.x-goal.x,hip.y-goal.y,0)).length;length=lengths[side]
             if horizontal<length:lowering=min(lowering,goal.z+math.sqrt(max(0,(length-1e-5)**2-horizontal**2))-hip.z)
-            goals[side]=(ids,goal)
+            goals[side]=(ids,goal,target,flat_strength)
         lowering=max(lowering,-max(lengths.values())*.08)
         if lowering<0:
             for i,m in enumerate(row):
-                if i not in root_indices:m.translation.z+=lowering
-        for side,(ids,goal) in goals.items():
-            hip,knee,end=[row[i].translation.copy() for i in ids]
-            pole=world.to_quaternion()@Vector((0,-1,0))
-            if set(rig_mapping.CORE)<=set(roles):
-                rest=[b.matrix_local for b in rig.data.bones];role_index={r:i for i,r in enumerate(role_names)}
-                pole=-(world.to_quaternion()@motion_retarget.body_frame(rest,role_index).col[1])
-            new_knee,new_end,clamped=kinematics.two_bone(hip,knee,end,goal,pole)
-            stats['contact_frames']+=1;stats['unreachable_frames']+=int(clamped)
-            for i,old,new,position in [(ids[0],knee-hip,new_knee-hip,hip),(ids[1],end-knee,new_end-new_knee,new_knee)]:
+                if i not in roots:m.translation.z+=lowering
+        for side,(ids,goal,target,flat_strength) in goals.items():
+            hip,knee,end=[row[i].translation.copy() for i in ids];new_knee,new_end,clamped=kinematics.two_bone(hip,knee,end,goal,pole)
+            stats['contact_frames']+=1;stats['flat_contact_frames']+=int(flat_strength>.999);stats['unreachable_frames']+=int(clamped)
+            for i,old,new,position in ((ids[0],knee-hip,new_knee-hip,hip),(ids[1],end-knee,new_end-new_knee,new_knee)):
                 m=(old.rotation_difference(new).to_matrix()@row[i].to_quaternion().to_matrix()).to_4x4()@Matrix.Diagonal((*row[i].to_scale(),1.));m.translation=position;row[i]=m
-            old=row[ids[2]].copy();row[ids[2]].translation=new_end;delta=row[ids[2]]@old.inverted()
-            for child in rig.data.bones[roles[side+'Foot']].children_recursive:row[index[child.name]]=delta@row[index[child.name]]
+            foot=rig.data.bones[roles[side+'Foot']];old=row[ids[2]].copy();target.translation=new_end;row[ids[2]]=target;delta=target@old.inverted()
+            for child in foot.children_recursive:row[index[child.name]]=delta@row[index[child.name]]
+            toe=rig.data.bones.get(roles.get(side+'ToeBase',''))
+            if toe and toe.parent and flat_strength:
+                i=index[toe.name];old=row[i].copy();neutral=row[index[toe.parent.name]]@rest[toe.parent.name].inverted()@rest[toe.name]
+                rotation=old.to_quaternion().slerp(neutral.to_quaternion(),flat_strength)
+                row[i]=rotation.to_matrix().to_4x4()@Matrix.Diagonal((*old.to_scale(),1.));row[i].translation=neutral.translation;delta=row[i]@old.inverted()
+                for child in toe.children_recursive:row[index[child.name]]=delta@row[index[child.name]]
     output=dict(data);output['poses']=np.array([[inverse@m for m in row] for row in poses],dtype=np.float32)
     stats['intervals']=[dict(side=s,start=float(times[a]),end=float(times[b]),mode='SLIDE' if in_place else 'PLANT') for s,segments in tracks.items() for a,b in segments]
+    stats['sole_markers']={s:dict(bone=roles[s+'Foot'],points=[list(p) for p in ps]) for s,ps in markers.items()}
+    stats['flat_intervals']=[dict(side=s,start=float(times[a]),end=float(times[b])) for s,segments in flat_tracks.items() for a,b in segments]
     return output,stats
-
 
 def contact_overrides(action,duration):
     data=json.loads(action.get('lc_contact_overrides','[]'))
@@ -151,12 +177,14 @@ def correct(context,rig,action,ground=0.,loop=False,contact_data=None):
     source=getattr(action,'lc_contact_source',None) or action
     slot=next((s for s in source.slots if s.identifier==rig.animation_data.action_slot.identifier),source.slots[0])
     data=motion_store.capture(context,rig,source,slot)
+    if contact_data is None and action.get('lc_contact_samples'):
+        saved=json.loads(action['lc_contact_samples']);contact_data=dict(times=np.asarray(saved['times']),contact_probabilities=np.asarray(saved['probabilities']))
     if contact_data is not None and 'contact_probabilities' in contact_data:
         data['contact_probabilities']=np.column_stack([np.interp(data['times'],contact_data['times'],contact_data['contact_probabilities'][:,i]) for i in range(2)])
     overrides=contact_overrides(action,float(data['times'][-1]))
     result,stats=solve(context,rig,data,ground,bool(action.get('lc_in_place')),overrides)
     new=motion_retarget.apply(context,rig,result,source.name+' · Grounded',loop=loop)
-    for key in ('lc_library_source','lc_library_license','lc_in_place','lc_motion_prompt','lc_contact_overrides','lc_contact_samples','lc_capture_job','lc_capture_video','lc_capture_offset_seconds','lc_capture_provenance'):
+    for key in ('lc_library_source','lc_library_license','lc_in_place','lc_motion_prompt','lc_contact_overrides','lc_contact_samples','lc_capture_job','lc_capture_video','lc_capture_offset_seconds','lc_capture_provenance','lc_capture_stabilized','lc_refinement_provider','lc_refinement_strength','lc_refinement_source'):
         if key in action:new[key]=action[key]
     new['lc_contact_report']=json.dumps(stats);new['lc_ground_height']=ground;new.lc_contact_source=source
     return new

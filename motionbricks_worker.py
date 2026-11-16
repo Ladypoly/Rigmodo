@@ -82,6 +82,8 @@ def run(folder):
     options=ort.SessionOptions();options.intra_op_num_threads=4;options.log_severity_level=3
     session=ort.InferenceSession(str(model_storage.resolve(provider/'mmm_v6_soma_fp32.onnx')),sess_options=options,providers=['CUDAExecutionProvider','CPUExecutionProvider'])
     if session.get_providers()[0]!='CUDAExecutionProvider':raise ValueError('MotionBricks CUDA provider unavailable; reinstall Setup')
+    from capture_progress import Progress
+    progress=Progress(folder);progress('MotionBricks · Generating transitions',0,len(poses)-1,unit='transitions')
     roots=[];rotations=[];native=[]
     for index,(start,end) in enumerate(zip(poses,poses[1:])):
         if index==0:
@@ -96,7 +98,7 @@ def run(folder):
         features=output['pred_global_motions'][0,3:4*tokens-3]
         root,q=decode(features,alignment,origin)
         root,q=correct_and_retime(root,q,start,end,end['index']-start['index']+1)
-        roots.append(root);rotations.append(q);native.append(len(features))
+        roots.append(root);rotations.append(q);native.append(len(features));progress('MotionBricks · Generating transitions',index+1,len(poses)-1,unit='transitions')
     root=np.concatenate([v if i==0 else v[1:] for i,v in enumerate(roots)])
     q=np.concatenate([v if i==0 else v[1:] for i,v in enumerate(rotations)])
     # Keep the requested final partial sample if artist keys lie between 30 fps samples.

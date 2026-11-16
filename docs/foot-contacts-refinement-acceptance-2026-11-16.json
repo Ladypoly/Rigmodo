@@ -1,0 +1,150 @@
+{
+  "passed": true,
+  "version": "0.21.0",
+  "date": "2026-11-16",
+  "checks": {
+    "contacts": {
+      "passed": true,
+      "planted_drift_reduced": true,
+      "airborne_arc_preserved": true,
+      "in_place_stride_preserved": true,
+      "original_action_preserved": true,
+      "no_new_objects": true,
+      "rest_and_lengths_preserved": true,
+      "maximum_length_error": 1.6296333676946162e-07
+    },
+    "soles_overlay": {
+      "passed": true,
+      "tilted_stationary_soles_max_error_m": 2.7939677238464355e-08,
+      "full_contact_at_clip_boundaries": true,
+      "air_override_preserved": true,
+      "reapply_samples_preserved": true,
+      "learned_contacts_repeat_in_loops": true,
+      "overlay_states": [
+        "PLANTED",
+        "OFF FLOOR",
+        "AIRBORNE"
+      ],
+      "overlay_creates_no_objects": true
+    },
+    "retarget_loop": {
+      "passed": true,
+      "retarget_ground_loop_pipeline": true,
+      "periodic_contacts": true,
+      "loop_position_seam_m": 0.0,
+      "source_action_create_workflow": true,
+      "pinned_target_used": true,
+      "source_rig_and_action_preserved": true
+    },
+    "loop_seam": {
+      "passed": true,
+      "exact_pose_seam": true,
+      "angular_and_linear_sample_velocities_matched": true,
+      "in_place_root_closed": true,
+      "original_action_preserved": true
+    },
+    "packaged_extension": {
+      "passed": true,
+      "archive_import_register_unregister": true,
+      "new_operators_registered": true,
+      "stationary_contact_solve": true,
+      "no_inference_needed_for_indicators": true
+    },
+    "mummy_soles": {
+      "passed": true,
+      "maximum_stationary_sole_error_m": 0.0011876958888024092,
+      "maximum_length_error": 1.1101169526961385e-06
+    },
+    "refined_soles": {
+      "passed": true,
+      "frames_checked": 193,
+      "maximum_stationary_sole_error_m": 0.0011825102847069502,
+      "maximum_bone_length_error_m": 1.2761027717578255e-06,
+      "objects": 3
+    },
+    "gui": {
+      "passed": true,
+      "version": "0.21.0",
+      "review": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\Mummy-Feet-Fix\\Mummy-Feet-and-MotionBricks.blend",
+      "active_action": "Mummy Staff \u00b7 MotionBricks",
+      "original_action_preserved": true,
+      "objects": 3,
+      "working_sources": 1,
+      "overlay_handles": 2,
+      "overlay_vertices_per_foot_max": 160,
+      "contacts": [
+        {
+          "side": "Left",
+          "state": "PLANTED",
+          "height_m": 1.6763806343078613e-07
+        },
+        {
+          "side": "Right",
+          "state": "PLANTED",
+          "height_m": -1.2170057743787766e-06
+        }
+      ],
+      "refine_operator_registered": true,
+      "unreachable_contacts": 0,
+      "native_preview_test": true,
+      "no_owned_inference_workers_remaining": true
+    },
+    "motionbricks": {
+      "passed": true,
+      "real_motionbricks": true,
+      "elapsed_seconds": 11.491022399997746,
+      "original_preserved": true,
+      "source_edit_rejected": true,
+      "rest_weights_preserved": true,
+      "finger_local_rotation_max_error": 2.7567148208618164e-06,
+      "refinement": {
+        "provider": "MotionBricks",
+        "strength": 0.35,
+        "frames": 240,
+        "guide_frames": [
+          0,
+          16,
+          32,
+          48,
+          64,
+          80,
+          96,
+          112,
+          127,
+          143,
+          159,
+          175,
+          191,
+          207,
+          223,
+          239
+        ],
+        "source_fingers_preserved": true,
+        "temporal_filter_seconds": 0.1,
+        "source_trajectory_preserved": true,
+        "source_support_preserved": true,
+        "physics_simulation": false
+      },
+      "unreachable_contacts": 0
+    },
+    "temporal_proxies": {
+      "passed": true,
+      "original": {
+        "second_difference_rms": 0.0045273518189787865,
+        "third_difference_rms": 0.0038570580072700977
+      },
+      "refined": {
+        "second_difference_rms": 0.005051120650023222,
+        "third_difference_rms": 0.0037941066548228264
+      },
+      "ground_truth_accuracy": false,
+      "interpretation": "Comparable high-frequency stability after filtering; no guarantee of smoother or more realistic performance"
+    }
+  },
+  "limits": [
+    "Flat static floor only; no balance, collision, terrain or prop-grip simulation",
+    "MotionBricks resynthesis is optional and can change gesture details; a clean capture can look better without it",
+    "RTX 4090 tested; no new 16 GB GPU or Unity import test",
+    "Existing model checkpoints are reused; private character and registered body-model files are excluded"
+  ]
+}

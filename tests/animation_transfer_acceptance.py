@@ -9,6 +9,8 @@ catalog=a.motion_store.catalog(Path('R:/AI/MotionLibrary/Rigmodo'));entry=next(e
 data=a.motion_store.read(Path('R:/AI/MotionLibrary/Rigmodo'),entry['id']);objects=set(bpy.data.objects);rest={b.name:b.matrix_local.copy() for b in target.data.bones}
 action=a.animation_transfer.finish(bpy.context,target,data,'Pipeline walk')
 assert action.lc_clip_loop and 'lc_loop_period_frames' in action
+assert action.name=='Pipeline walk · Loop'
+assert all(0<=e['start']<e['end']<=float(action.frame_end-action.frame_start)/(bpy.context.scene.render.fps/bpy.context.scene.render.fps_base)+.001 for e in json.loads(action['lc_contact_report'])['flat_intervals'])
 assert action.lc_contact_source and json.loads(action['lc_contact_report'])['periodic_three_cycle_solve']
 assert set(bpy.data.objects)==objects and all(b.matrix_local==rest[b.name] for b in target.data.bones)
 captured=a.motion_store.capture(bpy.context,target,action,target.animation_data.action_slot)
