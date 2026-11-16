@@ -22,6 +22,8 @@ For animals and other articulated shapes, choose **Creature → Generate Rig** i
 
 The [mocap research review](docs/mocap-research-review-2026-11-16.md) recommends stronger skeleton mapping and contact QA before video-capture providers; those providers are not part of this release.
 
+The [animation and interface implementation plan](docs/animation-suite-plan-2026-11-16.md) defines the next ComfyUI/video-capture, retargeting, contact, loop, and Blender interface work.
+
 Optional **Unity export** lives under **Extension Settings → Recovery**. Select the rig and meshes, set name, absolute destination folder and Unity profile, then press **Export to Unity**. Animation is enabled after motion generation. The existing Unity companion configures the bundle.
 
 While jobs run, lightweight viewport pulses/scans/trails show activity, and a shared panel shows the actual stage, elapsed time and **Cancel**. The effects leave the character untouched, stop when finished and respect Blender's Overlay toggle. **Extension Settings → Defaults → Viewport feedback** offers **Processing effects** and **Reduced animation**. See [behavior and measured cost](docs/processing-visuals.md).
