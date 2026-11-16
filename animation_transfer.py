@@ -28,7 +28,7 @@ def loop_diagnostics(context,rig,action):
 
 def finish(context,rig,data,name,metadata=None,controls=None):
     if 'provenance' in data:
-        allowed={'lc_contact_overrides','lc_capture_provenance','lc_capture_video','lc_capture_offset_seconds','lc_motion_prompt','lc_library_source','lc_library_license'}
+        allowed={'lc_contact_overrides','lc_capture_provenance','lc_capture_video','lc_capture_offset_seconds','lc_motion_prompt','lc_library_source','lc_library_license','lc_capture_stabilized'}
         inherited={k:v for k,v in json.loads(str(data['provenance'][0])).items() if k in allowed};inherited.update(metadata or {});metadata=inherited
     s=context.scene.lc_settings;old=rig.animation_data
     previous=(old.action,old.action_slot,old.use_nla,old.action_blend_type,old.action_influence) if old else None
@@ -39,6 +39,8 @@ def finish(context,rig,data,name,metadata=None,controls=None):
         if metadata:
             for key,value in metadata.items():
                 if isinstance(value,(str,int,float,bool)):action[key]=value
+        if s.stabilize_video and metadata and metadata.get('lc_capture_video') and not metadata.get('lc_capture_stabilized'):
+            motion_finish.stabilize_capture(context,rig,action);metadata=dict(metadata,lc_capture_stabilized=True)
         contact_data=data
         if controls:
             contact_data=dict(data,times=(data['times']-controls.get('start',0))/controls.get('speed',1))

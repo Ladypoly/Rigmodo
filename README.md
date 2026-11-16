@@ -1,6 +1,6 @@
 # Rigmodo
 
-Version 0.19.0 returns to the normal Blender sidebar with named Kimodo, MotionBricks, Video to Motion and UniMate tabs. Create reusable library motions first, then retarget them to one or many characters. Video batches and unconditioned Kimodo need no avatar. Owned ComfyUI jobs now release idle model memory. See [the animation workflow](docs/animation-workflow.md) for setup, usage, validation and limits.
+Version 0.20.0 adds optional ExMR body-and-hand capture through a pinned local RGB MoCap installation. Video capture shows measured stage counters and stage estimates. The Retarget source list contains only motions you explicitly load or create; the full collection stays in the external Asset Browser. GEM-X remains available, with optional target-motion stabilization and improved floor-drift/contact handling. See [the animation workflow](docs/animation-workflow.md).
 
 Independent Blender 5.2 extension for local humanoid and creature joint placement, AI skinning, regional correction, humanoid motion and Unity export. No ARP, proprietary Voxel Heat Diffusion or Mesh2Motion is required. Optional SAM image posing needs approved checkpoint access during setup; inference stays local.
 

@@ -32,6 +32,7 @@ def tick():
      def box(self):return self
      def panel(self,*args,**kw):return self,self
      def label(self,**kw):pass
+     def progress(self,**kw):pass
      def separator(self,**kw):pass
      def menu(self,*args,**kw):pass
      def template_list(self,*args,**kw):pass

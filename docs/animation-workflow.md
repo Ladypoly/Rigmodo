@@ -1,4 +1,4 @@
-# Rigmodo animation workflow — 0.19.0
+# Rigmodo animation workflow — 0.20.0
 
 Open the normal **Rigmodo** tab in Blender’s 3D View sidebar (`N`). The main steps are **Rig · Skin · Motion**. Motion contains **Create · Retarget · Library**. Provider installation, paths, sampling defaults and recovery controls live in **Extension Settings** (the cog).
 
@@ -21,6 +21,14 @@ UniMate infers facing and joint labels from names and rest geometry. Review ambi
 
 ### Video batches and ComfyUI
 
+Choose **Engine → ExMR · body and hands** for the optional RGB MoCap backend, or **GEM-X** for the existing capture runtime. Both work independently of a target avatar and feed the same reusable-motion/retargeting workflow. The engine applies to uploaded videos and ComfyUI-generated videos.
+
+ExMR setup is external: use a Git checkout of [RGB MoCap](https://github.com/toyxyz/toyxyz_RGBMocap/tree/42844135d0612c7e574fd43f6c42414f5fce1219) at the pinned revision and run its supported `install.cmd`, then use its model manager to download ExMR dependencies and import your registered `SMPLX_NEUTRAL.npz` and `MANO_RIGHT.pkl`. Set **Extension Settings → RGB MoCap folder**. The local test installation uses `R:\AI\Rigmodo\Providers\RGBMocap`, with `models` linked to `R:\AI\Models\Rigmodo\RGBMocap`; existing byte-identical SAM weights are shared. The adapter validates its revision, uses the provider's separated private runtimes and never installs Torch into Blender. Registered models and upstream research/model terms remain separate from Rigmodo's license. No model weights are bundled.
+
+ExMR runs subject tracking, temporal body/hand inference with global smoothing, source foot correction, and the provider's Mixamo-style skeleton export. Rigmodo imports that BVH in isolated Blender through its existing importer. The raw provider project, source diagnostics and corrected capture remain in the job. The target contact pass then adapts the motion to the target's proportions. Global provider smoothing is recorded to avoid filtering the same capture twice.
+
+Stage counters come from completed provider work. Estimated time is **for the current stage**, and appears only after measurable progress; model loading/one-pass stages may have no percentage. Cancellation terminates the owned worker tree. GPU workers exit after processing rather than remaining resident.
+
 In **Video to Motion → Video files**, choose a single video or **Batch capture videos…**. Whole-video capture accepts up to 60 seconds per file, with at most 200 files in one batch. Turn off **Capture whole video** for a selected interval. Clips process sequentially; failed files are reported without discarding completed clips. Identical captured results are reused. Each capture process exits between files, releasing its GPU allocations.
 
 **Video to Motion → ComfyUI** generates a reference video, then captures it to the library. Use an image from disk, or render the selected character into a disposable reference scene. An avatar is optional. Configure the existing local ComfyUI endpoint and either its built-in H3 profile or a custom API-format workflow in Settings. Bind inputs with JSON such as `{"prompt":"12.text","image":"20.image","output_prefix":"90.filename_prefix"}`; specify the output node when a workflow returns several videos. Existing ComfyUI checkpoints are reused in place.
@@ -29,15 +37,15 @@ Captured motion and raw provider output remain in the job folder under `R:\AI\Ri
 
 ## Retarget to one or many characters
 
-1. In **Retarget**, search and tick source motions. With no boxes ticked, the highlighted row is the active source. **Preview source** uses a disposable skeleton; Stop removes it and restores selection, frame, preview range and playback intent.
+1. In **Retarget**, use **Load from library…** to select external Asset Browser motions, then **Use for retargeting**. Newly generated/imported motions are loaded explicitly as well; opening Retarget never loads the full catalog. The × button unloads working sources without deleting library files. Search and tick those source motions. With no boxes ticked, the highlighted row is the active source. **Preview source** uses a disposable skeleton; Stop removes it and restores selection, frame, preview range and playback intent.
 2. Choose a **Character**, or enable **Use all selected characters** to apply each source to each selected rig. Selecting bound meshes also identifies their rigs.
 3. Choose source playback, Loop, or Play once; optionally enable In place. Click **Retarget motions**. Each target gets its own editable Actions; source clips, rest bones, proportions, meshes and weights remain intact.
 
-**Motion adjustments** contains speed, mirror and humanoid arm spacing. Trim is available for a single source; a multi-source batch uses complete clips. **Retarget options** contains automatic foot placement, ground height, reviewed bone mapping and contact overrides. The current-animation selector supports previewing, deleting and saving created Actions. An existing scene rig/Action can be retargeted under **Scene animation / image pose**.
+**Motion adjustments** contains speed, mirror, humanoid arm spacing and **Stabilize video motion**. Stabilization filters local capture channels before target foot correction and preserves the raw source. ExMR global-smoothed captures skip this additional filter. Trim is available for a single source; a multi-source batch uses complete clips. **Retarget options** contains automatic foot placement, ground height, reviewed bone mapping and contact overrides. The current-animation selector supports previewing, deleting and saving created Actions. An existing scene rig/Action can be retargeted under **Scene animation / image pose**.
 
 Mapping recognizes common game-rig names and supports saved role overrides and different spine counts. Geometry/hierarchy suggestions require review. Unsupported constraints, drivers and mirrored/nonuniform scales produce preparation instructions rather than modifying the rig.
 
-Automatic contacts combine learned confidence, sole clearance, speed and interval continuity. The solver uses bounded pelvis correction and leg IK while retaining jump flight. It assumes a flat floor, default world Z=0. Set ground height and heel/forefoot markers for unusual shoes. Explicit Planted, Sliding or Airborne intervals override automatic choices; later overlapping intervals take priority. Review reported unreachable contacts. Terrain and moving platforms are not supported.
+Automatic contacts combine learned confidence, sole clearance, speed and interval continuity. The solver uses bounded pelvis correction and leg IK while retaining jump flight. Confident support can estimate slow vertical capture drift; airborne overrides and low-confidence gaps retain flight. A consistent heel/forefoot support point is retained through each plant to avoid marker-switch pops. It assumes a flat floor, default world Z=0. Set ground height and heel/forefoot markers for unusual shoes. Explicit Planted, Sliding or Airborne intervals override automatic choices; later overlapping intervals take priority. Review reported unreachable contacts. Terrain and moving platforms are not supported.
 
 ## Library and native Asset Browser
 
@@ -63,4 +71,10 @@ Real inference passed for unconditioned Kimodo, ordinary-key MotionBricks, video
 
 The RTX 4090 is the tested GPU. Earlier GEM-X measurements reached 3.42 GiB of PyTorch allocation for the short fixture, excluding other applications, ONNX/driver allocation and startup. No 16 GB hardware guarantee follows from this. H3 graph schemas and the real ComfyUI API path are checked; new H3 sampling was not run. H3 remains an optional externally licensed workflow; see its [published model license](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/LICENSE).
 
-Video capture currently supports one visible humanoid in a continuous shot. Cuts and ambiguous multiple people are rejected; crop or trim first. Creature video capture, terrain contacts, control-rig solving and reliable animated fingers are outside the current capture scope. Review inferred depth, anatomy, collisions and contact quality before export.
+Video capture currently supports one visible humanoid in a continuous shot. Cuts are rejected; crop or trim first. GEM-X rejects ambiguous multi-person detections. ExMR uses the upstream primary track and cannot disambiguate several actors through this adapter, so supply a single clearly visible person. Creature video capture, terrain contacts and control-rig solving are outside the current capture scope. ExMR infers fingers; small, occluded or stylized hands still need review. GEM-X does not provide the same dedicated hand-refinement path. Prop tracking, two-hand staff constraints and collision solving are not automatic; attach rigid accessories deliberately and review grips. Review inferred depth, anatomy, collisions and contact quality before export.
+
+### ExMR acceptance on the supplied mummy
+
+On 2026-11-16, the supplied eight-second MiniMax video produced 240 samples at 30 Hz, with all 30 finger joints articulating. Capture, library save and target retargeting completed in about 64 seconds on the RTX 4090; peak PyTorch allocation was 5.68 GiB. Native-to-BVH joint-position error was below one micrometre. Target foot correction reported 393 contact samples and zero unreachable samples. These are measured solver/integration results, not ground-truth accuracy guarantees.
+
+The stylized subject caused 86 detector gaps; the provider interpolated their boxes and inferred every frame. The UI retains a capture-review warning. Native Blender playback passed, and the final review copy contains the skinned body, game rig and a rigid staff attachment. The staff was calibrated upright at frame 1; its two-hand grip still needs manual polish. Video world heading can differ from Blender Front, so the review uses the camera-facing Back view. The original video and model were not overwritten. See [the acceptance record](rgbmocap-acceptance-2026-11-16.json).

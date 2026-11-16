@@ -28,6 +28,8 @@ def python_executable():
 def prepare(context, rig, meshes, parent=None, method='AUTO', iterations=12, strength=.35,
             selected_only=False, join_seams=True,voxel_resolution=48):
     if not 1 <= iterations <= 200 or not 0 < strength <= 1: raise ValueError('Invalid refinement settings')
+    # Newly parented review meshes must settle before recording exact transform checks.
+    context.view_layer.update()
     names, fields, reports = regions.prepare_fields(context, rig, meshes, method, selected_only, join_seams,voxel_resolution)
     arrays = {}
     for i, field in enumerate(fields):

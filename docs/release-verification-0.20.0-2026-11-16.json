@@ -1,0 +1,652 @@
+{
+  "version": "0.20.0",
+  "extension_zip_validated": true,
+  "source_modules_compile": true,
+  "private_assets_excluded": true,
+  "artifacts": {
+    "local_character-0.20.0.zip": {
+      "bytes": 420804,
+      "sha256": "56e0e24387224a2e33ab6e480fe929d842bdbb5880c0d93c53ac7001efb904f1"
+    },
+    "local_character-unity-companion-0.20.0.zip": {
+      "bytes": 12333,
+      "sha256": "9c079e5b22fdd4ebcb8ab76bb7f90352284522d3ba22f0248cbe3a38c9ef2b7e"
+    }
+  },
+  "evidence": {
+    "version": "0.20.0",
+    "passed": true,
+    "checks": {
+      "protocol_and_refinement": {
+        "passed": true,
+        "progress_counters": true,
+        "utf8_worker_logs": true,
+        "embedded_progress_events": true,
+        "worker_error_preserved": true,
+        "invalid_events_rejected": true,
+        "transformed_refinement_applied": true
+      },
+      "source_mapping_and_stabilization": {
+        "passed": true,
+        "working_list_starts_empty": true,
+        "explicit_loading_only": true,
+        "new_source_selects_own_trim": true,
+        "unload_keeps_external_assets": true,
+        "left_right_suffix_mapping": true,
+        "progress_lock_nonfatal": true,
+        "actual_worker_error_preserved": true,
+        "confidence_and_manual_air_preserve_flight": true,
+        "stabilization_keeps_rest_and_bone_lengths": true
+      },
+      "native_sidebar": {
+        "passed": true,
+        "native_sidebar": true,
+        "named_systems": [
+          "Kimodo",
+          "MotionBricks",
+          "Video to Motion",
+          "UniMate"
+        ],
+        "no_avatar_required_for_panel": true,
+        "all_stage_draws": true,
+        "advanced_rna_references": true,
+        "no_custom_editor": true,
+        "screens": [
+          "create-kimodo",
+          "create-motionbricks",
+          "create-video",
+          "create-unimate",
+          "edit-video",
+          "browse-video"
+        ]
+      },
+      "foot_contacts": {
+        "passed": true,
+        "planted_drift_reduced": true,
+        "airborne_arc_preserved": true,
+        "in_place_stride_preserved": true,
+        "original_action_preserved": true,
+        "no_new_objects": true,
+        "rest_and_lengths_preserved": true,
+        "maximum_length_error": 1.2345315353323727e-07
+      },
+      "independent_retarget": {
+        "passed": true,
+        "two_sources_two_targets": true,
+        "one_shots_preserved": true,
+        "speed_trim_mirror": true,
+        "per_character_actions": true,
+        "rest_unchanged": true,
+        "preview_error_cleans_temporary_skeleton": true,
+        "conflicting_loop_guides_rejected_before_generation": true
+      },
+      "real_exmr_mummy": {
+        "passed": true,
+        "real_exmr_inference": true,
+        "video": "C:\\Users\\Elin\\Downloads\\MiniMax_H3_00122_.mp4",
+        "prepared": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\Mummy-ExMR-Prepared.blend",
+        "job": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\Mummy-ExMR\\Jobs\\source-olzc9idm",
+        "source_id": "bc6f05df94da59c9d45d2559cff43750",
+        "source_motion": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\Mummy-ExMR\\Library\\clips\\bc6f05df94da59c9d45d2559cff43750\\motion.npz",
+        "source_sha256": "32f57a54d2acdf8eaf62b20e6f0d0c6da24760305c29e8b648de0e70a29ef6d8",
+        "duration_seconds": 7.966666539510091,
+        "frames": 240,
+        "source_only_working_list": true,
+        "rest_and_weights_preserved": true,
+        "one_shot": true,
+        "automatic_foot_correction": {
+          "contact_frames": 393,
+          "unreachable_frames": 0,
+          "ground_alignment_m": 0.022451629862189293,
+          "maximum_floor_drift_m": 0.06859185822519795,
+          "contacts": {
+            "Left": 2,
+            "Right": 1
+          },
+          "intervals": [
+            {
+              "side": "Left",
+              "start": 0.0,
+              "end": 4.966667175292969,
+              "mode": "PLANT"
+            },
+            {
+              "side": "Left",
+              "start": 5.266666889190674,
+              "end": 7.9666666984558105,
+              "mode": "PLANT"
+            },
+            {
+              "side": "Right",
+              "start": 0.0,
+              "end": 5.3333330154418945,
+              "mode": "PLANT"
+            }
+          ]
+        },
+        "finger_channels": 30,
+        "animated_finger_channels": 30,
+        "finger_rotation_variance": 0.01663404516875744,
+        "measured_stages": {
+          "1/1 \u00b7 MiniMax_H3_00122_ \u00b7 ExMR \u00b7 Tracking the actor in the video": {
+            "completed": 240,
+            "total": 240,
+            "unit": "frames"
+          },
+          "1/1 \u00b7 MiniMax_H3_00122_ \u00b7 ExMR \u00b7 ExMR: body, hand and foot keypoints (Balanced)": {
+            "completed": 0,
+            "total": 240,
+            "unit": "frames"
+          },
+          "1/1 \u00b7 MiniMax_H3_00122_ \u00b7 ExMR \u00b7 Sapiens2 keypoints": {
+            "completed": 240,
+            "total": 240,
+            "unit": "frame"
+          },
+          "1/1 \u00b7 MiniMax_H3_00122_ \u00b7 ExMR \u00b7 ExMR: SAM body features": {
+            "completed": 0,
+            "total": 240,
+            "unit": "frames"
+          },
+          "1/1 \u00b7 MiniMax_H3_00122_ \u00b7 ExMR \u00b7 SAM 3D Body features": {
+            "completed": 232,
+            "total": 240,
+            "unit": "frame"
+          },
+          "1/1 \u00b7 MiniMax_H3_00122_ \u00b7 ExMR \u00b7 ExMR: left and right hand features": {
+            "completed": 0,
+            "total": 240,
+            "unit": "frames"
+          },
+          "1/1 \u00b7 MiniMax_H3_00122_ \u00b7 ExMR \u00b7 HaMeR hand features": {
+            "completed": 232,
+            "total": 240,
+            "unit": "frame"
+          },
+          "1/1 \u00b7 MiniMax_H3_00122_ \u00b7 ExMR \u00b7 ExMR: reconstruct and refine full body, feet and fingers": {
+            "completed": 0,
+            "total": 240,
+            "unit": "frames"
+          }
+        },
+        "elapsed_seconds": 64.3793269999951,
+        "capture": {
+          "provider": "ExMR via RGB MoCap",
+          "source_revision": "42844135d0612c7e574fd43f6c42414f5fce1219",
+          "elapsed_seconds": 60.07799999999406,
+          "frames": 240,
+          "fps": 30.0,
+          "source_video": "C:\\Users\\Elin\\Downloads\\MiniMax_H3_00122_.mp4",
+          "project": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\Mummy-ExMR\\Jobs\\source-olzc9idm\\captures\\0000\\RGBMocap\\exmr",
+          "smoothing": "global",
+          "bvh_joint_position_max_error_m": 8.344650268554688e-07,
+          "source_correction": {
+            "version": 9,
+            "preset": "normal",
+            "mode": "flat",
+            "frames": 240,
+            "fps": 30.0,
+            "floor": 0.020041909441351893,
+            "core_frames": 1024,
+            "halo_frames": 120,
+            "native_seconds": 0.01600000000325963,
+            "contacts": 472,
+            "max_root_y_offset_m": 0.05636618658900261,
+            "max_root_xz_offset_m": 0.018726356327533722,
+            "max_contact_goal_error_m": 3.655828863058089e-08,
+            "max_reach_pelvis_drop_m": 0.05077958106994629,
+            "max_reach_pelvis_raise_m": 0.0,
+            "max_transition_goal_error_m": 2.1815757715718306e-08,
+            "pelvis_offset_m": 0.0,
+            "max_applied_pelvis_lift_m": 0.0,
+            "max_applied_pelvis_lower_m": 0.0,
+            "max_ankle_global_change_deg": 3.552747789449429e-06,
+            "rejected_knee_frames": 0,
+            "straight_knee_support_frames": 0,
+            "max_added_knee_off_axis_deg": 9.133121755118154e-07,
+            "max_added_knee_rotation_deg": 35.08651325831075,
+            "max_corrected_knee_flex_deg": 55.81075234484009,
+            "swing_clearance_frames": 0,
+            "max_swing_clearance_lift_m": 0.0,
+            "air_clearance_frames": 0,
+            "max_air_clearance_lift_m": 0.0,
+            "airborne_rejected_frames": 0,
+            "transition_frames": 8,
+            "support_model": "geometry-driven heel/forefoot material handoff; physical minimum Y",
+            "method": "RGB MoCap Motion Correction; native anatomical contacts; continuous sole support; source global ankle rotations retained",
+            "warning": "",
+            "max_transition_offset_speed_mps": 0.4923189096964963,
+            "fast_transition_steps": 0,
+            "contact_temporal_root": {
+              "config": {
+                "position_sigma": 0.01,
+                "pose_sigma": 0.175,
+                "velocity_sigma": 0.025,
+                "acceleration_sigma": 0.004,
+                "root_acceleration_sigma": 0.0004,
+                "limit": 0.02,
+                "iterations": 60,
+                "temporal_weight": 0.5,
+                "total_root_smoothing": true
+              },
+              "seconds": 0.06985500000155298,
+              "evaluations": 9,
+              "success": true,
+              "cost_before": 1130.64810342514,
+              "cost_after": 480.9251701905468,
+              "additional_root_height_max_m": 0.01849460149892073,
+              "frozen_frames": 0,
+              "jacobian_relative_error_max": null,
+              "note": "Changes root plan only; retains exact original native anatomical solver and unchanged contact goals."
+            },
+            "contact_chain_plan": {
+              "config": {
+                "root_free": true,
+                "hip_weight": 0.5,
+                "target_limit": 0.02,
+                "target_sigma": 0.02,
+                "root_sigma": 0.01,
+                "pose_sigma": 0.175,
+                "velocity_sigma": 0.025,
+                "acceleration_sigma": 0.002,
+                "root_acceleration_sigma": 0.0004,
+                "iterations": 60
+              },
+              "seconds": 0.14753339999879245,
+              "evaluations": 8,
+              "success": true,
+              "message": "`ftol` termination condition is satisfied.",
+              "cost_before": 631.4751992095299,
+              "cost_after": 569.2098037670318,
+              "root_freeze_frames": 0,
+              "transition_variables": 8,
+              "planned_free_foot_clearance_frames": 8,
+              "target_y_extra_max_m": 0.005098510688587836,
+              "trial_scaling": "sparse Jacobian column norms",
+              "free_goal_basis": "final planned root with finite C1 joins",
+              "root_extra_from_app_max_m": 0.01887084171832836,
+              "source_speed_method": "relative SO(3)",
+              "physics_simulation": false
+            },
+            "contact_plan_limit_windows": 0,
+            "hand_lock": {
+              "segments": [],
+              "automatic": [
+                [],
+                []
+              ],
+              "contacts": 0,
+              "warning": "",
+              "method": "Finite palm-only source-relative contact trajectories"
+            },
+            "contact_revision": null,
+            "contact_sole_height_before_m": 0.03293205797672272,
+            "contact_sole_height_after_m": 0.00031669484451413155,
+            "sole_below_floor_before_m": 0.0002893146884161979,
+            "sole_below_floor_after_m": 0.00018811576592270285,
+            "support_material_speed_before_max_mps": 0.7898625898353386,
+            "support_material_speed_before_p95_mps": 0.1387757772513685,
+            "support_material_speed_after_max_mps": 0.5002761518809697,
+            "support_material_speed_after_p95_mps": 0.0020650669310671933,
+            "automatic_handoff_frames": 24,
+            "full_lock_frames": 448,
+            "blended_contact_frames": 24,
+            "full_lock_surface_error_max_m": 0.0013506724779812945,
+            "full_lock_height_error_max_m": 0.0012951459735631964,
+            "full_lock_sole_penetration_max_m": 0.0012951456010341644,
+            "blended_sole_penetration_max_m": 0.001011991873383522,
+            "noncontact_sole_penetration_max_m": 0.0,
+            "contact_sole_penetration_over_1cm": 0,
+            "geometric_support_modes": [
+              {
+                "foot": 0,
+                "mode": "heel",
+                "frames": 82
+              },
+              {
+                "foot": 0,
+                "mode": "flat",
+                "frames": 150
+              },
+              {
+                "foot": 0,
+                "mode": "forefoot",
+                "frames": 0
+              },
+              {
+                "foot": 1,
+                "mode": "heel",
+                "frames": 33
+              },
+              {
+                "foot": 1,
+                "mode": "flat",
+                "frames": 207
+              },
+              {
+                "foot": 1,
+                "mode": "forefoot",
+                "frames": 0
+              }
+            ],
+            "short_contact_segments": 0,
+            "output_stat": [
+              165489,
+              1794855866074824700
+            ],
+            "segment_count": 5,
+            "contacts_stat": [
+              3997,
+              1794855866077823600
+            ],
+            "source": "initial",
+            "options": {
+              "auto_floor": true,
+              "floor": 0.0,
+              "preset": "normal",
+              "pelvis_offset": 0.0,
+              "mode": "flat",
+              "foot_lock": true,
+              "hand_lock": false
+            },
+            "model_stat": [
+              108752058,
+              1794851902023741200
+            ],
+            "backend_sha256": "46fea913e302fafa2281842e8b081ba34cfcbc572e2d2f36ac107bc89ed22638"
+          },
+          "quality": {
+            "missing_track_frames": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              102,
+              103,
+              104,
+              108,
+              109,
+              116,
+              117,
+              120,
+              123,
+              124,
+              125,
+              126,
+              127,
+              128,
+              129,
+              130,
+              134,
+              135,
+              136,
+              137,
+              154,
+              158
+            ],
+            "person_selection": "Primary track; crop videos to one person"
+          },
+          "peak_torch_bytes": 6096157696,
+          "stage_timings_seconds": {
+            "Starting video capture": 0.0,
+            "Checking the video": 0.203,
+            "ExMR \u00b7 Preparing video": 0.422,
+            "ExMR \u00b7 Tracking subject": 1.562,
+            "ExMR \u00b7 track": 2.672,
+            "ExMR \u00b7 Tracking the actor in the video": 2.766,
+            "ExMR \u00b7 Reconstructing body and hands": 1.484,
+            "ExMR \u00b7 exmr_preprocess": 2.016,
+            "ExMR \u00b7 ExMR: body, hand and foot keypoints (Balanced)": 10.922,
+            "ExMR \u00b7 Sapiens2 keypoints": 6.921,
+            "ExMR \u00b7 exmr_features": 1.031,
+            "ExMR \u00b7 ExMR: SAM body features": 3.391,
+            "ExMR \u00b7 SAM 3D Body features": 10.516,
+            "ExMR \u00b7 ExMR: left and right hand features": 1.359,
+            "ExMR \u00b7 HaMeR hand features": 2.125,
+            "ExMR \u00b7 exmr": 0.047,
+            "ExMR \u00b7 ExMR: reconstruct and refine full body, feet and fingers": 3.344,
+            "ExMR \u00b7 Correcting source foot contacts": 1.562,
+            "ExMR \u00b7 correct": 0.954,
+            "ExMR \u00b7 Motion Correction: stabilizing ground contacts": 0.296,
+            "ExMR \u00b7 Preparing game skeleton": 4.657,
+            "ExMR \u00b7 Importing captured motion": 2.047
+          },
+          "checkpoint_manifest_sha256": "d9ea4d8760da318189d30d0ddcb3a8817dd4a75bda957daa8a04e02b56db99ca",
+          "source_video_sha256": "261b914f9d80423ec95d7aeea0a2c1b07d295d472e4652b04aa65ae792de391a"
+        }
+      },
+      "live_blender": {
+        "playback_advanced": 193,
+        "was_playing": false,
+        "stopped": true,
+        "action": "Mummy Staff",
+        "source_list_count": 1,
+        "object_count": 3,
+        "contacts": {
+          "contact_frames": 393,
+          "unreachable_frames": 0,
+          "ground_alignment_m": 0.022451629862189293,
+          "maximum_floor_drift_m": 0.06859185822519795,
+          "contacts": {
+            "Left": 2,
+            "Right": 1
+          },
+          "intervals": [
+            {
+              "side": "Left",
+              "start": 0.0,
+              "end": 4.966667175292969,
+              "mode": "PLANT"
+            },
+            {
+              "side": "Left",
+              "start": 5.266666889190674,
+              "end": 7.9666666984558105,
+              "mode": "PLANT"
+            },
+            {
+              "side": "Right",
+              "start": 0.0,
+              "end": 5.3333330154418945,
+              "mode": "PLANT"
+            }
+          ]
+        },
+        "passed": true,
+        "playback_started": true,
+        "one_shot_stopped": true,
+        "staff_reference_frame": 1
+      },
+      "extracted_package": {
+        "passed": true,
+        "source_byte_parity": true,
+        "extracted_source_worker_runs": true,
+        "private_capture_runtime_runs": true,
+        "real_capture_cache_reused": true,
+        "motion_and_contacts_identical": true,
+        "neural_inference_not_repeated": true,
+        "zip_sha256": "56e0e24387224a2e33ab6e480fe929d842bdbb5880c0d93c53ac7001efb904f1"
+      }
+    },
+    "gem_comparison": {
+      "passed": true,
+      "rest_weights_preserved": true,
+      "raw": {
+        "Head": {
+          "acceleration_p95_m_s2": 12.289292335510254,
+          "acceleration_mean_m_s2": 3.950664758682251
+        },
+        "LeftHand": {
+          "acceleration_p95_m_s2": 52.02503204345703,
+          "acceleration_mean_m_s2": 13.294987678527832
+        },
+        "RightHand": {
+          "acceleration_p95_m_s2": 43.88930130004883,
+          "acceleration_mean_m_s2": 13.703997611999512
+        },
+        "LeftFoot": {
+          "acceleration_p95_m_s2": 22.28632926940918,
+          "acceleration_mean_m_s2": 7.790135860443115
+        },
+        "RightFoot": {
+          "acceleration_p95_m_s2": 23.417287826538086,
+          "acceleration_mean_m_s2": 7.755847930908203
+        }
+      },
+      "stabilized_and_grounded": {
+        "Head": {
+          "acceleration_p95_m_s2": 4.537469863891602,
+          "acceleration_mean_m_s2": 1.328658938407898
+        },
+        "LeftHand": {
+          "acceleration_p95_m_s2": 28.598588943481445,
+          "acceleration_mean_m_s2": 6.563626766204834
+        },
+        "RightHand": {
+          "acceleration_p95_m_s2": 27.9680233001709,
+          "acceleration_mean_m_s2": 6.6378679275512695
+        },
+        "LeftFoot": {
+          "acceleration_p95_m_s2": 1.5872526168823242,
+          "acceleration_mean_m_s2": 1.2536072731018066
+        },
+        "RightFoot": {
+          "acceleration_p95_m_s2": 3.2943053245544434,
+          "acceleration_mean_m_s2": 1.822800874710083
+        }
+      },
+      "contacts": {
+        "contact_frames": 476,
+        "unreachable_frames": 11,
+        "ground_alignment_m": -0.03150494769215584,
+        "maximum_floor_drift_m": 0.06750523083905259,
+        "contacts": {
+          "Left": 1,
+          "Right": 2
+        },
+        "intervals": [
+          {
+            "side": "Left",
+            "start": 0.0,
+            "end": 7.9666666984558105,
+            "mode": "PLANT"
+          },
+          {
+            "side": "Right",
+            "start": 0.0,
+            "end": 4.199999809265137,
+            "mode": "PLANT"
+          },
+          {
+            "side": "Right",
+            "start": 4.366665840148926,
+            "end": 7.9666666984558105,
+            "mode": "PLANT"
+          }
+        ]
+      }
+    },
+    "exmr_target_quality": {
+      "Head": {
+        "acceleration_p95_m_s2": 3.7969627380371094,
+        "acceleration_mean_m_s2": 1.138010025024414
+      },
+      "LeftHand": {
+        "acceleration_p95_m_s2": 21.37408447265625,
+        "acceleration_mean_m_s2": 6.191799163818359
+      },
+      "RightHand": {
+        "acceleration_p95_m_s2": 23.389110565185547,
+        "acceleration_mean_m_s2": 6.204535961151123
+      },
+      "LeftFoot": {
+        "acceleration_p95_m_s2": 3.213287353515625,
+        "acceleration_mean_m_s2": 0.7311974763870239
+      },
+      "RightFoot": {
+        "acceleration_p95_m_s2": 2.3835911750793457,
+        "acceleration_mean_m_s2": 1.0105358362197876
+      }
+    },
+    "limits": [
+      "RTX 4090 24 GB tested. Peak PyTorch allocation excludes driver, Blender and other applications; no physical 16 GB hardware guarantee.",
+      "The stylized mummy had 86/240 detector gaps. Bounding boxes were interpolated; every frame still received body/hand inference. No pose ground truth was available.",
+      "Staff is a rigid right-hand attachment calibrated at frame 1. Prop tracking, two-hand grip IK and collisions are not automatic.",
+      "ExMR uses a pinned external RGB MoCap Git checkout and registered SMPL-X/MANO files; upstream research/model terms apply.",
+      "Source and target contacts assume a flat floor. Inspect stylized anatomy, fast/occluded limbs and flagged capture samples.",
+      "No new H3/ComfyUI sampling or Unity import/export test was run for 0.20.0. Existing backend remains available."
+    ]
+  },
+  "baseline_record": {
+    "file": "release-verification-0.19.0-2026-11-16.json",
+    "sha256": "5c81790e80d591ca0bb45ad6dcacbfbbdf16d508d27fa660fc1e701f240752a1"
+  },
+  "limits": [
+    "RTX 4090 24 GB tested. Peak PyTorch allocation excludes driver, Blender and other applications; no physical 16 GB hardware guarantee.",
+    "The stylized mummy had 86/240 detector gaps. Bounding boxes were interpolated; every frame still received body/hand inference. No pose ground truth was available.",
+    "Staff is a rigid right-hand attachment calibrated at frame 1. Prop tracking, two-hand grip IK and collisions are not automatic.",
+    "ExMR uses a pinned external RGB MoCap Git checkout and registered SMPL-X/MANO files; upstream research/model terms apply.",
+    "Source and target contacts assume a flat floor. Inspect stylized anatomy, fast/occluded limbs and flagged capture samples.",
+    "No new H3/ComfyUI sampling or Unity import/export test was run for 0.20.0. Existing backend remains available."
+  ]
+}

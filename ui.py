@@ -340,12 +340,17 @@ def draw_preferences(layout,context,prefs):
     resolved=configuration.settings(context);s=context.scene.lc_settings
     box=layout.box();box.label(text='Local motion library');box.prop(prefs,'motion_library_directory')
     box=layout.box();box.label(text='Video capture and ComfyUI')
-    for key in ('capture_python','capture_camera','video_jobs','video_ffmpeg','video_ffprobe','comfy_url'):
+    for key in ('capture_python','rgbmocap_provider','capture_camera','video_jobs','video_ffmpeg','video_ffprobe','comfy_url'):
         box.prop(prefs,key)
     from . import video_setup
     ready=video_setup.ready(bpy.path.abspath(resolved.capture_python),__import__('pathlib').Path(bpy.path.abspath(resolved.models_directory))/'gemx')
-    box.label(text='Capture ready' if ready else 'Capture setup needed',icon='CHECKMARK' if ready else 'INFO')
-    row=box.row(align=True);row.operator('local_character.setup_video_capture',text='Install Capture');row.operator('local_character.setup_video_capture',text='Verify').verify_only=True
+    box.label(text='GEM-X ready' if ready else 'GEM-X setup needed',icon='CHECKMARK' if ready else 'INFO')
+    from . import rgbmocap
+    problem=rgbmocap.status(bpy.path.abspath(resolved.rgbmocap_provider))
+    message(box,'ExMR ready' if not problem else problem)
+    op=box.operator('wm.url_open',text='RGB MoCap setup and model access',icon='URL');op.url='https://github.com/toyxyz/toyxyz_RGBMocap/tree/'+rgbmocap.REVISION
+    message(box,'ExMR needs the pinned RGB MoCap installation and registered SMPL-X/MANO files. Upstream model terms apply.')
+    row=box.row(align=True);row.operator('local_character.setup_video_capture',text='Install GEM-X');row.operator('local_character.setup_video_capture',text='Verify').verify_only=True
     box.operator('local_character.check_comfy')
     box.operator('local_character.release_comfy_memory')
     header,body=box.panel('lc_comfy_workflows',default_closed=True);header.label(text='Video workflows')

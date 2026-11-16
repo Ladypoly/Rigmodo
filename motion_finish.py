@@ -65,3 +65,30 @@ def loop(context,rig,blend_frames=8):
     action['lc_loop_finished']=True;action['lc_loop_blend_frames']=blend_frames;action['lc_loop_seam_velocity']='matched_one_frame'
     context.scene.frame_set(context.scene.frame_current,subframe=context.scene.frame_subframe)
     return action
+
+
+def stabilize_capture(context,rig,action):
+    """A centered 33 ms filter on local channels, before target foot locking."""
+    import numpy as np
+    from . import motion_clips,motion_store
+    slot=rig.animation_data.action_slot;lo,hi=motion_store.bounds(action,slot)
+    fps=context.scene.render.fps/context.scene.render.fps_base
+    frames=np.linspace(lo,hi,max(2,round((hi-lo)/fps*30)+1));groups={}
+    for curve in motion_clips.slot_curves(action,slot):
+        if curve.data_path.endswith(('rotation_quaternion','location')):groups.setdefault(curve.data_path,{})[curve.array_index]=curve
+    kernel=np.exp(-np.arange(-3,4,dtype=float)**2/2);kernel/=kernel.sum()
+    for path,axes in groups.items():
+        count=4 if path.endswith('rotation_quaternion') else 3
+        if set(axes)!=set(range(count)):raise ValueError('Capture stabilization needs complete transform channels')
+        values=np.asarray([[axes[i].evaluate(float(frame)) for i in range(count)] for frame in frames])
+        if count==4:
+            for i in range(1,len(values)):
+                if np.dot(values[i-1],values[i])<0:values[i]*=-1
+        filtered=np.column_stack([np.convolve(np.pad(values[:,i],(3,3),mode='edge'),kernel,mode='valid') for i in range(count)])
+        filtered[0]=values[0];filtered[-1]=values[-1]
+        if count==4:filtered/=np.maximum(np.linalg.norm(filtered,axis=1,keepdims=True),1e-12)
+        for i,curve in axes.items():
+            curve.keyframe_points.clear()
+            for frame,value in zip(frames,filtered[:,i]):curve.keyframe_points.insert(float(frame),float(value),options={'FAST'}).interpolation='LINEAR'
+            curve.update()
+    action['lc_capture_stabilized']=True

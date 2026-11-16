@@ -2,7 +2,7 @@
 """Global runtime preferences with legacy scene compatibility for old files."""
 from . import model_storage
 
-KEYS=('keep_motion_copies','video_jobs','capture_python','capture_camera','video_ffmpeg','video_ffprobe','comfy_url','comfy_model','comfy_clip','comfy_vae','comfy_audio_vae','comfy_workflow','comfy_output_node','comfy_bindings','comfy_shot_rules','placement_python','skin_executable','skin_models','skin_device','skin_beams','motion_provider',
+KEYS=('keep_motion_copies','video_jobs','capture_python','capture_backend','rgbmocap_provider','capture_camera','video_ffmpeg','video_ffprobe','comfy_url','comfy_model','comfy_clip','comfy_vae','comfy_audio_vae','comfy_workflow','comfy_output_node','comfy_bindings','comfy_shot_rules','placement_python','skin_executable','skin_models','skin_device','skin_beams','motion_provider',
       'motion_steps','motion_seed','refine_iterations','refine_seams','voxel_resolution',
       'workflow_hide_sources','keep_skin_copies','workflow_allow_strain','setup_python','setup_archive',
       'image_pose_provider','image_pose_models','image_pose_hands','creature_provider','creature_checkpoint','unimate_provider','motionbricks_provider','models_directory','motion_library_directory')

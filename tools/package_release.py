@@ -25,22 +25,23 @@ with zipfile.ZipFile(extension) as archive:
     if version=='0.14.0':assert {'creatures.py','unirig_worker.py','unirig_install.py','unirig-lock.json','processing_visuals.py','ui.py','image_pose.py','auto_pose.py','motion_keyframes.py'}<=names
     if version=='0.15.0':assert {'unimate.py','unimate_geometry.py','unimate_worker.py','unimate_install.py','unimate-lock.json','processing_visuals.py','creatures.py'}<=names
     if version=='0.16.0':assert {'creature_annotation.py','motionbricks.py','motionbricks_worker.py','motionbricks_install.py','motionbricks-lock.json','model_storage.py','unimate.py','motion_finish.py','motion_clips.py','motion_playback.py'}<=names
-    if version in {'0.18.0','0.19.0'}:assert {'animation_ui.py','character_context.py','animation_transfer.py','rig_mapping.py','motion_contacts.py','comfy_video.py','video_motion.py','video_worker.py','video_setup.py','video_cycles.py','video_capture_lock.json','requirements-video-capture.txt','animation_import_worker.py','reference_render.py'}<=names
-    if version=='0.19.0':assert {'motion_sources.py','motion_source_worker.py'}<=names
+    if version in {'0.18.0','0.19.0','0.20.0'}:assert {'animation_ui.py','character_context.py','animation_transfer.py','rig_mapping.py','motion_contacts.py','comfy_video.py','video_motion.py','video_worker.py','video_setup.py','video_cycles.py','video_capture_lock.json','requirements-video-capture.txt','animation_import_worker.py','reference_render.py'}<=names
+    if version in {'0.19.0','0.20.0'}:assert {'motion_sources.py','motion_source_worker.py'}<=names
+    if version=='0.20.0':assert {'rgbmocap.py','rgbmocap_lock.json','capture_progress.py'}<=names
     if version=='0.17.0':assert {'motion_assets.py','motion_store.py','motion_retarget.py','motion_library.py','motion_library_worker.py','mixamo_downloader_install.py','motion-library-sources.json'}<=names
     assert not any(n.startswith(('tests/','tools/','native/','docs/','artifacts/','unity/','.git/')) for n in names)
-    assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl','.npz','.gif','.mp4','.ckpt','.onnx','.task','.pt'} for n in names)
+    assert not any(Path(n).suffix.lower() in {'.blend','.fbx','.glb','.png','.pth','.gguf','.exe','.dll','.whl','.npz','.gif','.mp4','.ckpt','.onnx','.task','.pt','.pkl','.safetensors','.bin'} for n in names)
     for name in names:
         if name.endswith('.py'):compile(archive.read(name),name,'exec')
         if name.endswith('.py') or name in {'blender_manifest.toml','unirig-lock.json','unimate-lock.json','motionbricks-lock.json'}:assert archive.read(name)==(root/name).read_bytes(),name
 with zipfile.ZipFile(companion) as archive:
     assert {'LICENSE','README.md','Editor/LocalCharacter.Editor.asmdef','Runtime/LocalCharacter.Runtime.asmdef','Runtime/LocalCharacterTwists.cs'}<=set(archive.namelist())
 
-if version in {'0.18.0','0.19.0'}:
-    evidence='independent-motion-acceptance-2026-11-16.json' if version=='0.19.0' else 'animation-suite-acceptance-2026-11-16.json'
+if version in {'0.18.0','0.19.0','0.20.0'}:
+    evidence='rgbmocap-acceptance-2026-11-16.json' if version=='0.20.0' else 'independent-motion-acceptance-2026-11-16.json' if version=='0.19.0' else 'animation-suite-acceptance-2026-11-16.json'
     checks=json.loads((root/'docs'/evidence).read_text())
     assert checks['passed'] and checks['version']==version and all(c['passed'] for c in checks['checks'].values())
-    baseline=root/'docs'/('release-verification-0.18.0-2026-11-16.json' if version=='0.19.0' else 'release-verification-0.17.0-2026-11-16.json')
+    baseline=root/'docs'/('release-verification-0.19.0-2026-11-16.json' if version=='0.20.0' else 'release-verification-0.18.0-2026-11-16.json' if version=='0.19.0' else 'release-verification-0.17.0-2026-11-16.json')
     assert json.loads(baseline.read_text())['extension_zip_validated']
     checksums={file.name:dict(bytes=file.stat().st_size,sha256=hashlib.sha256(file.read_bytes()).hexdigest()) for file in (extension,companion)}
     record=dict(version=version,extension_zip_validated=True,source_modules_compile=True,private_assets_excluded=True,artifacts=checksums,evidence=checks,baseline_record=dict(file=baseline.name,sha256=hashlib.sha256(baseline.read_bytes()).hexdigest()),limits=checks['limits'])

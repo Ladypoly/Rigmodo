@@ -33,6 +33,7 @@ class Session:
     cancel_requested:bool=False
     completed:float=0.
     phase:str='Working locally'
+    progress:dict=field(default_factory=dict)
     geometry_key:tuple=()
     bones:list=field(default_factory=list)
     bounds:tuple=()
@@ -103,6 +104,7 @@ def update_state(session):
         session.rig=run.rig;session.meshes=tuple(run.meshes[:MAX_MESHES]);session.folder=str(run.folder or '')
         session.kind={'placement':'RIG','skin':'SKIN','refine':'SKIN','motion':'MOTION'}.get(run.stage,session.kind)
     job=skinning._jobs.get(session.folder,{})
+    session.progress=job.get('progress',{})
     session.phase=job.get('phase') or {'RIG':'Placing humanoid joints','SKIN':'Refining skin weights',
         'MOTION':'Generating motion','IMAGE':'Estimating image pose','SETUP':'Installing local providers'}.get(session.kind,'Working locally')
 
@@ -298,6 +300,8 @@ def draw_hud():
         while blf.dimensions(0,title)[0]>width-60 and len(title)>3:title=title[:-4]+'…'
         blf.color(0,.93,.96,1.,1.);blf.position(0,x+45,y+34,0);blf.draw(0,title)
         subtitle='Ready for review' if session.completed else f'Local processing   ·   {elapsed(session,now)}   ·   Cancel in Rigmodo'
+        if not session.completed and session.progress.get('total'):
+            detail=session.progress;subtitle=f"{detail.get('completed',0):g}/{detail['total']:g} {detail.get('unit','frames')} · {elapsed(session,now)} elapsed"
         blf.size(0,11);blf.color(0,.58,.68,.77,1.);blf.position(0,x+16,y+12,0);blf.draw(0,subtitle)
     finally:
         gpu.state.blend_set(blend)
@@ -310,6 +314,12 @@ def draw_panel(layout,context):
     box=layout.box();box.label(text='Working locally',icon='TIME')
     from .ui import message
     message(box,session.phase)
+    detail=session.progress
+    if detail.get('total'):
+        done=detail.get('completed',0);total=detail['total']
+        box.progress(factor=min(1.,done/total),type='BAR',text=f"{done:g} / {total:g} {detail.get('unit','frames')}")
+        if detail.get('eta_seconds') is not None:
+            seconds=round(detail['eta_seconds']);box.label(text=f'Stage remaining ≈ {seconds//60}:{seconds%60:02d}')
     row=box.row(align=True);row.label(text='Elapsed '+elapsed(session))
     if session.cancel_requested:row.label(text='Cancelling…')
     else:row.operator('local_character.cancel_processing',text='Cancel',icon='X')

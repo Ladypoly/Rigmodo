@@ -11,7 +11,7 @@ class LC_CharacterMesh(PropertyGroup):
 
 def bound_meshes(context,rig):
     helpers={p.custom_shape for p in rig.pose.bones if p.custom_shape}
-    return [o for o in context.view_layer.objects if o.type=='MESH' and o.visible_get() and o not in helpers and
+    return [o for o in context.view_layer.objects if o and o.type=='MESH' and o.visible_get() and o not in helpers and
             any(m.type=='ARMATURE' and m.object==rig for m in o.modifiers)]
 
 

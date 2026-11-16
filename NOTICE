@@ -111,3 +111,11 @@ ComfyUI is an external, already configured service. No MiniMax H3 code or
 weights are bundled or relicensed. Its optional workflow profile is subject
 to the checkpoint's terms, including the H3 community license's territorial
 restrictions. See docs/animation-workflow.md in the source repository.
+
+The optional RGB MoCap adapter targets toyxyz/toyxyz_RGBMocap revision
+42844135d0612c7e574fd43f6c42414f5fce1219. RGB MoCap original code is MIT;
+its bundled dependencies retain their own licenses and notices. The adapter
+invokes the external installation rather than bundling its code or weights.
+ExMR, SAM 3D Body, Sapiens, HaMeR, SMPL-X and MANO model/code terms remain
+separate, including registration and noncommercial/research restrictions.
+Keep the external provider LICENSE and THIRD_PARTY_NOTICES.md with it.

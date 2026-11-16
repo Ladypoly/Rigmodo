@@ -43,6 +43,23 @@ def soles(context,rig,roles):
     return result
 
 
+def floor_drift(samples,probabilities,times,length,overrides):
+    """Estimate slow vertical capture drift only during confident ground support."""
+    if probabilities is None:return np.zeros(len(times))
+    heights=np.column_stack([samples[side][:,:,2].min(1) for side in ('Left','Right')])
+    lowest=heights.min(1);support=(probabilities>.75)&(heights<=lowest[:,None]+length*.035)
+    for edit in overrides:
+        if edit['mode']=='AIR':support[(times>=edit['start'])&(times<=edit['end']),0 if edit['side']=='Left' else 1]=False
+    known=np.flatnonzero(support.any(1))
+    if len(known)<3:return np.zeros(len(times))
+    # Interpolate across flight rather than pulling an airborne performer to the floor.
+    reference=float(np.quantile(lowest[known],.08));values=np.interp(times,times[known],lowest[known])-reference
+    grid=np.arange(times[0],times[-1]+1/60,1/30);uniform=np.interp(grid,times,values)
+    kernel=np.exp(-np.arange(-9,10,dtype=float)**2/18);kernel/=kernel.sum()
+    smooth=np.convolve(np.pad(uniform,(9,9),mode='edge'),kernel,mode='valid')
+    return np.clip(np.interp(times,grid,smooth),-length*.45,length*.45)
+
+
 def solve(context,rig,data,ground=0.,in_place=False,overrides=()):
     if not math.isfinite(ground):raise ValueError('Ground height must be finite')
     role_names=rig_mapping.names(rig);roles={r:b.name for r,b in zip(role_names,rig.data.bones)}
@@ -56,14 +73,15 @@ def solve(context,rig,data,ground=0.,in_place=False,overrides=()):
     # One constant floor alignment retains jumps; never lower each airborne frame.
     shift=ground-reference
     if abs(shift)>max(lengths.values())*.6:raise ValueError('Estimated floor is too far away; review sole markers and ground height')
+    drift=floor_drift(samples,data.get('contact_probabilities'),times,max(lengths.values()),overrides)
     masks={};tracks={};count=0
     for side,points in samples.items():
-        heights=points[:,:,2].min(1)-reference
+        heights=points[:,:,2].min(1)-reference-drift
         center=points.mean(1);velocity=np.linalg.norm(np.gradient(center[:,:2],times,axis=0),axis=1)
         mask=(heights<lengths[side]*.045)&((velocity<lengths[side]*.55)|in_place)
         if 'contact_probabilities' in data:
             probability=data['contact_probabilities'][:,0 if side=='Left' else 1]
-            mask=(heights<lengths[side]*.08)&((probability>.6)|(mask&(probability>.2)))
+            mask=(heights<lengths[side]*.08)&(((probability>.6)&((velocity<lengths[side]*.8)|in_place))|(mask&(probability>.2)))
         for lo,hi in intervals(~mask):
             if lo>0 and hi+1<len(mask) and times[hi]-times[lo]<.05:mask[lo:hi+1]=True
         for lo,hi in intervals(mask):
@@ -72,10 +90,11 @@ def solve(context,rig,data,ground=0.,in_place=False,overrides=()):
             if edit['side']!=side:continue
             active=(times>=edit['start'])&(times<=edit['end']);mask[active]=edit['mode']!='AIR'
         masks[side]=mask;tracks[side]=intervals(mask)
-    for row in poses:
-        for m in row:m.translation.z+=shift
     root_indices={i for i,n in enumerate(data['names']) if str(n)==roles.get('Root') and not rig.data.bones[str(n)].use_deform}
-    stats=dict(contact_frames=0,unreachable_frames=0,ground_alignment_m=shift,contacts={s:len(v) for s,v in tracks.items()})
+    for f,row in enumerate(poses):
+        for i,m in enumerate(row):
+            if i not in root_indices:m.translation.z+=shift-drift[f]
+    stats=dict(contact_frames=0,unreachable_frames=0,ground_alignment_m=shift,maximum_floor_drift_m=float(np.abs(drift).max()),contacts={s:len(v) for s,v in tracks.items()})
     anchors={};report=[]
     for f,row in enumerate(poses):
         goals={};lowering=0.
@@ -85,11 +104,15 @@ def solve(context,rig,data,ground=0.,in_place=False,overrides=()):
             if lower.parent!=upper or foot.parent!=lower:raise ValueError('Foot correction needs direct upper leg, lower leg and foot chains')
             ids=[index[b.name] for b in (upper,lower,foot)];hip,knee,end=[row[i].translation.copy() for i in ids]
             points=[row[ids[2]]@p for p in markers[side]];lowest=min(points,key=lambda p:p.z)
-            if side not in anchors:anchors[side]=Vector((lowest.x,lowest.y,ground))
             lo,hi=next((a,b) for a,b in tracks[side] if a<=f<=b);strength=min(1.,(f-lo+1)/3,(hi-f+1)/3)
+            if side not in anchors:
+                candidates=np.asarray([[pose[index[foot.name]]@p for p in markers[side]] for pose in poses[lo:hi+1]])
+                point=int(np.argmin(np.var(candidates[:,:,:2],axis=0).sum(1)));chosen=points[point]
+                anchors[side]=(point,Vector((chosen.x,chosen.y,ground)))
+            point,anchor=anchors[side]
             edits=[e for e in overrides if e['side']==side and e['start']<=times[f]<=e['end']]
             sliding=(edits[-1]['mode']=='SLIDE') if edits else in_place
-            correction=Vector((0,0,ground-lowest.z)) if sliding else anchors[side]-lowest
+            correction=Vector((0,0,ground-lowest.z)) if sliding else anchor-points[point]
             goal=end+correction*strength
             horizontal=(Vector((hip.x,hip.y,0))-Vector((goal.x,goal.y,0))).length;length=lengths[side]
             if horizontal<length:lowering=min(lowering,goal.z+math.sqrt(max(0,(length-1e-5)**2-horizontal**2))-hip.z)

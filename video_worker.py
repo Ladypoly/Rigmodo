@@ -2,6 +2,9 @@
 """External capture runtime; never imports Blender or writes the user's scene."""
 import sys,os,json,math,time,hashlib,subprocess,shutil,traceback
 from pathlib import Path
+
+for stream in (sys.stdout,sys.stderr):
+    if hasattr(stream,'reconfigure'):stream.reconfigure(encoding='utf-8',errors='backslashreplace')
 import numpy as np
 
 
@@ -115,9 +118,11 @@ def export_gem(result,assets,device,progress):
 
 
 def capture(video,request,folder,progress):
+    progress('Loading GEM-X runtime')
     import torch
     from omegaconf import OmegaConf
-    from gem.inference.body_video import run_body_video
+    from gem.inference import body_video
+    from capture_progress import instrument_gem
     models=Path(request['models']);config=OmegaConf.load(str(models/'body_video_native77.yaml'))
     for section,name in [('pose','body_s240000.ckpt'),('observations','vitpose.pth'),('motion','motion_native77_e774_s292175.ckpt'),('detector','yolox_humanart.onnx')]:config[section]['checkpoint']=str(models/name)
     config['motion']['stats']=str(models/'motion_stats_raw.npz');config['camera']['mode']=request.get('camera_mode','static')
@@ -127,7 +132,8 @@ def capture(video,request,folder,progress):
         while torch.cuda.mem_get_info()[0]<5*1024**3:
             progress('Waiting for GPU memory; close or finish other GPU tasks');time.sleep(2)
         torch.cuda.reset_peak_memory_stats()
-    began=time.monotonic();result=run_body_video(str(video),OmegaConf.to_container(config,resolve=True),device=device,start=request.get('start',0),duration=request['duration'],progress=progress)
+    began=time.monotonic()
+    with instrument_gem(body_video,progress):result=body_video.run_body_video(str(video),OmegaConf.to_container(config,resolve=True),device=device,start=request.get('start',0),duration=request['duration'],progress=progress)
     torch.save(result,folder/'raw-gem.pt')
     quality=tracking_report(result);data=export_gem(result,models/'soma',device,progress)
     data['source_times']=data['times']+float(request.get('start',0))
@@ -137,7 +143,8 @@ def capture(video,request,folder,progress):
 
 def main(folder):
     request=json.loads((folder/'request.json').read_text(encoding='utf-8'))
-    def progress(phase):atomic(folder/'progress.json',dict(phase=phase));print('CAPTURE_STAGE',phase,flush=True)
+    from capture_progress import Progress
+    progress=Progress(folder);progress('Starting video capture')
     video=Path(request.get('video',''))
     if request['kind']=='comfy':
         from comfy_video import Client,bind,h3_graph
@@ -168,12 +175,19 @@ def main(folder):
     os.environ['PATH']=str(Path(request['ffmpeg']).parent)+os.pathsep+os.environ.get('PATH','')
     from comfy_video import release_job
     release_job(folder)
-    identity=dict(video_sha256=file_hash(video),start=request.get('start',0),duration=request['duration'],camera=request.get('camera_mode','static'),adapter=3,models=file_hash(Path(request['models'])/'rigmodo-checkpoints.json') if (Path(request['models'])/'rigmodo-checkpoints.json').exists() else file_hash(Path(__file__).with_name('video_capture_lock.json')))
+    backend=request.get('backend','GEMX')
+    if backend not in {'GEMX','EXMR'}:raise ValueError('Unknown capture engine')
+    model_manifest=Path(__file__).with_name('rgbmocap_lock.json') if backend=='EXMR' else Path(request['models'])/'rigmodo-checkpoints.json'
+    if not model_manifest.is_file():model_manifest=Path(__file__).with_name('video_capture_lock.json')
+    identity=dict(video_sha256=file_hash(video),start=request.get('start',0),duration=request['duration'],camera=request.get('camera_mode','static'),adapter=4,backend=backend,models=file_hash(model_manifest))
     key=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest();cache=folder.parent/'CaptureCache'/key;cache.mkdir(parents=True,exist_ok=True)
     if (cache/'output.npz').exists() and (cache/'metrics.json').exists():
         progress('Reusing cached motion capture');shutil.copyfile(cache/'output.npz',folder/'output.npz');metrics=json.loads((cache/'metrics.json').read_text());metrics['cache_hit']=True
     else:
-        data,metrics=capture(video,request,folder,progress)
+        if backend=='EXMR':
+            from rgbmocap import capture as capture_exmr
+            data,metrics=capture_exmr(video,request,folder,progress)
+        else:data,metrics=capture(video,request,folder,progress)
         temporary=folder/'output.pending.npz';np.savez_compressed(temporary,**data);os.replace(temporary,folder/'output.npz')
         staging=cache/'output.pending.npz';shutil.copyfile(folder/'output.npz',staging);os.replace(staging,cache/'output.npz');atomic(cache/'metrics.json',metrics)
     if request.get('loop') and request.get('cycle_method')=='TRIM':
@@ -181,6 +195,7 @@ def main(folder):
         with np.load(folder/'output.npz',allow_pickle=False) as archive:data={k:archive[k] for k in archive.files}
         shutil.copyfile(folder/'output.npz',folder/'raw-motion.npz');data,cycle=find_cycle(data)
         np.savez_compressed(folder/'output.npz',**data);metrics['selected_cycle']=cycle
+    metrics['stage_timings_seconds']=progress.finish()
     metrics['checkpoint_manifest_sha256']=identity['models'];metrics['source_video_sha256']=identity['video_sha256']
     if request['kind']=='comfy':metrics['workflow_sha256']=file_hash(request['workflow']) if request.get('workflow') else file_hash(Path(__file__).with_name('comfy_video.py'))
     atomic(folder/'capture-source.json',dict(identity=identity,source=source,metrics=metrics))

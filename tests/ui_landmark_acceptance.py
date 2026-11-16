@@ -25,6 +25,7 @@ class Layout:
     def box(self):return self
     def grid_flow(self,**kwargs):return self
     def template_list(self,*args,**kwargs):pass
+    def progress(self,**kwargs):pass
     def separator(self):pass
     def label(self,**kwargs):self.records.append(('label',kwargs.get('text','')))
     def prop(self,data,key,**kwargs):assert hasattr(data,key),key;self.records.append(('prop',key))

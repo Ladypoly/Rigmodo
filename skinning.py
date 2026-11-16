@@ -254,11 +254,10 @@ def poll(folder):
     if not job: return json.loads((folder / 'status.json').read_text())
     code = job['process'].poll()
     if code is None:
-        phase=job.get('phase','Running locally');path=folder/'progress.json'
-        try:
-            if path.is_file() and path.stat().st_size<16384:phase=str(json.loads(path.read_text()).get('phase',phase))[:240]
-        except (OSError,ValueError):pass
-        return dict(status='running',elapsed_seconds=time.monotonic()-job['started'],phase=phase)
+        from .capture_progress import read
+        detail=read(folder);phase=detail.pop('phase',job.get('phase','Running locally'))
+        job['phase']=phase;job['progress']=detail
+        return dict(detail,status='running',elapsed_seconds=time.monotonic()-job['started'],phase=phase)
     job['log'].close()
     if job.get('job_object'):job['job_object'].close()
     _jobs.pop(str(folder))
@@ -273,12 +272,19 @@ def poll(folder):
         try: job['finish'](folder)
         except (ValueError, OSError, KeyError) as exc: error = str(exc)
     if code!=0 and error is None:
+        try:
+            status_path=folder/'status.json'
+            if status_path.stat().st_size<16384:
+                failed=json.loads(status_path.read_text())
+                if failed.get('status')=='failed' and isinstance(failed.get('error'),str):error=failed['error'][:1600]
+        except (OSError,ValueError,TypeError):pass
+    if code!=0 and error is None:
         with (folder/'worker.log').open('rb') as stream:
             stream.seek(max(0,(folder/'worker.log').stat().st_size-8192));tail=stream.read().decode('utf-8',errors='replace')
         if any(word in tail.lower() for word in ('out of memory','out_of_device_memory')):
             error='The local provider ran out of memory. Close GPU-heavy applications or reduce the skin search beams, then retry'
         else:
-            lines=[line.strip() for line in tail.splitlines() if line.strip()]
+            lines=[line.strip() for line in tail.splitlines() if line.strip() and not line.strip().startswith(('Blender ', 'Blender quit'))]
             error='Local provider failed: '+(lines[-1][:800] if lines else f'exit code {code}')
     _state(folder, 'complete' if code == 0 and error is None else 'failed', exit_code=code, error=error,
            elapsed_seconds=time.monotonic() - job['started'])

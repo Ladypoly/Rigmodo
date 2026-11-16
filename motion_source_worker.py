@@ -2,6 +2,9 @@
 """Create reusable motion assets in isolation; one GPU child at a time."""
 import importlib,json,os,subprocess,sys,time,traceback
 from pathlib import Path
+
+for stream in (sys.stdout,sys.stderr):
+    if hasattr(stream,'reconfigure'):stream.reconfigure(encoding='utf-8',errors='backslashreplace')
 import bpy
 import numpy as np
 from mathutils import Matrix
@@ -12,10 +15,15 @@ def main(folder):
     os.environ['RIGMODO_MODEL_DIRECTORY']=request['model_root'];sys.path.insert(0,str(root.parent))
     bpy.ops.wm.read_factory_settings(use_empty=True);addon=importlib.import_module(root.name);addon.register();bpy.context.scene.render.fps=30
     store=addon.motion_store;library=Path(request['library']);added=[];errors=[];completed=[]
-    last_phase=None
-    def progress(phase):
-        nonlocal last_phase
-        if phase!=last_phase:store.atomic(folder/'progress.json',dict(phase=phase));print('SOURCE_STAGE',phase,flush=True);last_phase=phase
+    progress_io=importlib.import_module(root.name+'.capture_progress');read_progress=progress_io.read
+    last_progress={}
+    def progress(phase,**details):
+        nonlocal last_progress
+        value=dict(details,phase=phase)
+        if value!=last_progress:
+            progress_io.write(folder,value)
+            if phase!=last_progress.get('phase'):print('SOURCE_STAGE',phase,flush=True)
+            last_progress=value
     def dispose():
         if bpy.context.mode!='OBJECT':bpy.ops.object.mode_set(mode='OBJECT')
         for obj in list(bpy.context.scene.objects):
@@ -94,9 +102,8 @@ def main(folder):
                     try:
                         while child.poll() is None:
                             phase='Capturing video'
-                            try:phase=json.loads((job/'progress.json').read_text()).get('phase',phase)
-                            except (OSError,ValueError):pass
-                            progress(f'{index+1}/{len(inputs)} · {label} · {phase}');time.sleep(.5)
+                            detail=read_progress(job);phase=detail.pop('phase',phase)
+                            progress(f'{index+1}/{len(inputs)} · {label} · {phase}',**detail);time.sleep(.5)
                     finally:
                         if child.poll() is None:child.terminate();child.wait(timeout=5)
                 state=json.loads((job/'status.json').read_text())
@@ -104,7 +111,9 @@ def main(folder):
                 result=json.loads((job/'results.json').read_text());data=store.read_file(job/'output.npz')
                 name=request['name'] if len(inputs)==1 and request['name'] else label
                 metadata=dict(lc_library_source='Video capture' if system=='VIDEO' else 'ComfyUI video capture',lc_library_license='User-provided',lc_capture_video=result['video'],lc_capture_offset_seconds=result['source'].get('capture_start',0)+result.get('metrics',{}).get('selected_cycle',{}).get('start_seconds',0),lc_capture_provenance=json.dumps(result),lc_motion_prompt=request['prompt'])
-                key,created=save(data,name,metadata);completed.append(dict(file=str(filename),name=name,id=key,created=created));checkpoint()
+                if result.get('metrics',{}).get('smoothing')=='global':metadata['lc_capture_stabilized']=True
+                metrics=result.get('metrics',{});quality=metrics.get('quality',{});review=bool(quality.get('missing_track_frames') or quality.get('low_confidence_frames') or metrics.get('source_correction',{}).get('warning'))
+                key,created=save(data,name,metadata);completed.append(dict(file=str(filename),name=name,id=key,created=created,review=review));checkpoint()
             except Exception as exc:
                 errors.append(dict(file=str(filename),error=str(exc)));checkpoint();traceback.print_exc();dispose()
     if not added:raise ValueError(errors[0]['error'] if errors else 'No source motions were created')

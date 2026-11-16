@@ -33,11 +33,16 @@ def controls_changed(self,context):
 
 
 def refresh(context,key=None):
+    explicitly_loaded=key is not None
     state=context.window_manager.lc_motion_library
     if key is None and state.entries and 0<=state.index<len(state.entries):key=state.entries[state.index].key
     selected={item.key for item in state.entries if item.source_selected}
+    loaded=set(json.loads(state.loaded_sources)) if state.is_property_set('loaded_sources') else selected
+    if explicitly_loaded:loaded.add(key)
+    state.loaded_sources=json.dumps(sorted(loaded))
     state.entries.clear()
     for record in sorted(motion_store.catalog(root(context))['clips'],key=lambda c:(c['family'].casefold(),c['name'].casefold())):
+        if record['id'] not in loaded:continue
         item=state.entries.add();item.key=record['id'];item.name=record['name'];item.family=record['family'];item.source=record['source']
         item.duration=record['duration'];item.loop=record['loop'];item.favorite=record.get('favorite',False);item.tags=record.get('tags','');item.source_selected=item.key in selected
     state.index=next((i for i,item in enumerate(state.entries) if item.key==key),0);controls_changed(state,context)
@@ -109,13 +114,20 @@ def start_job(context,kind,files=(),mixamo=False):
     return {'FINISHED'}
 
 
+def source_selection_changed(self,context):
+    if not context:return
+    state=context.window_manager.lc_motion_library;selected=[i for i,item in enumerate(state.entries) if item.source_selected]
+    if len(selected)==1:state.index=selected[0]
+
+
 class LC_LibraryItem(PropertyGroup):
     key:StringProperty();name:StringProperty();family:StringProperty();source:StringProperty();tags:StringProperty()
-    duration:FloatProperty();loop:BoolProperty();favorite:BoolProperty();source_selected:BoolProperty(name='Use motion')
+    duration:FloatProperty();loop:BoolProperty();favorite:BoolProperty();source_selected:BoolProperty(name='Use motion',update=source_selection_changed)
 
 
 class LC_LibraryState(PropertyGroup):
     entries:CollectionProperty(type=LC_LibraryItem)
+    loaded_sources:StringProperty(default='[]',options={'SKIP_SAVE'})
     index:IntProperty(default=0,update=controls_changed)
     query:StringProperty(name='Search',options={'TEXTEDIT_UPDATE'})
     favorites:BoolProperty(name='Favorites only')

@@ -31,8 +31,11 @@ def current(layout,context,rig):
 def sources(layout,context):
     state=context.window_manager.lc_motion_library
     row=layout.row(align=True);row.prop(state,'query',text='',icon='VIEWZOOM');row.operator('local_character.refresh_motion_library',text='',icon='FILE_REFRESH')
-    layout.template_list('LC_UL_source_motions','rigmodo_sources',state,'entries',state,'index',rows=5)
-    row=layout.row(align=True);row.operator('local_character.select_source_motions',text='Select all').mode='ALL';row.operator('local_character.select_source_motions',text='Clear').mode='NONE'
+    layout.operator('local_character.open_motion_assets',text='Load from library…',icon='ASSET_MANAGER')
+    if not state.entries:
+        ui.message(layout,'Create a motion or load one from a file or the Asset Browser.');return
+    layout.template_list('LC_UL_source_motions','rigmodo_working_sources',state,'entries',state,'index',rows=min(5,max(2,len(state.entries))))
+    row=layout.row(align=True);row.operator('local_character.select_source_motions',text='Select all').mode='ALL';row.operator('local_character.select_source_motions',text='Clear').mode='NONE';row.operator('local_character.unload_source_motions',text='',icon='X')
     row=layout.row(align=True);row.operator('local_character.preview_source_motion',text='Preview source',icon='PLAY');row.operator('local_character.stop_source_preview',text='',icon='PAUSE')
 
 
@@ -52,7 +55,6 @@ def draw(layout,context,rig=None,creature=False):
     layout.row(align=True).prop(s,'animation_view',expand=True)
     body=layout.column();body.enabled=not motion_sources.busy()
     if s.animation_view=='BROWSE':
-        body.operator('local_character.open_motion_assets',text='Open Asset Browser',icon='ASSET_MANAGER')
         row=body.row(align=True);row.operator('local_character.import_library_motions',text='Import files');row.operator('local_character.import_motion_folder',text='Import folder')
         sources(body,context)
         body.operator('local_character.save_library_motion',text='Save character animation',icon='ADD')
@@ -70,6 +72,7 @@ def draw(layout,context,rig=None,creature=False):
         adjustments=ui.details(body,'lc_motion_adjustments','Motion adjustments')
         if adjustments:
             controls=context.window_manager.lc_motion_library
+            adjustments.prop(s,'stabilize_video')
             adjustments.prop(controls,'speed');adjustments.prop(controls,'mirror');adjustments.prop(controls,'spacing')
             if len(motion_sources.chosen(context))==1:
                 row=adjustments.row(align=True);row.prop(controls,'trim_start');row.prop(controls,'trim_end')
@@ -110,6 +113,7 @@ def draw(layout,context,rig=None,creature=False):
             body.prop(s,'motion_prompt',text='Motion');body.prop(s,'motion_duration',text='Seconds')
             ui.message(body,'Creature generation supports up to 2 seconds per clip.')
         else:
+            body.prop(configuration.settings(context).prefs or s,'capture_backend',text='Engine')
             body.prop(s,'video_input',expand=True)
             if s.video_input=='FILES':
                 body.prop(s,'video_path',text='Video');body.operator('local_character.capture_video_batch',text='Batch capture videos…',icon='FILEBROWSER')

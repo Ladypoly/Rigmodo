@@ -66,6 +66,7 @@ def apply(context,rig,data,name,start=0.,end=None,speed=1.,mirror=False,in_place
     same=all(b.name in lookup and np.max(np.abs(np.asarray(b.matrix_local)-data['rest'][lookup[b.name]]))<1e-5 and
              (source_names[data['parents'][lookup[b.name]]] if data['parents'][lookup[b.name]]>=0 else None)==(b.parent.name if b.parent else None) for b in rig.data.bones)
     human=set(rig_mapping.CORE)<=src.keys() and set(rig_mapping.CORE)<=dst.keys()
+    if not same and set(rig_mapping.CORE)<=src.keys() and not set(rig_mapping.CORE)<=dst.keys():raise ValueError('Review target bone mapping; missing roles: '+', '.join(sorted(set(rig_mapping.CORE)-dst.keys())))
     if not same and not human:raise ValueError('Creature motions need the same skeleton. Humanoid motions can be retargeted across supported human rigs')
     if spacing and not human:raise ValueError('Arm spacing is a humanoid control')
     if human:

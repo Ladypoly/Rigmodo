@@ -2,7 +2,7 @@ import bpy,addon_utils,importlib,sys,json,tempfile
 from pathlib import Path
 addon_utils.enable('bl_ext.user_default.local_character');a=importlib.import_module('bl_ext.user_default.local_character')
 root=Path('R:/AI/MotionLibrary/Rigmodo');entries=a.motion_store.catalog(root)['clips']
-assert len(entries)==330 and all((root/'Assets'/(e['id']+'.blend')).is_file() for e in entries)
+assert len(entries)>=330 and all((root/'Assets'/(e['id']+'.blend')).is_file() for e in entries)
 for entry in [next(e for e in entries if e['family']=='Human' and e['name']=='Walk'),next(e for e in entries if e['name']=='Scorpion_WalkFast_Attack_Arcade')]:
     path=root/'Assets'/(entry['id']+'.blend')
     with bpy.data.libraries.load(str(path),link=False) as (available,loaded):

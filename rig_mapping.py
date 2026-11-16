@@ -19,9 +19,10 @@ def canonical(name):
         if clean==role.lower() or clean=='c'+role.lower():return role
     parts={'upperarm':'Arm','lowerarm':'ForeArm','forearm':'ForeArm','hand':'Hand','upperleg':'UpLeg','thigh':'UpLeg','lowerleg':'Leg','shin':'Leg','calf':'Leg','foot':'Foot','toes':'ToeBase','toe':'ToeBase','shoulder':'Shoulder'}
     for marker,side in [('left','Left'),('right','Right'),('l','Left'),('r','Right')]:
-        word=clean[len(marker):] if clean.startswith(marker) else clean[:-len(marker)] if clean.endswith(marker) else ''
-        if word in parts:return side+parts[word]
-    return original
+        words=[clean[len(marker):] if clean.startswith(marker) else '',clean[:-len(marker)] if clean.endswith(marker) else '']
+        for word in words:
+            if word in parts:return side+parts[word]
+    return {'pelvis':'Hips','chest':'Spine1','upperchest':'Spine2'}.get(clean,original)
 
 
 def names(rig):

@@ -55,12 +55,13 @@ def start(context,files=()):
         if rig:snapshot(rig,folder,request)
     else:
         system='VIDEO' if s.video_input=='FILES' else 'COMFY';request['system']=system
-        if not video_setup.ready(bpy.path.abspath(p.capture_python),Path(bpy.path.abspath(p.models_directory))/'gemx'):raise ValueError('Install or verify Video Capture in Extension Settings')
+        capture_options=video_motion.capture_options(p)
         paths=list(map(Path,files)) or ([Path(bpy.path.abspath(s.video_path))] if system=='VIDEO' else [])
         if system=='VIDEO' and (not paths or any(not path.is_file() or path.suffix.lower() not in VIDEO_EXTENSIONS for path in paths)):raise ValueError('Choose video files to capture')
         if len(paths)>200:raise ValueError('Capture at most 200 videos in one batch')
-        request.update(files=list(map(str,paths)),whole_video=s.capture_whole_video,start=s.video_start,duration=s.motion_duration,capture_python=bpy.path.abspath(p.capture_python))
+        request.update(files=list(map(str,paths)),whole_video=s.capture_whole_video,start=s.video_start,duration=s.motion_duration,capture_python=capture_options.pop('python'))
         request['capture']=dict(models=str(Path(bpy.path.abspath(p.models_directory))/'gemx'),camera_mode=p.capture_camera,ffmpeg=bpy.path.abspath(p.video_ffmpeg),ffprobe=bpy.path.abspath(p.video_ffprobe),prompt=s.motion_prompt,seed=p.motion_seed,comfy_url=p.comfy_url,model=p.comfy_model,clip=p.comfy_clip,vae=p.comfy_vae,audio_vae=p.comfy_audio_vae,reference=bpy.path.abspath(s.video_reference) if s.video_reference else '',workflow=bpy.path.abspath(p.comfy_workflow) if p.comfy_workflow else '',bindings=json.loads(p.comfy_bindings),output_node=p.comfy_output_node,shot_rules=p.comfy_shot_rules,cycle_method=s.video_cycle if system=='VIDEO' else 'FULL')
+        request['capture'].update(capture_options)
         if system=='COMFY' and s.source_loop and not s.video_reference:raise ValueError('A generated video loop needs a reference image')
     motion_store.atomic(folder/'request.json',request);s.source_job=str(folder)
     image_pose.launch(folder,[bpy.app.binary_path,'--factory-startup','--background','--disable-autoexec','--python',str(Path(__file__).with_name('motion_source_worker.py')),'--',str(folder)],'Creating reusable motion')
@@ -76,7 +77,11 @@ def cancel_external(folder):
 
 
 def refresh(context,selected=()):
-    motion_library.refresh(context)
+    state=context.window_manager.lc_motion_library
+    if selected:
+        loaded=set(json.loads(state.loaded_sources)) if state.is_property_set('loaded_sources') else {item.key for item in state.entries if item.source_selected}
+        state.loaded_sources=json.dumps(sorted(loaded|set(selected)))
+    motion_library.refresh(context,next(iter(selected),None))
     if selected:
         chosen=set(selected)
         for item in context.window_manager.lc_motion_library.entries:item.source_selected=item.key in chosen
@@ -126,6 +131,8 @@ class LC_OT_finish_source(Operator):
         try:
             s=context.scene.lc_settings;result=json.loads((Path(s.source_job)/'results.json').read_text());refresh(context,result['added'])
             s.motion_status=f"Saved {len(result['added'])} reusable motion(s)"+(f" · {len(result['errors'])} failed; inspect the job log" if result['errors'] else '')
+            review=sum(bool(item.get('review')) for item in result.get('completed',[]))
+            if review:s.motion_status+=f' · {review} capture(s) need review'
             self.report({'INFO'},s.motion_status)
         except (ValueError,OSError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
         return {'FINISHED'}
@@ -174,6 +181,16 @@ class LC_OT_edit_source(Operator):
         rig.select_set(True);context.view_layer.objects.active=rig;bpy.ops.object.mode_set(mode='POSE');return {'FINISHED'}
 
 
+class LC_OT_unload_sources(Operator):
+    bl_idname='local_character.unload_source_motions';bl_label='Remove from Source List'
+    bl_description='Remove selected sources from this working list; keep every library motion and asset on disk'
+    def execute(self,context):
+        state=context.window_manager.lc_motion_library
+        keys={entry['id'] for entry in chosen(context)}
+        state.loaded_sources=json.dumps(sorted(set(json.loads(state.loaded_sources))-keys));refresh(context)
+        return {'FINISHED'}
+
+
 class LC_OT_source_selection(Operator):
     bl_idname='local_character.select_source_motions';bl_label='Select Source Motions'
     mode:EnumProperty(items=[('ALL','All',''),('NONE','None','')])
@@ -212,7 +229,7 @@ class LC_OT_retarget_sources(Operator):
             options=context.scene.lc_settings;controls=context.window_manager.lc_motion_library
             adjustments=dict(speed=controls.speed,mirror=controls.mirror,spacing=controls.spacing)
             if len(entries)==1:adjustments.update(start=controls.trim_start,end=min(controls.trim_end,entries[0]['duration']))
-            _retarget=dict(scene=context.scene,tasks=[(rig,entry) for rig in rigs for entry in entries],index=0,errors=[],made=[],options=dict(in_place=options.retarget_in_place,contacts=options.motion_contacts,ground=options.ground_height,loop=options.retarget_loop),root=motion_library.root(context),controls=adjustments)
+            _retarget=dict(scene=context.scene,tasks=[(rig,entry) for rig in rigs for entry in entries],index=0,errors=[],made=[],review_contacts=0,options=dict(in_place=options.retarget_in_place,contacts=options.motion_contacts,ground=options.ground_height,loop=options.retarget_loop),root=motion_library.root(context),controls=adjustments)
             self._token=None
             if not bpy.app.background:
                 from . import processing_visuals
@@ -230,6 +247,7 @@ class LC_OT_retarget_sources(Operator):
                 s.motion_in_place=state['options']['in_place'];s.motion_contacts=state['options']['contacts'];s.ground_height=state['options']['ground'];s.create_loop=entry['loop'] if state['options']['loop']=='SOURCE' else state['options']['loop']=='LOOP'
                 action=animation_transfer.finish(context,rig,data,entry['name'],dict(lc_library_source=entry['source'],lc_library_license=entry['license'],lc_library_id=entry['id']),state['controls'])
                 state['made'].append(action.name)
+                state['review_contacts']+=json.loads(action.get('lc_contact_report','{}')).get('unreachable_frames',0)
             finally:
                 for key,value in previous.items():setattr(s,key,value)
         except (ValueError,OSError,RuntimeError,KeyError,ReferenceError) as exc:state['errors'].append(dict(character=label,motion=entry['name'],error=str(exc)))
@@ -241,7 +259,7 @@ class LC_OT_retarget_sources(Operator):
         if getattr(self,'_timer',None):context.window_manager.event_timer_remove(self._timer)
         from . import processing_visuals
         if self._token:processing_visuals.finish(self._token,'CANCELLED' if cancelled else 'FINISHED')
-        state['scene'].lc_settings.motion_status=f"{'Stopped · ' if cancelled else ''}{len(state['made'])} animation(s) retargeted"+(f" · {len(state['errors'])} failed" if state['errors'] else '')
+        state['scene'].lc_settings.motion_status=f"{'Stopped · ' if cancelled else ''}{len(state['made'])} animation(s) retargeted"+(f" · {len(state['errors'])} failed" if state['errors'] else '')+(f" · {state['review_contacts']} contact samples need review" if state['review_contacts'] else '')
         state['scene'].lc_settings.retarget_report=json.dumps(state['errors'])
     def modal(self,context,event):
         from . import processing_visuals
@@ -320,4 +338,4 @@ def cleanup():
     stop_preview(bpy.context)
 
 
-CLASSES=(LC_UL_source_motions,LC_OT_create_source,LC_OT_batch_videos,LC_OT_finish_source,LC_OT_assets_to_sources,LC_OT_source_tab,LC_OT_pose_rig,LC_OT_use_pose_rig,LC_OT_edit_source,LC_OT_source_selection,LC_OT_retarget_sources,LC_OT_preview_source,LC_OT_stop_source)
+CLASSES=(LC_UL_source_motions,LC_OT_create_source,LC_OT_batch_videos,LC_OT_finish_source,LC_OT_assets_to_sources,LC_OT_source_tab,LC_OT_pose_rig,LC_OT_use_pose_rig,LC_OT_edit_source,LC_OT_unload_sources,LC_OT_source_selection,LC_OT_retarget_sources,LC_OT_preview_source,LC_OT_stop_source)

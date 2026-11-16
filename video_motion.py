@@ -15,6 +15,18 @@ def runtime():
     return base/'Scripts/python.exe'
 
 
+def capture_options(settings):
+    from . import rgbmocap
+    options=dict(backend=settings.capture_backend,rgbmocap_provider=bpy.path.abspath(settings.rgbmocap_provider),blender=bpy.app.binary_path)
+    if options['backend']=='EXMR':
+        problem=rgbmocap.status(options['rgbmocap_provider'])
+        if problem:raise ValueError(problem+' · Extension Settings → Video capture')
+    elif not video_setup.ready(bpy.path.abspath(settings.capture_python),Path(bpy.path.abspath(settings.models_directory))/'gemx'):
+        raise ValueError('Install or verify GEM-X Capture in Extension Settings')
+    options['python']=str(Path(options['rgbmocap_provider'])/'runtime/python.exe') if options['backend']=='EXMR' else bpy.path.abspath(settings.capture_python)
+    return options
+
+
 def start(context,kind=None):
     if skinning._jobs:raise ValueError('Wait for the current task to finish')
     s=context.scene.lc_settings;p=configuration.settings(context);rig=motion_jobs.selected_rig(context)
@@ -36,8 +48,8 @@ def start(context,kind=None):
         request['file']=str(source)
         command=[bpy.app.binary_path,'--factory-startup','--background','--disable-autoexec','--python',str(Path(__file__).with_name('animation_import_worker.py')),'--','JOB']
     else:
-        python=Path(bpy.path.abspath(p.capture_python))
-        if not video_setup.ready(python,request['models']):raise ValueError('Install or verify Video Capture in Extension Settings → Setup')
+        options=capture_options(p);python=Path(options.pop('python'))
+        request.update(options,capture_python=str(python))
         for key in ('ffmpeg','ffprobe'):
             if not Path(request[key]).is_file() and not shutil.which(request[key]):raise ValueError('Set '+key+' in Extension Settings')
         if kind=='video' and not Path(request['video']).is_file():raise ValueError('Choose a video file')
@@ -108,6 +120,7 @@ class LC_OT_finish_video(Operator):
             try:
                 s.motion_in_place=request['in_place'];s.create_loop=request['loop'];s.motion_contacts=request['contacts'];s.ground_height=request['ground']
                 metadata=dict(lc_library_source='ComfyUI video capture' if request['kind']=='comfy' else 'User animation' if request['kind']=='animation' else 'User video capture',lc_library_license='User-provided',lc_capture_job=str(folder),lc_capture_video=result.get('video',''),lc_capture_offset_seconds=result.get('source',{}).get('capture_start',0)+result.get('metrics',{}).get('selected_cycle',{}).get('start_seconds',0),lc_motion_prompt=request['prompt'],lc_capture_provenance=json.dumps(dict(source=result.get('source',{}),metrics=result.get('metrics',{}),workflow=request.get('workflow') or 'builtin-h3-v1',loop=request['loop'],in_place=request['in_place'])))
+                if result.get('metrics',{}).get('smoothing')=='global':metadata['lc_capture_stabilized']=True
                 action=animation_transfer.finish(context,rig,data,result.get('name') or ('Captured Motion' if request['kind']!='animation' else 'Retargeted Motion'),metadata)
             finally:
                 for key,value in old.items():setattr(s,key,value)
@@ -140,7 +153,7 @@ class LC_OT_retry_video(Operator):
             request=json.loads((folder/'request.json').read_text());rig=bpy.data.objects.get(request['rig']);meshes=[bpy.data.objects.get(n) for n in request['meshes']]
             if request['kind'] not in {'video','comfy'}:raise ValueError('Create a new animation import instead')
             if not rig or rig.as_pointer()!=request['rig_pointer'] or context.scene.as_pointer()!=request['scene_pointer'] or any(m is None for m in meshes) or skinning._digest(rig,meshes)!=request['signature']:raise ValueError('The source character changed; create a new job')
-            image_pose.launch(folder,[bpy.path.abspath(p.capture_python),str(Path(__file__).with_name('video_worker.py')),'--',str(folder)],'Resuming animation')
+            image_pose.launch(folder,[request.get('capture_python') or bpy.path.abspath(p.capture_python),str(Path(__file__).with_name('video_worker.py')),'--',str(folder)],'Resuming animation')
             if not bpy.app.background:bpy.ops.local_character.run_video_job()
         except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
         return {'FINISHED'}
