@@ -1,0 +1,128 @@
+{
+  "passed": true,
+  "version": "0.17.0",
+  "date": "2026-11-16",
+  "library": {
+    "passed": true,
+    "real_cc0_source": true,
+    "humanoid_a_pose_retarget": true,
+    "mirror_and_spacing": true,
+    "speed_and_trim": true,
+    "lengths_preserved": true,
+    "maximum_length_error": 1.874134319956866e-07,
+    "source_capture_preserved": true,
+    "data_roundtrip": true,
+    "duplicate_detection": true,
+    "preview_cancel_preserved": true,
+    "no_new_objects": true,
+    "favorites_persist": true,
+    "path_validation": true,
+    "range_validation": true,
+    "target_scale_and_drivers_validated": true,
+    "starter_clips": 330
+  },
+  "batch": {
+    "passed": true,
+    "fbx_batch_import": true,
+    "mixamo_namespace_supported": true,
+    "provenance_not_inferred_from_names": true,
+    "repeat_import_skipped": true,
+    "imported_fbx_retargeted": true
+  },
+  "assets": {
+    "passed": true,
+    "assets": 330,
+    "full_human_and_scorpion_actions": true,
+    "thumbnails_embedded": true,
+    "native_catalogs": true,
+    "no_mesh_or_armature_dependencies": true
+  },
+  "gui": {
+    "passed": true,
+    "native_asset_browser": true,
+    "selected_external_action_asset": true,
+    "cross_creature_rig_rejected": true,
+    "thumbnail_rendered": true,
+    "adjust_controls_rendered": true,
+    "full_clip_preview_plays": true,
+    "cancel_restores_original": true,
+    "no_new_objects": true
+  },
+  "modal": {
+    "passed": true,
+    "real_modal_batch_import": true,
+    "asset_browser_context": true,
+    "worker_finished": true,
+    "catalog_refreshed": true,
+    "no_new_scene_objects": true,
+    "processing_effects_cleaned": true
+  },
+  "clips": {
+    "passed": true,
+    "existing_clips_discovered": true,
+    "select_and_loop_range": true,
+    "new_empty_clip": true,
+    "old_clips_retained": true,
+    "empty_clips_scoped_to_owner": true,
+    "shared_delete_protected": true,
+    "nla_delete_protected": true,
+    "compatible_slot_selected": true,
+    "enum_stable_on_reordering": true,
+    "delete_only_action": true,
+    "invalid_name_rejected": true,
+    "empty_clip_survives_save_reload": true,
+    "registration_cycle_passed": true
+  },
+  "one_shot": {
+    "passed": true,
+    "attack_and_death_default_once": true,
+    "walk_default_loop": true,
+    "explicit_override": true,
+    "full_endpoint_for_one_shot": true,
+    "loop_duplicate_endpoint_excluded": true,
+    "per_clip_export_loop": true,
+    "legacy_export_fallback_preserved": true,
+    "generated_prompt_stamped": true,
+    "handlers_registered_once": true
+  },
+  "loop": {
+    "passed": true,
+    "authored_period_respected": true,
+    "export_duplicate_endpoint_retained": true,
+    "ordinary_actions_unchanged": true,
+    "invalid_metadata_ignored": true
+  },
+  "concurrent": {
+    "passed": true,
+    "concurrent_process_import": true,
+    "no_lost_or_duplicate_catalog_entries": true,
+    "atomic_asset_publishing": true
+  },
+  "own_clips": {
+    "passed": true,
+    "own_clips_added": 5,
+    "creature_identity_max_joint_error_m": 2.384185791015625e-07,
+    "scene_files_unchanged": true,
+    "total_clips": 330
+  },
+  "rotation_modes": {
+    "passed": true,
+    "malformed_mode_metadata_ignored": true,
+    "euler_preview_restored": true,
+    "original_rotation_order_retained": true,
+    "clip_switch_restores_rotation_modes": true
+  },
+  "downloader": {
+    "no_login_renderer_passed": true,
+    "authenticated_download_tested": false
+  },
+  "limits": [
+    "Native Blender 5.2 isolated GUI/background processes tested; no user scene saved or replaced.",
+    "No Unity Editor import repeated in this release.",
+    "Cross-skeleton creature retargeting and anonymous humanoid role mapping are unsupported.",
+    "FK rest-pose/scale transfer is not a contact-aware retargeting solver.",
+    "Thumbnails show three static poses; viewport preview plays the full clip.",
+    "Authenticated Mixamo batch downloading requires user login and remains untested.",
+    "Mocap providers were reviewed, not installed or benchmarked."
+  ]
+}

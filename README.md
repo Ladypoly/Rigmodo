@@ -1,6 +1,6 @@
 # Rigmodo
 
-Version 0.16.0 adds automatic creature facing/joint labels, humanoid MotionBricks pose transitions, improved editable loop seams and one shared model folder.
+Version 0.17.0 adds a local motion library in Blender’s Asset Browser, full-clip humanoid retargeting, batch imports, generated-motion saving, and optional Mixamo batch-downloader setup.
 
 Independent Blender 5.2 extension for local humanoid and creature joint placement, AI skinning, regional correction, humanoid motion and Unity export. No ARP, proprietary Voxel Heat Diffusion or Mesh2Motion is required. Optional SAM image posing needs approved checkpoint access during setup; inference stays local.
 
@@ -17,6 +17,10 @@ For animals and other articulated shapes, choose **Creature → Generate Rig** i
    Humanoid **Method** offers **Text · Kimodo** and **Key poses · MotionBricks**. MotionBricks generates transitions between sparse, ordinary bone pose keys in the active Action, spaced 0.5–2 seconds apart; it follows their timing and preserves exact anchors on an editable character copy. Install it in Extension Settings → Setup. It has no text input and adds about 758 MB of weights. See [automatic annotation, MotionBricks and loops](docs/auto-creature-motionbricks.md).
 
    Humanoids continue to use Kimodo for text: selecting just the armature is enough. Its visible bound meshes are included automatically; explicitly selected meshes still define a narrower scope. Enter a description and press **Generate Motion**. To guide Kimodo, pose the armature and insert ordinary Blender pose keyframes, then enable **Use Key Poses**. Keys in the active Action guide the generated clip, beginning at the Timeline's **Start** frame. Edit, move or delete them in the Timeline or Dope Sheet. **Preview Motion** sets the playback range. Hand poses, contacts and loop finishing are under **Motion options**.
+
+**Motion Library:** select an armature, then open **Motion → Animations → Motion Library**. Browse native Blender catalogs, thumbnails and search; select an asset and use the right-hand **Rigmodo → Preview** or **Apply / Adjust** controls for the complete animation. Adjust speed, trim, mirror, in-place travel, loop playback and humanoid arm spacing. **Import Files / Folder** accepts batches of FBX, GLB, glTF and Blender files; **Save Current Animation** stores your own clips. The default location is `R:\AI\MotionLibrary\Rigmodo`. **Get CC0 Motions** installs 325 Mesh2Motion clips across nine character families. Creature reuse requires a matching skeleton. The optional unofficial Mixamo downloader requires your own Adobe login; authenticated downloading is unverified. See the [library guide](docs/local-motion-library.md).
+
+The [mocap research review](docs/mocap-research-review-2026-11-16.md) recommends stronger skeleton mapping and contact QA before video-capture providers; those providers are not part of this release.
 
 Optional **Unity export** lives under **Extension Settings → Recovery**. Select the rig and meshes, set name, absolute destination folder and Unity profile, then press **Export to Unity**. Animation is enabled after motion generation. The existing Unity companion configures the bundle.
 

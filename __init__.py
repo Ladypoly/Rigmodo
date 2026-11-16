@@ -6,9 +6,11 @@ from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips,motion_playback
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips,motion_playback,motion_store,motion_retarget,motion_library
 
 class LC_Settings(PropertyGroup):
+    motion_library_directory: StringProperty(name='Motion library folder',subtype='DIR_PATH',default=motion_store.DEFAULT_ROOT)
+    library_job: StringProperty(default='',options={'HIDDEN'})
     rig_type: EnumProperty(name='Character',items=[('HUMANOID','Humanoid','Standard game character rig'),('CREATURE','Creature','UniRig predicts a custom hierarchy for animals and other articulated shapes')],default='HUMANOID')
     models_directory: StringProperty(name='Shared model folder',subtype='DIR_PATH',default=str(model_storage.preferred()))
     motion_engine: EnumProperty(name='Generate from',items=[('KIMODO','Text · Kimodo','Generate motion from a text prompt, optionally guided by pose keys'),('MOTIONBRICKS','Key poses · MotionBricks','Generate human motion between ordinary pose keyframes')],default='KIMODO')
@@ -291,6 +293,15 @@ class WorkerModal:
     def cancel(self, context):
         if self._folder: skinning.cancel(self._folder)
         self._finish(context)
+
+
+class LC_OT_library_job(WorkerModal,Operator):
+    bl_idname='local_character.run_library_job';bl_label='Import Motion Library'
+    status_property='motion_status';job_property='library_job';apply_operator='finish_library_job'
+    def execute(self,context):
+        from pathlib import Path
+        self._folder=Path(context.scene.lc_settings.library_job)
+        return self.begin(context)
 
 
 class LC_OT_skin(WorkerModal, Operator):
@@ -916,7 +927,7 @@ class LC_PT_main(Panel):
     bl_category = "Rigmodo"
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, *motion_clips.CLASSES, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (LC_Settings, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, *motion_clips.CLASSES, *motion_library.CLASSES, LC_OT_library_job, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
@@ -936,6 +947,7 @@ def register():
     bpy.app.handlers.load_post.append(migrate_workflow_tab)
     motion_clips.register()
     motion_playback.register()
+    motion_library.register()
     auto_pose.register()
     image_pose.register()
     processing_visuals.register()
@@ -943,6 +955,7 @@ def register():
 def unregister():
     if hasattr(bpy.types.Bone,'lc_unimate_label'):del bpy.types.Bone.lc_unimate_label
     if hasattr(bpy.types.Object,'lc_unimate_forward'):del bpy.types.Object.lc_unimate_forward
+    motion_library.unregister()
     motion_playback.unregister()
     motion_clips.unregister()
     processing_visuals.unregister()

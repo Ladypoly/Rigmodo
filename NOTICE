@@ -87,3 +87,13 @@ See licenses/Apache-2.0.txt. The full external source notice and ONNX model
 license are retained with the model download. Weights are governed by the
 NVIDIA Open Model Agreement; they do not become GPL. NVIDIA's sample motion
 dataset and Smart Primitive/demo assets are not bundled or needed here.
+
+The optional local motion starter library downloads Mesh2Motion art assets
+under CC0-1.0 from a pinned public revision. No animation assets are bundled
+in this extension. Source provenance and the CC0 dedication are retained in
+the external motion library. See motion-library-sources.json.
+
+Optional Mixamo batch downloading installs underfusion/mixamo-downloader
+at revision 86ecff45f9a4d78cbea8df10d22f0613ed078b57, under its MIT license,
+in an external Tools folder. The original source and LICENSE are retained
+there. Adobe assets and account credentials are not bundled or relicensed.

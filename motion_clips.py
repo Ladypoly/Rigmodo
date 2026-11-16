@@ -179,6 +179,8 @@ def draw(layout,context,rig):
     row.operator('local_character.delete_motion_clip',text='',icon='TRASH')
     if action:
         playback=box.row();playback.enabled=action.library is None;playback.prop(action,'lc_clip_loop')
+    row=box.row(align=True);row.operator('local_character.open_motion_assets',text='Motion Library',icon='ASSET_MANAGER');row.operator('local_character.save_library_motion',text='',icon='ADD')
+    if action:
         if not any(c.keyframe_points or c.sampled_points for c in slot_curves(action,rig.animation_data.action_slot)):
             box.label(text='Empty clip · add pose keyframes',icon='INFO')
 

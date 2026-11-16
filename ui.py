@@ -326,6 +326,7 @@ def draw_export_tools(layout,context):
 
 def draw_preferences(layout,context,prefs):
     resolved=configuration.settings(context);s=context.scene.lc_settings
+    box=layout.box();box.label(text='Local motion library');box.prop(prefs,'motion_library_directory')
     layout.prop(prefs,'page',expand=True)
     processing_visuals.draw_panel(layout,context)
     if prefs.page=='SETUP':

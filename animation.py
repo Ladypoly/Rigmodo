@@ -49,9 +49,22 @@ def selected_action(rig, scene):
             "frame_end": math.ceil(end), "fps": fps}
 
 
+def remember_rotation_modes(rig, action):
+    if action and action.library is None:
+        action['lc_rotation_modes'] = json.dumps({b.name: b.rotation_mode for b in rig.pose.bones})
+
+
 def attach_action(rig, selection):
     rig.data.pose_position = "POSE"
+    try:
+        modes = json.loads(selection['action'].get('lc_rotation_modes', '{}'))
+    except (ValueError, TypeError):
+        modes = {}
+    if not isinstance(modes, dict): modes = {}
+    allowed = {'QUATERNION', 'AXIS_ANGLE', 'XYZ', 'XZY', 'YXZ', 'YZX', 'ZXY', 'ZYX'}
     for bone in rig.pose.bones:
+        mode = modes.get(bone.name)
+        if isinstance(mode, str) and mode in allowed: bone.rotation_mode = mode
         bone.matrix_basis.identity()
     data = rig.animation_data_create()
     data.action = selection["action"]

@@ -1,0 +1,1639 @@
+{
+  "schema": 1,
+  "repository": "https://github.com/Mesh2Motion/mesh2motion-app",
+  "revision": "5d6918ef67203e68c661b3e32e8e8f227bfd953e",
+  "license": "CC0-1.0",
+  "license_text": "All 3d models, blend files, rigs, animations\n\nCC0 1.0 Universal\nBy marking the work with a CC0 public domain dedication, the creator is giving up their copyright and allowing reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes.",
+  "files": [
+    {
+      "path": "static/assets/bird/animations/death.glb",
+      "sha": "f368921999f5fbd6020caa564f40ff2400566aae",
+      "size": 56812
+    },
+    {
+      "path": "static/assets/bird/animations/flap.glb",
+      "sha": "bf65328557b4c1c4e8b42447ffe603d0b5c6351e",
+      "size": 50560
+    },
+    {
+      "path": "static/assets/bird/animations/glide.glb",
+      "sha": "e615e2aecf6aa86c2571a68b4a022708f45cdf50",
+      "size": 50760
+    },
+    {
+      "path": "static/assets/bird/animations/hop.glb",
+      "sha": "94ab8023d59ced47eec8a528c41e73246119adfa",
+      "size": 52592
+    },
+    {
+      "path": "static/assets/bird/animations/idle.glb",
+      "sha": "a43f476b6761bdea127fdfae1f193debabb45c4e",
+      "size": 50312
+    },
+    {
+      "path": "static/assets/bird/animations/land.glb",
+      "sha": "13f7d7b82709c01512ec264ccd356ba738bb6d92",
+      "size": 57632
+    },
+    {
+      "path": "static/assets/bird/animations/rest-pose.glb",
+      "sha": "469deb538199f8757873ebd0e452bc7607afb853",
+      "size": 48964
+    },
+    {
+      "path": "static/assets/bird/animations/take-off.glb",
+      "sha": "2fbacc8eb95de65ff0b5e180ecf0e9170b1b1e33",
+      "size": 56312
+    },
+    {
+      "path": "static/assets/bird/animations/walk.glb",
+      "sha": "c5cf5763d4551cc0c7747533413d4e8669f9a045",
+      "size": 50332
+    },
+    {
+      "path": "static/assets/dragon/animations/attack.glb",
+      "sha": "d6a386bc4ca91761c6fcd6113821c7b1483c1aef",
+      "size": 93196
+    },
+    {
+      "path": "static/assets/dragon/animations/death.glb",
+      "sha": "9f39763822a6a083130b260e77725f928c7815f4",
+      "size": 106556
+    },
+    {
+      "path": "static/assets/dragon/animations/fire-breath.glb",
+      "sha": "8a3af926593d35757ab389207e7be246118576e4",
+      "size": 94544
+    },
+    {
+      "path": "static/assets/dragon/animations/fly-flap.glb",
+      "sha": "0f5e835b9b35b849fdcbc410f41151e8a1b21dce",
+      "size": 91036
+    },
+    {
+      "path": "static/assets/dragon/animations/fly-glide.glb",
+      "sha": "0c2f7a07fdc2a0c0b5978821ca61a90955879460",
+      "size": 92244
+    },
+    {
+      "path": "static/assets/dragon/animations/hurt.glb",
+      "sha": "fba011c2b604c3f26d9da0efda9cb2ce02aeb7cc",
+      "size": 90076
+    },
+    {
+      "path": "static/assets/dragon/animations/idle.glb",
+      "sha": "809b97720e620520820d65d0d163169d3831b578",
+      "size": 88880
+    },
+    {
+      "path": "static/assets/dragon/animations/land.glb",
+      "sha": "b3400694cf0528bc7d1d41fadc397bd72c2c1cc5",
+      "size": 110080
+    },
+    {
+      "path": "static/assets/dragon/animations/rest-pose.glb",
+      "sha": "7fd1da740eff11982769479aa326e43f2bdb71b0",
+      "size": 81368
+    },
+    {
+      "path": "static/assets/dragon/animations/roar.glb",
+      "sha": "f77e73ec4a3ee2f83980572c6525aaa03facbaeb",
+      "size": 110640
+    },
+    {
+      "path": "static/assets/dragon/animations/take-off.glb",
+      "sha": "c442d33ebf13d91aedb30c6317b806834b61f6b3",
+      "size": 110412
+    },
+    {
+      "path": "static/assets/dragon/animations/walk.glb",
+      "sha": "3c1e11809f36170231bfbc557168d1fbf1065426",
+      "size": 89816
+    },
+    {
+      "path": "static/assets/fox/animations/bark.glb",
+      "sha": "4e26ba216a4c8fd66230c328e75dd35dc2c93235",
+      "size": 51844
+    },
+    {
+      "path": "static/assets/fox/animations/bite.glb",
+      "sha": "2dedb5bd4caf59a7ceb621bc4e89c018b3aec062",
+      "size": 51092
+    },
+    {
+      "path": "static/assets/fox/animations/death.glb",
+      "sha": "8efd7b83de61b3635e21b4cd6369189cb865a91f",
+      "size": 54740
+    },
+    {
+      "path": "static/assets/fox/animations/fall.glb",
+      "sha": "b22478b07a8a67047e871ff21af33fad5dcab6e4",
+      "size": 48936
+    },
+    {
+      "path": "static/assets/fox/animations/fetch.glb",
+      "sha": "d54a467323924119805fcb67a2881e1985d54583",
+      "size": 52456
+    },
+    {
+      "path": "static/assets/fox/animations/flip.glb",
+      "sha": "8e5201215ae0d87fdd5c70b3f03114788b41a04e",
+      "size": 64572
+    },
+    {
+      "path": "static/assets/fox/animations/howl.glb",
+      "sha": "734f8fba2918e0ae8b7f22eed373f71a1ef75602",
+      "size": 53392
+    },
+    {
+      "path": "static/assets/fox/animations/idle-alert.glb",
+      "sha": "24c83b6b6f6c10641f7ce0710597374dbef587b8",
+      "size": 56128
+    },
+    {
+      "path": "static/assets/fox/animations/idle.glb",
+      "sha": "2d0ef965b22d226aef5fe1f0043fc22b8bb0a50b",
+      "size": 51788
+    },
+    {
+      "path": "static/assets/fox/animations/jump.glb",
+      "sha": "1514b4ac96b61cd2e7a0ea09f77611c9b224bb20",
+      "size": 54892
+    },
+    {
+      "path": "static/assets/fox/animations/play-bow.glb",
+      "sha": "427cbcd6d805159a40f717b65deda910d1ff838c",
+      "size": 60152
+    },
+    {
+      "path": "static/assets/fox/animations/rest-pose.glb",
+      "sha": "9e78008678a539c4213a7f96803e8606ca902155",
+      "size": 46976
+    },
+    {
+      "path": "static/assets/fox/animations/run.glb",
+      "sha": "cd86aa735fa4268d279e36bffb124b0fc5fc6606",
+      "size": 49428
+    },
+    {
+      "path": "static/assets/fox/animations/scratch-ear.glb",
+      "sha": "a098cbb0ad0d7c06e6e425ce9bc0de70f4b14425",
+      "size": 59048
+    },
+    {
+      "path": "static/assets/fox/animations/shake-off.glb",
+      "sha": "2a8b45e409694d9a3d37f9e94d456fbc313971ee",
+      "size": 64952
+    },
+    {
+      "path": "static/assets/fox/animations/sit.glb",
+      "sha": "a498fd96c718f6550b6ac690cafedd45abe40ee7",
+      "size": 50272
+    },
+    {
+      "path": "static/assets/fox/animations/sleep.glb",
+      "sha": "5dd08575fe185ddb1a920f9a067c5ca60f59e648",
+      "size": 53936
+    },
+    {
+      "path": "static/assets/fox/animations/sneak.glb",
+      "sha": "070e8f1d0d458e68d8c07c9b79ca4b14b3add1b7",
+      "size": 52044
+    },
+    {
+      "path": "static/assets/fox/animations/swim.glb",
+      "sha": "bf4488c92ae1df98086a890d64961bd0e527e420",
+      "size": 49748
+    },
+    {
+      "path": "static/assets/fox/animations/trot.glb",
+      "sha": "8b7733854feabb43751d68672adcb8686b7e2807",
+      "size": 50396
+    },
+    {
+      "path": "static/assets/fox/animations/walk.glb",
+      "sha": "d547aa001e8adf406704158f828da65e81b7c420",
+      "size": 50468
+    },
+    {
+      "path": "static/assets/horse/animations/death.glb",
+      "sha": "1cc0a51989e159a54adacceeeb111d956a50dcb7",
+      "size": 56752
+    },
+    {
+      "path": "static/assets/horse/animations/eating.glb",
+      "sha": "23fbf8be82fa8c30728607e9ee90a8cb1ab027b5",
+      "size": 57428
+    },
+    {
+      "path": "static/assets/horse/animations/headbut.glb",
+      "sha": "cdcbbcea44543aae6e3971ee20f0922fbdc1031e",
+      "size": 54248
+    },
+    {
+      "path": "static/assets/horse/animations/idle.glb",
+      "sha": "81a3c72be67fab47ae48f7c9fb52c9581170fb7f",
+      "size": 54896
+    },
+    {
+      "path": "static/assets/horse/animations/kick.glb",
+      "sha": "89301f5ce555a037cc5df24774cbee53982ed8a4",
+      "size": 55772
+    },
+    {
+      "path": "static/assets/horse/animations/lay-to-idle.glb",
+      "sha": "3f0def880e0f425c59ba47a67315eb846a44317b",
+      "size": 65044
+    },
+    {
+      "path": "static/assets/horse/animations/rear.glb",
+      "sha": "3849e6aed1187fbd141342b911ff9f2d2e621afe",
+      "size": 64036
+    },
+    {
+      "path": "static/assets/horse/animations/rest-pose.glb",
+      "sha": "f1661da98c505e4bbb5f39bdd44a340a59f4c027",
+      "size": 48932
+    },
+    {
+      "path": "static/assets/horse/animations/run.glb",
+      "sha": "f9ec1a26af547b2e3bebb5f5d4ccd18d61ec7ca9",
+      "size": 52160
+    },
+    {
+      "path": "static/assets/horse/animations/sleep.glb",
+      "sha": "535de166972a1e1f91a4bd960d4946b23abc4192",
+      "size": 49628
+    },
+    {
+      "path": "static/assets/horse/animations/trot.glb",
+      "sha": "99d812d680f43d86b2566b1dceb1844d1420f27e",
+      "size": 54680
+    },
+    {
+      "path": "static/assets/horse/animations/turn-left.glb",
+      "sha": "8bf1742529f71fd544af0df242d60807137b1634",
+      "size": 72444
+    },
+    {
+      "path": "static/assets/horse/animations/turn-right.glb",
+      "sha": "d9142746a923cf6d5ccf4465a89c8fc78ee9be65",
+      "size": 72396
+    },
+    {
+      "path": "static/assets/horse/animations/walk.glb",
+      "sha": "10999598270c7bf21eb70db12b4d4e7688281254",
+      "size": 55592
+    },
+    {
+      "path": "static/assets/human/animations/angry.glb",
+      "sha": "e370dcd66e413df3c8a0e9b1a3aa8755d56ac8fa",
+      "size": 59040
+    },
+    {
+      "path": "static/assets/human/animations/attack-ground-pound.glb",
+      "sha": "e9d4c4c7c7e275796a4e6a4c0bbf4a7b604fdba5",
+      "size": 68092
+    },
+    {
+      "path": "static/assets/human/animations/backflip.glb",
+      "sha": "4c4312816bc1cf621341334e5f84679682dbaaf2",
+      "size": 64276
+    },
+    {
+      "path": "static/assets/human/animations/bow-pull-hold.glb",
+      "sha": "75ddcc8a707994d179db836e6ed9b3ceb8bdecab",
+      "size": 56348
+    },
+    {
+      "path": "static/assets/human/animations/bow-pull.glb",
+      "sha": "f84538fe647c2bdbfc5f30eebd045843e421a19f",
+      "size": 59412
+    },
+    {
+      "path": "static/assets/human/animations/bow-release.glb",
+      "sha": "f8843d3522f422419cbe5d8b96c24cd2d3c1422e",
+      "size": 58272
+    },
+    {
+      "path": "static/assets/human/animations/bow.glb",
+      "sha": "35e20151e67fd833ec29bb91d61821cf0907ee5f",
+      "size": 60292
+    },
+    {
+      "path": "static/assets/human/animations/burpee.glb",
+      "sha": "7dc9ea0d7d1b009d93ff4343f1886c5b80fa5e6b",
+      "size": 72432
+    },
+    {
+      "path": "static/assets/human/animations/chest-open.glb",
+      "sha": "cdd73f171f7864d1d8fa080981ba913a7a308f6e",
+      "size": 62360
+    },
+    {
+      "path": "static/assets/human/animations/chop-tree.glb",
+      "sha": "5783762eb565ab3b90cd96d5742adcb80384ee2a",
+      "size": 61052
+    },
+    {
+      "path": "static/assets/human/animations/chop-wood.glb",
+      "sha": "6d686e4670f9b14786ab1d6bc3d933052db4755e",
+      "size": 61760
+    },
+    {
+      "path": "static/assets/human/animations/clapping.glb",
+      "sha": "3acceec5556502dffad90a774602a16e8b37d270",
+      "size": 61608
+    },
+    {
+      "path": "static/assets/human/animations/climb-ladder.glb",
+      "sha": "2241c0b6c9d237ec13349c7f0df6ec62bae61d17",
+      "size": 82852
+    },
+    {
+      "path": "static/assets/human/animations/climb-pipe.glb",
+      "sha": "bb654f01aaf3cf6f96038ce6c520130747b730bd",
+      "size": 62920
+    },
+    {
+      "path": "static/assets/human/animations/climb-wall.glb",
+      "sha": "2f38e63f8d7e2d3190da35bb28f640794c0bf5cb",
+      "size": 71096
+    },
+    {
+      "path": "static/assets/human/animations/climbup-1m-rm.glb",
+      "sha": "d5f87b120fb759fd0e9f4eb3c6fd55fabc8f745e",
+      "size": 61572
+    },
+    {
+      "path": "static/assets/human/animations/confused.glb",
+      "sha": "d31c51cf64caa012354e148e8f2ac6676d867f62",
+      "size": 68444
+    },
+    {
+      "path": "static/assets/human/animations/consume-powerup.glb",
+      "sha": "6f3dccfd3aab7c42bdb3fef75c886b1d2d8a4b0d",
+      "size": 68064
+    },
+    {
+      "path": "static/assets/human/animations/consume.glb",
+      "sha": "738d97420f0b294f5be8a7aa3054d48aae8890ec",
+      "size": 63132
+    },
+    {
+      "path": "static/assets/human/animations/crawl-rm.glb",
+      "sha": "8d6253ad67f41c3d4e3bb08bfb2afbc64f5d20b2",
+      "size": 64284
+    },
+    {
+      "path": "static/assets/human/animations/crawl.glb",
+      "sha": "1c36d2335ada9d79380b6d5e0e6763cc42246484",
+      "size": 63844
+    },
+    {
+      "path": "static/assets/human/animations/crouch-idle.glb",
+      "sha": "68fb2a5e7e981e0ec2d683bee1f169464788bf73",
+      "size": 66396
+    },
+    {
+      "path": "static/assets/human/animations/crouch-walk.glb",
+      "sha": "06ebc2ceee72dcede5ae9b754075f05749a09fbe",
+      "size": 63560
+    },
+    {
+      "path": "static/assets/human/animations/dab.glb",
+      "sha": "3cfb7986e34eaa12d042cf267e41a85e54717c1b",
+      "size": 65144
+    },
+    {
+      "path": "static/assets/human/animations/dagger-stab.glb",
+      "sha": "566fd9c4b4cfd85884b0212bfd98f4e0cc8d7f83",
+      "size": 63248
+    },
+    {
+      "path": "static/assets/human/animations/dance-arm-pump.glb",
+      "sha": "ed063c2299786ff8e8cad89a1ea5de9b3a31fc18",
+      "size": 63360
+    },
+    {
+      "path": "static/assets/human/animations/dance-body-roll.glb",
+      "sha": "bb6c3a6d0a45e13dd17e4e4543832b277a7c208e",
+      "size": 94392
+    },
+    {
+      "path": "static/assets/human/animations/dance-charleston.glb",
+      "sha": "cebd6a68a16a53fca7654e33e54c06b13a7cd1ae",
+      "size": 63876
+    },
+    {
+      "path": "static/assets/human/animations/dance-reach-hip.glb",
+      "sha": "b37c36137a0320c46aef1b0edd498e97188f5d96",
+      "size": 74376
+    },
+    {
+      "path": "static/assets/human/animations/dance-simple.glb",
+      "sha": "8ad06eb158315badf7582e1ab3d3a8b51bd003cd",
+      "size": 60148
+    },
+    {
+      "path": "static/assets/human/animations/death-a.glb",
+      "sha": "ca9410e2c4715dd2acd95dde19d411a3be4cb3c1",
+      "size": 72068
+    },
+    {
+      "path": "static/assets/human/animations/death-b.glb",
+      "sha": "6e1a4a5b41c114c332ad9d805d69bee2a64f0858",
+      "size": 64888
+    },
+    {
+      "path": "static/assets/human/animations/death-c.glb",
+      "sha": "fda6c3a4b8156082d5d42fc892513982075cc7e0",
+      "size": 68596
+    },
+    {
+      "path": "static/assets/human/animations/death-d.glb",
+      "sha": "fcb72562e356ca483f3d9565132bea6ab08c4854",
+      "size": 77876
+    },
+    {
+      "path": "static/assets/human/animations/death-spin-rm.glb",
+      "sha": "2b84d87fce3042189db3db1390543cbc90ffc497",
+      "size": 80848
+    },
+    {
+      "path": "static/assets/human/animations/defend.glb",
+      "sha": "9ed0e067e566f717121fc03d2c39347c542924e2",
+      "size": 60156
+    },
+    {
+      "path": "static/assets/human/animations/dizzy.glb",
+      "sha": "e489ea995dcc94860537e79e218bb74ba1cef7fd",
+      "size": 62984
+    },
+    {
+      "path": "static/assets/human/animations/dodge-back-rm.glb",
+      "sha": "4e022e1345a1bf25820d76865c682403a58e5924",
+      "size": 60396
+    },
+    {
+      "path": "static/assets/human/animations/dodge-back.glb",
+      "sha": "da0ceff44e1ae1c71d7fd176167458cd55b7f691",
+      "size": 60100
+    },
+    {
+      "path": "static/assets/human/animations/dodge-left-rm.glb",
+      "sha": "f901d0f9149a18069ca3a418bedef5c7841c95a1",
+      "size": 60028
+    },
+    {
+      "path": "static/assets/human/animations/dodge-left.glb",
+      "sha": "88e30f7a2697e5ee4ad964082139f5c79e1c22d4",
+      "size": 59912
+    },
+    {
+      "path": "static/assets/human/animations/dodge-right-rm.glb",
+      "sha": "92e9762b725c21d05ffa73d41a7b2a42a7a02396",
+      "size": 60016
+    },
+    {
+      "path": "static/assets/human/animations/dodge-right.glb",
+      "sha": "0f874aa2005061a243792c13e0cb26cccdfb5b02",
+      "size": 59896
+    },
+    {
+      "path": "static/assets/human/animations/driving.glb",
+      "sha": "5712b5999381ada9694092d91fc47734ba453de5",
+      "size": 58228
+    },
+    {
+      "path": "static/assets/human/animations/drumming.glb",
+      "sha": "2f1425469a29b9d7930aaecd60572a3504c96a8f",
+      "size": 65516
+    },
+    {
+      "path": "static/assets/human/animations/drunk-walk.glb",
+      "sha": "6b039fe12abeee28eefdea0dc7cf4157c93e7648",
+      "size": 65896
+    },
+    {
+      "path": "static/assets/human/animations/dual-wield-combo.glb",
+      "sha": "b650a838ea3b1c417f4b79ee59b4e778ef0bdff5",
+      "size": 65220
+    },
+    {
+      "path": "static/assets/human/animations/dual-wield-cross-slash.glb",
+      "sha": "c227d68f92200f40058cab71c05f708436390484",
+      "size": 62216
+    },
+    {
+      "path": "static/assets/human/animations/farm-harvest.glb",
+      "sha": "3a45582c26c9fd4e5fa90c2a1d01db4ec74fa8c9",
+      "size": 65836
+    },
+    {
+      "path": "static/assets/human/animations/farm-plantseed.glb",
+      "sha": "403eea9946dfea660495c7d8ae0d727ea4005a9b",
+      "size": 68184
+    },
+    {
+      "path": "static/assets/human/animations/farm-watering.glb",
+      "sha": "ca0a125488fd12d6a3ce2c87cd0a996d5fb82505",
+      "size": 66644
+    },
+    {
+      "path": "static/assets/human/animations/fighting-idle.glb",
+      "sha": "91be53822cc3faf143982b08736e1ea80dcfffd5",
+      "size": 61296
+    },
+    {
+      "path": "static/assets/human/animations/fighting-left-jab.glb",
+      "sha": "0e7c7c9ea786a1f311d25613b2eff501fd865c3a",
+      "size": 61024
+    },
+    {
+      "path": "static/assets/human/animations/fighting-right-jab.glb",
+      "sha": "204b74c10b335aa3c229de18c298f46b76a6f7d5",
+      "size": 58632
+    },
+    {
+      "path": "static/assets/human/animations/fixing-kneeling.glb",
+      "sha": "b4fcc9da83bd511ff49dc6182de3179dea4d4c9e",
+      "size": 89668
+    },
+    {
+      "path": "static/assets/human/animations/flying-forward-super.glb",
+      "sha": "229b3cd0b8daff202a802b72a730ad9317b3ff9a",
+      "size": 58476
+    },
+    {
+      "path": "static/assets/human/animations/flying-forward.glb",
+      "sha": "89847aef6f253ccb0a46ae259d16d37ff262e9db",
+      "size": 57936
+    },
+    {
+      "path": "static/assets/human/animations/freefall.glb",
+      "sha": "ccdd696ceb7a9569749b9542af915036f5cee87e",
+      "size": 61552
+    },
+    {
+      "path": "static/assets/human/animations/glide.glb",
+      "sha": "7bb3dc8d27e6fa44c840c31b064cf98632922d7f",
+      "size": 58404
+    },
+    {
+      "path": "static/assets/human/animations/greeting.glb",
+      "sha": "866d4d5eb1d1ffd21705fb4514d5dd94f9581b98",
+      "size": 74420
+    },
+    {
+      "path": "static/assets/human/animations/grenade-throw.glb",
+      "sha": "753c7f7edc64e06506d7466b3ddebd2b116ce309",
+      "size": 66580
+    },
+    {
+      "path": "static/assets/human/animations/guitar-playing.glb",
+      "sha": "45acb52291190681f4cd4d81289345606b1e6b94",
+      "size": 70188
+    },
+    {
+      "path": "static/assets/human/animations/hammering.glb",
+      "sha": "3d39613e6445168add02707a51583d2cd62030bc",
+      "size": 59608
+    },
+    {
+      "path": "static/assets/human/animations/head-nod.glb",
+      "sha": "c08a26dab316d007855878712cb8ca4654824e36",
+      "size": 56680
+    },
+    {
+      "path": "static/assets/human/animations/hit-chest.glb",
+      "sha": "bf6a7996badcd82aaa3bd36ceece4cca9f0fba86",
+      "size": 58792
+    },
+    {
+      "path": "static/assets/human/animations/hit-head.glb",
+      "sha": "dfe8313f86be1b292957bf83c59820db3c4971fd",
+      "size": 60372
+    },
+    {
+      "path": "static/assets/human/animations/hit-knockback-rm.glb",
+      "sha": "8af200e243cfdf69ebb4cf2ab85d75a7f1a3c123",
+      "size": 60788
+    },
+    {
+      "path": "static/assets/human/animations/hit-knockback.glb",
+      "sha": "65280a1ef8f8ac8cd7070cdba1c3c8dd775d6c36",
+      "size": 61760
+    },
+    {
+      "path": "static/assets/human/animations/idle-a.glb",
+      "sha": "accbff27c1f92f08d322bb6cb951cae0278fb1c7",
+      "size": 61684
+    },
+    {
+      "path": "static/assets/human/animations/idle-foldarms.glb",
+      "sha": "ff918d2ddbd4b2c23507e4aabdd787c3acf71056",
+      "size": 60384
+    },
+    {
+      "path": "static/assets/human/animations/idle-hurt.glb",
+      "sha": "afb0d802d22459ec971a881b2e4787da2fcd8359",
+      "size": 62908
+    },
+    {
+      "path": "static/assets/human/animations/idle-lantern.glb",
+      "sha": "3b929fd2efcf7a7137ad8a474117fa0d211f5909",
+      "size": 61264
+    },
+    {
+      "path": "static/assets/human/animations/idle-listening.glb",
+      "sha": "af33a7e11ef4b17e2d5057809c5f57b62c547360",
+      "size": 60600
+    },
+    {
+      "path": "static/assets/human/animations/idle-rail-call.glb",
+      "sha": "2b78d69cd4a599b67b80b39468ca9849e853e7e5",
+      "size": 66612
+    },
+    {
+      "path": "static/assets/human/animations/idle-rail.glb",
+      "sha": "f80f499dd96cca80d1b18df189c5d4fa561626a5",
+      "size": 58228
+    },
+    {
+      "path": "static/assets/human/animations/idle-shakeoff.glb",
+      "sha": "1ef7453ecdee800aa9625453a58318d9231f218f",
+      "size": 62420
+    },
+    {
+      "path": "static/assets/human/animations/idle-shield-break.glb",
+      "sha": "e3c1f5147a699f023db4a4dc80069bba5c3692d1",
+      "size": 59976
+    },
+    {
+      "path": "static/assets/human/animations/idle-shield.glb",
+      "sha": "d15172f0b3f99a40c6938e3d65f9770a139c1798",
+      "size": 60696
+    },
+    {
+      "path": "static/assets/human/animations/idle-subtle.glb",
+      "sha": "0a163dc71ec71ec94f7efc461d27b631480f564f",
+      "size": 60440
+    },
+    {
+      "path": "static/assets/human/animations/idle-sword.glb",
+      "sha": "45d1ce1ef736e90e6c0982acf3fb4c274b829fa9",
+      "size": 64824
+    },
+    {
+      "path": "static/assets/human/animations/idle-talking.glb",
+      "sha": "cadd96732d2bf76d4324d728190a343e295b2b51",
+      "size": 69116
+    },
+    {
+      "path": "static/assets/human/animations/idle-talkingphone.glb",
+      "sha": "2b87080cec83251cf0e8eb2398e0e3634fd5f611",
+      "size": 64392
+    },
+    {
+      "path": "static/assets/human/animations/idle-torch.glb",
+      "sha": "b3642020b38bbba5e7396fbb0aab92fb07b12d49",
+      "size": 61148
+    },
+    {
+      "path": "static/assets/human/animations/interact.glb",
+      "sha": "5bbe10c2b534fbee6e26b050389e80da9b6d05d8",
+      "size": 62060
+    },
+    {
+      "path": "static/assets/human/animations/jog.glb",
+      "sha": "8c9913fc04ccb1de5b20cd00aefb543ee7d7dc62",
+      "size": 59744
+    },
+    {
+      "path": "static/assets/human/animations/jump-2-rm.glb",
+      "sha": "d79463c4cb11ca3ad4a0992abe36181a6b273172",
+      "size": 60936
+    },
+    {
+      "path": "static/assets/human/animations/jump-2.glb",
+      "sha": "fefabc728f9015617911e7413b447c1fd06b4e79",
+      "size": 60588
+    },
+    {
+      "path": "static/assets/human/animations/jump-air.glb",
+      "sha": "542492dd221f3ba5cc0e3a47c7a328f5a682f267",
+      "size": 62592
+    },
+    {
+      "path": "static/assets/human/animations/jump-attack.glb",
+      "sha": "224975b426982005b6c26b958203f807d2eb371f",
+      "size": 65680
+    },
+    {
+      "path": "static/assets/human/animations/jump-land.glb",
+      "sha": "f81e2e6d66ccd8bb2193107326a102ba416e9039",
+      "size": 65496
+    },
+    {
+      "path": "static/assets/human/animations/jump-running.glb",
+      "sha": "97f4542cafb75131b01818b825fac9e224c802ad",
+      "size": 59928
+    },
+    {
+      "path": "static/assets/human/animations/jump-start.glb",
+      "sha": "03af0dc204899e564593f45cba0dfd38e44fc775",
+      "size": 65416
+    },
+    {
+      "path": "static/assets/human/animations/jumping-jacks.glb",
+      "sha": "6ff683ec6ba61e7bebf8cfd1cc93a71d6b81a1fe",
+      "size": 60172
+    },
+    {
+      "path": "static/assets/human/animations/kick-front.glb",
+      "sha": "3784d765da9ab028ee668710f66d82517793e829",
+      "size": 60112
+    },
+    {
+      "path": "static/assets/human/animations/kick-roundhouse.glb",
+      "sha": "37b24bb0a7cccbe6c8be597b3c9e774282905bfa",
+      "size": 61004
+    },
+    {
+      "path": "static/assets/human/animations/kick-side.glb",
+      "sha": "4e7635551d0b4a07c343ab545c8ddb9832f87ad2",
+      "size": 61264
+    },
+    {
+      "path": "static/assets/human/animations/kick-spin.glb",
+      "sha": "a077ff16bb9ef598b5d32036d2a25b09b7a5a99c",
+      "size": 65620
+    },
+    {
+      "path": "static/assets/human/animations/kneel.glb",
+      "sha": "6bb1e41a407754c8a904f6340965b98ae08cc5bc",
+      "size": 64708
+    },
+    {
+      "path": "static/assets/human/animations/knife-throw.glb",
+      "sha": "3ac4f189b6109b4b3373931a7f5fc8e917d96e61",
+      "size": 62624
+    },
+    {
+      "path": "static/assets/human/animations/knock.glb",
+      "sha": "6b8b63e2e5721caa470a1a32a37e9554313277c8",
+      "size": 62616
+    },
+    {
+      "path": "static/assets/human/animations/ladder-idle.glb",
+      "sha": "8df07e8afa15a5547dc5cdf65253f3d674d0113d",
+      "size": 61064
+    },
+    {
+      "path": "static/assets/human/animations/land-three-point.glb",
+      "sha": "172ed4f0287218f9828ccb2ca40e859ce1afd9e0",
+      "size": 64568
+    },
+    {
+      "path": "static/assets/human/animations/laytoidle.glb",
+      "sha": "021040c4a4388aef9c12842aa3537119599c4b9c",
+      "size": 67652
+    },
+    {
+      "path": "static/assets/human/animations/ledge-climb-up.glb",
+      "sha": "91070be359e7488b0723f0ece9d0217a6520e9b8",
+      "size": 72172
+    },
+    {
+      "path": "static/assets/human/animations/ledge-hang.glb",
+      "sha": "24a7b8a3c6758b35a4ca7069ca9b1f685d72ee67",
+      "size": 64932
+    },
+    {
+      "path": "static/assets/human/animations/levitate-entrance.glb",
+      "sha": "815f3802631209e4347583a4246bbad66c8c6cd9",
+      "size": 60636
+    },
+    {
+      "path": "static/assets/human/animations/levitate-idle.glb",
+      "sha": "49ec1e2767de1975a6a77ea13be97331cff94795",
+      "size": 61712
+    },
+    {
+      "path": "static/assets/human/animations/meditate.glb",
+      "sha": "fe539d9bd2f90e17115a2090034d8d43ab2e664f",
+      "size": 58416
+    },
+    {
+      "path": "static/assets/human/animations/melee-hook-rec.glb",
+      "sha": "3b347d48d518bb117e4d1859cdfd4337c507de14",
+      "size": 58244
+    },
+    {
+      "path": "static/assets/human/animations/melee-hook.glb",
+      "sha": "d0dd1af435e577d7cb777ef18ed2cbb5da089cc0",
+      "size": 58356
+    },
+    {
+      "path": "static/assets/human/animations/mining.glb",
+      "sha": "98444786e0dd9694a1ebc7ada6296d69751d181b",
+      "size": 61888
+    },
+    {
+      "path": "static/assets/human/animations/moonwalk.glb",
+      "sha": "2b46ad567cacaefb1ebc61b189b413da4cfb08f5",
+      "size": 60020
+    },
+    {
+      "path": "static/assets/human/animations/mount-idle.glb",
+      "sha": "d06ba3162c0aa9059786f6e2b330f06b52ebc3a8",
+      "size": 56324
+    },
+    {
+      "path": "static/assets/human/animations/ninjajump-idle.glb",
+      "sha": "10bb5ace7e43a23fdac7c6e5624d97f172bac4b1",
+      "size": 62668
+    },
+    {
+      "path": "static/assets/human/animations/ninjajump-land.glb",
+      "sha": "5f3cdde5a1167cdda9d8498fc0018d43886eb8d7",
+      "size": 61700
+    },
+    {
+      "path": "static/assets/human/animations/ninjajump-start.glb",
+      "sha": "7bca8831d230aaa3d8051d5c29b8f1db27410f6b",
+      "size": 61240
+    },
+    {
+      "path": "static/assets/human/animations/one-hand-slash-combo.glb",
+      "sha": "0879d0bf4d5c5410ab91ead78c6bc7d636c5e268",
+      "size": 63296
+    },
+    {
+      "path": "static/assets/human/animations/one-hand-weapon-idle.glb",
+      "sha": "30b2eecbaef3be6d796580889a16c30b44ac93db",
+      "size": 59520
+    },
+    {
+      "path": "static/assets/human/animations/open-door.glb",
+      "sha": "49a574af1bf52dd60e1f58d76c51695ec221f273",
+      "size": 74556
+    },
+    {
+      "path": "static/assets/human/animations/overhandthrow.glb",
+      "sha": "a1de0a86ba30613d1757432135ced8e2ffbe359f",
+      "size": 66004
+    },
+    {
+      "path": "static/assets/human/animations/pick-up.glb",
+      "sha": "229f8880618c2b8dc57fe8604de4bbb4eb990f8d",
+      "size": 64636
+    },
+    {
+      "path": "static/assets/human/animations/pickup-table.glb",
+      "sha": "df988ead47299ede8e5291994912943d45251b44",
+      "size": 59980
+    },
+    {
+      "path": "static/assets/human/animations/pistol-aim-down.glb",
+      "sha": "f601dcc1a8d19f562e149506957e68bc3c93b67b",
+      "size": 56324
+    },
+    {
+      "path": "static/assets/human/animations/pistol-aim-neutral.glb",
+      "sha": "ebb9b33ed40f6a1ad0c3a6a84268953e08d97eb6",
+      "size": 56324
+    },
+    {
+      "path": "static/assets/human/animations/pistol-aim-up.glb",
+      "sha": "52d8e0147d7addaf44e68e0bcae0b851dfbfcbab",
+      "size": 56324
+    },
+    {
+      "path": "static/assets/human/animations/pistol-fire.glb",
+      "sha": "a827e1ed85c17aba427c21c697477275b22bb3c7",
+      "size": 57940
+    },
+    {
+      "path": "static/assets/human/animations/pistol-idle-aim.glb",
+      "sha": "46e8fe58c3c759fa6bb74606361afa6615f5005a",
+      "size": 58360
+    },
+    {
+      "path": "static/assets/human/animations/pistol-idle.glb",
+      "sha": "8e98187470b01d4950102e66e0313ab94c70776c",
+      "size": 58964
+    },
+    {
+      "path": "static/assets/human/animations/pistol-prone.glb",
+      "sha": "47a8c940fd533fe7b1e273985370f78a838e654d",
+      "size": 58564
+    },
+    {
+      "path": "static/assets/human/animations/pistol-reload-2.glb",
+      "sha": "b6ee2d669964602268e0a772457f2fa3e6e328fa",
+      "size": 64476
+    },
+    {
+      "path": "static/assets/human/animations/pistol-reload.glb",
+      "sha": "82107eb13d84aaecaa37396b2845050b38592e23",
+      "size": 63188
+    },
+    {
+      "path": "static/assets/human/animations/pistol-shoot.glb",
+      "sha": "93247387c1ebc15a909354183637244e4c5fc16c",
+      "size": 58668
+    },
+    {
+      "path": "static/assets/human/animations/pistol-walk.glb",
+      "sha": "a4be2f12873f1492615cc5e142cda1c8ef89f7b6",
+      "size": 61352
+    },
+    {
+      "path": "static/assets/human/animations/polearm-idle.glb",
+      "sha": "a780779d665ae35e57a2d49fe1beec229a3d73a7",
+      "size": 59076
+    },
+    {
+      "path": "static/assets/human/animations/polearm-run.glb",
+      "sha": "5f38261b53b35c3708ad874c76fde56a005826f0",
+      "size": 59056
+    },
+    {
+      "path": "static/assets/human/animations/power-burst.glb",
+      "sha": "39f2a38196e2e28346c6b2cb4e73a3901e32b8fd",
+      "size": 82168
+    },
+    {
+      "path": "static/assets/human/animations/power-up.glb",
+      "sha": "614ff24dfa08c841ce1781f06a35aea064f062ed",
+      "size": 58324
+    },
+    {
+      "path": "static/assets/human/animations/pray.glb",
+      "sha": "8eb785d0369bb27551723af281769ee4f4fc8c0b",
+      "size": 58340
+    },
+    {
+      "path": "static/assets/human/animations/punch-cross.glb",
+      "sha": "dddf7ac09f6df1e3219de5053f9d07763537d21f",
+      "size": 60808
+    },
+    {
+      "path": "static/assets/human/animations/punch-jab.glb",
+      "sha": "152d0ca6112fb59cd2110f8ddea6466e06b35eaf",
+      "size": 59828
+    },
+    {
+      "path": "static/assets/human/animations/push.glb",
+      "sha": "2963dc37718486496476fbf6019058c91eabb6cd",
+      "size": 66512
+    },
+    {
+      "path": "static/assets/human/animations/pushup.glb",
+      "sha": "29656993c7f90d9254b086042a07b0e892a40d90",
+      "size": 60736
+    },
+    {
+      "path": "static/assets/human/animations/reject.glb",
+      "sha": "c99d757b5195214b4126959d1f563050e59b7831",
+      "size": 69380
+    },
+    {
+      "path": "static/assets/human/animations/rest-pose.glb",
+      "sha": "732f28b186d5c9c4ce4e21da574203b70a35581a",
+      "size": 56308
+    },
+    {
+      "path": "static/assets/human/animations/rifle-fire.glb",
+      "sha": "f4ed439fe7c6e3b20256ec598486402c8198f607",
+      "size": 60656
+    },
+    {
+      "path": "static/assets/human/animations/rifle-idle.glb",
+      "sha": "9c511131416ede346987dba5750010a26a3b6613",
+      "size": 60136
+    },
+    {
+      "path": "static/assets/human/animations/rifle-reload.glb",
+      "sha": "43ce3b24c77b87d29392c16c188b4b5f7e6d8d6b",
+      "size": 64572
+    },
+    {
+      "path": "static/assets/human/animations/rifle-run.glb",
+      "sha": "03fb339dd4b149995c8bbbe15f91c595ffad6341",
+      "size": 59128
+    },
+    {
+      "path": "static/assets/human/animations/rifle-walk.glb",
+      "sha": "bbfbd0213c4e62dcee595778a2c6584b3522d2fd",
+      "size": 60844
+    },
+    {
+      "path": "static/assets/human/animations/roll-rm.glb",
+      "sha": "212abc4c0a55666096fe695cf7347a95ab90cfde",
+      "size": 71980
+    },
+    {
+      "path": "static/assets/human/animations/roll.glb",
+      "sha": "0ccfc90069522e77c22008b7e9def666c9d3b4e2",
+      "size": 71752
+    },
+    {
+      "path": "static/assets/human/animations/rope-hang.glb",
+      "sha": "a9766925481c26ad05e017d96d223d6ad773fabc",
+      "size": 62712
+    },
+    {
+      "path": "static/assets/human/animations/rope-pull.glb",
+      "sha": "1572dad124bd17c78b93f6e2491c8e0ec45756c9",
+      "size": 62748
+    },
+    {
+      "path": "static/assets/human/animations/rope-swing.glb",
+      "sha": "366f453e6d7101e8ba6d587dcfd187eef02e528e",
+      "size": 62200
+    },
+    {
+      "path": "static/assets/human/animations/run-anime.glb",
+      "sha": "37379ed1c7ca3645b25a8b4364c2704966f32ab4",
+      "size": 59432
+    },
+    {
+      "path": "static/assets/human/animations/run-female.glb",
+      "sha": "bc11a49e4c38d18ef5a3e5fb7d834f2244fad7ad",
+      "size": 58912
+    },
+    {
+      "path": "static/assets/human/animations/run-stealth.glb",
+      "sha": "67a2499459c57fc0daefc2229a3f06569e193b01",
+      "size": 57960
+    },
+    {
+      "path": "static/assets/human/animations/shield-dash-rm.glb",
+      "sha": "ff4b6a219eec3e297706b32eef40fb059fb160f7",
+      "size": 61124
+    },
+    {
+      "path": "static/assets/human/animations/shield-oneshot.glb",
+      "sha": "1d87a5f7ee336fbb6c5ba5dad8727f0f59c774e3",
+      "size": 59084
+    },
+    {
+      "path": "static/assets/human/animations/shiver.glb",
+      "sha": "4e09cd06252247e5655d940e2714c5b7bc05148a",
+      "size": 56928
+    },
+    {
+      "path": "static/assets/human/animations/shovel-dig.glb",
+      "sha": "f64ad60e499edea084eebe58b9507a8a153a8ae8",
+      "size": 67600
+    },
+    {
+      "path": "static/assets/human/animations/singing.glb",
+      "sha": "501cdde65956bdaad89fc72324f7b6830b39b8ce",
+      "size": 70568
+    },
+    {
+      "path": "static/assets/human/animations/sit-ground-crying.glb",
+      "sha": "ad0bedfd85f2e69cd40eb36c2ca9b57c4a6e95dd",
+      "size": 60004
+    },
+    {
+      "path": "static/assets/human/animations/sit-ground-idle.glb",
+      "sha": "9b4cd56cc3a0834e815da8e30dc0621d028e2728",
+      "size": 60444
+    },
+    {
+      "path": "static/assets/human/animations/sitting-enter.glb",
+      "sha": "3e54fe61b484dcc2e18ef3c241276f92c8b76acc",
+      "size": 69792
+    },
+    {
+      "path": "static/assets/human/animations/sitting-exit.glb",
+      "sha": "29de0b6a2bbc374d7b0c985f18488f6dbeff58bb",
+      "size": 66940
+    },
+    {
+      "path": "static/assets/human/animations/sitting-idle.glb",
+      "sha": "4a144b4496ac9db7de4ee72ca0d689ffae6b7e30",
+      "size": 59580
+    },
+    {
+      "path": "static/assets/human/animations/sitting-talking.glb",
+      "sha": "130d0ff4cd811f41d3912e472d6f3f8092e733b0",
+      "size": 69964
+    },
+    {
+      "path": "static/assets/human/animations/sitting-writing.glb",
+      "sha": "65dc839ba97479e2ab32f0b5179b6e433f319d02",
+      "size": 60896
+    },
+    {
+      "path": "static/assets/human/animations/sleeping.glb",
+      "sha": "320c35e5f2f46af59d09b30fb43a4653973f4c3f",
+      "size": 58340
+    },
+    {
+      "path": "static/assets/human/animations/slide-exit.glb",
+      "sha": "11ee9d514e9c3c229e1d868e2e2341edad443668",
+      "size": 59644
+    },
+    {
+      "path": "static/assets/human/animations/slide-start.glb",
+      "sha": "605d5b1176954b158d8ceee15ebd0ef382bb2a0c",
+      "size": 60212
+    },
+    {
+      "path": "static/assets/human/animations/slide.glb",
+      "sha": "46c43d15e3813390d1185d3a222348e1a747d128",
+      "size": 66416
+    },
+    {
+      "path": "static/assets/human/animations/spear-throw.glb",
+      "sha": "47349c2c2ade27136fe596f38e217ade7f0d9c25",
+      "size": 62856
+    },
+    {
+      "path": "static/assets/human/animations/spear-thrust.glb",
+      "sha": "577edb8e7d2289363ec334272be403dae121dd0b",
+      "size": 62132
+    },
+    {
+      "path": "static/assets/human/animations/spell-simple-enter.glb",
+      "sha": "30e56d7b7bd1efa9ea14e07c4b8607e8939a45f5",
+      "size": 61304
+    },
+    {
+      "path": "static/assets/human/animations/spell-simple-exit.glb",
+      "sha": "be460712fe999bf8a32c79e272d3c39d1e79c4e6",
+      "size": 60632
+    },
+    {
+      "path": "static/assets/human/animations/spell-simple-idle.glb",
+      "sha": "d859b6e4845326626a0783764dc582fe5fe97fc4",
+      "size": 59756
+    },
+    {
+      "path": "static/assets/human/animations/spell-simple-shoot.glb",
+      "sha": "d91b86921abf475ceef18471369532fd9437bf46",
+      "size": 60548
+    },
+    {
+      "path": "static/assets/human/animations/sprint.glb",
+      "sha": "73466a3332c7da0bbd2b9795394e071c7bd4224e",
+      "size": 59252
+    },
+    {
+      "path": "static/assets/human/animations/staff-combo.glb",
+      "sha": "d0693837114513bc292fb917be7945ff24392209",
+      "size": 68224
+    },
+    {
+      "path": "static/assets/human/animations/staff-spin.glb",
+      "sha": "954414a70ce640cff8d6b1adac51e744764b200d",
+      "size": 59928
+    },
+    {
+      "path": "static/assets/human/animations/strafe-left.glb",
+      "sha": "e7d6be68ff6e22ace3b172dec6ee46fb01015d1f",
+      "size": 60008
+    },
+    {
+      "path": "static/assets/human/animations/strafe-right.glb",
+      "sha": "7e4a2e42f21d79e56d1214b119a54c0cc328e9c2",
+      "size": 59876
+    },
+    {
+      "path": "static/assets/human/animations/swim-2.glb",
+      "sha": "eda6cdb9340c74b929d231907aeb5f0a10ad1384",
+      "size": 60576
+    },
+    {
+      "path": "static/assets/human/animations/swim-fwd.glb",
+      "sha": "78a2479edade333e0172f7a4778c9f09c2cb7d10",
+      "size": 60836
+    },
+    {
+      "path": "static/assets/human/animations/swim-idle.glb",
+      "sha": "3e40a5f0233080759822a13798dcf74ce09a20d4",
+      "size": 73028
+    },
+    {
+      "path": "static/assets/human/animations/sword-attack-air-vertical.glb",
+      "sha": "609f04bde3e0cdfd1ac843e22c1b00afbcf2e97f",
+      "size": 61800
+    },
+    {
+      "path": "static/assets/human/animations/sword-attack-rm.glb",
+      "sha": "421445d1a33ce28406919374cb7b83e78ce449d5",
+      "size": 63456
+    },
+    {
+      "path": "static/assets/human/animations/sword-attack.glb",
+      "sha": "ba81f7e043b4251c0cded160510e44e4ec14e432",
+      "size": 63200
+    },
+    {
+      "path": "static/assets/human/animations/sword-block.glb",
+      "sha": "f014d00444b9ec0eee5517d37345b2ae0dbc8f22",
+      "size": 62316
+    },
+    {
+      "path": "static/assets/human/animations/sword-dash-rm.glb",
+      "sha": "95c9a257c183ba69752b6ada3c75e486de743a20",
+      "size": 66628
+    },
+    {
+      "path": "static/assets/human/animations/sword-regular-a-rec.glb",
+      "sha": "80f2a4960c654606954f918fb7c0e1c60b4bdd7f",
+      "size": 61968
+    },
+    {
+      "path": "static/assets/human/animations/sword-regular-a.glb",
+      "sha": "feecf38a9b6e25bb14f675114206a3ac8a72746c",
+      "size": 59316
+    },
+    {
+      "path": "static/assets/human/animations/sword-regular-b-rec.glb",
+      "sha": "e3c2ba383976fd29ec7168d013d303ff45abb14a",
+      "size": 62284
+    },
+    {
+      "path": "static/assets/human/animations/sword-regular-b.glb",
+      "sha": "129e6c91909f274e527eb2dc72d3c413259d5b85",
+      "size": 59904
+    },
+    {
+      "path": "static/assets/human/animations/sword-regular-c-rm.glb",
+      "sha": "b3db3a560a2b43d6d72bb3ce8b63400383dd21ab",
+      "size": 65056
+    },
+    {
+      "path": "static/assets/human/animations/sword-regular-c.glb",
+      "sha": "4f9ec01ed1871479ba9fbf5ca1741f10942fa36b",
+      "size": 66080
+    },
+    {
+      "path": "static/assets/human/animations/sword-regular-combo.glb",
+      "sha": "ae91800bc2f78a0d12b531d032ab9251a6fbccfd",
+      "size": 71808
+    },
+    {
+      "path": "static/assets/human/animations/texting-walk.glb",
+      "sha": "c15bb67982767299737c3c3e7f170d1a0a08d251",
+      "size": 60968
+    },
+    {
+      "path": "static/assets/human/animations/throw-ball.glb",
+      "sha": "7191bd8a653ee9b13cc96de33d6307c2c6e3bec9",
+      "size": 66588
+    },
+    {
+      "path": "static/assets/human/animations/tightrope-walk.glb",
+      "sha": "1457924d6fc8b49e93bc58085e19660a4af0f36c",
+      "size": 64984
+    },
+    {
+      "path": "static/assets/human/animations/tired-hunched.glb",
+      "sha": "0cc54b2fd403c48ae8efd906dd1d7151be4e6d3e",
+      "size": 58672
+    },
+    {
+      "path": "static/assets/human/animations/tired-kneeling.glb",
+      "sha": "c8825ab5baa466b5626811d0442fda1c42b8b0c0",
+      "size": 59016
+    },
+    {
+      "path": "static/assets/human/animations/tumbling.glb",
+      "sha": "10ca76a65478d57fb93777d492b35a1a3f3e3670",
+      "size": 60968
+    },
+    {
+      "path": "static/assets/human/animations/two-hand-blast.glb",
+      "sha": "157a205363767c6b839a4dfd00f7ccc8d1299e60",
+      "size": 57908
+    },
+    {
+      "path": "static/assets/human/animations/two-handed-horizontal-swing.glb",
+      "sha": "3d49f04258ba4753f503843df6b83ee9de0410fc",
+      "size": 63080
+    },
+    {
+      "path": "static/assets/human/animations/two-handed-overhead-slam.glb",
+      "sha": "d37af85c4581e233b0d52d754ea386fc48d4b1c0",
+      "size": 63784
+    },
+    {
+      "path": "static/assets/human/animations/victory-fist-pump.glb",
+      "sha": "7e1befe0ed29a48e19fab64cb2fd7c33ced9d8e4",
+      "size": 66484
+    },
+    {
+      "path": "static/assets/human/animations/victory.glb",
+      "sha": "7325eb6e83d87f34aadfb0d77509407296fa3ae6",
+      "size": 62560
+    },
+    {
+      "path": "static/assets/human/animations/walk-backwards.glb",
+      "sha": "9665be8cb78a283cc1c9fc8da22e1617a134bfea",
+      "size": 60316
+    },
+    {
+      "path": "static/assets/human/animations/walk-carry.glb",
+      "sha": "0e77536284fb8e68585cabc67db35d20ded41a5f",
+      "size": 61472
+    },
+    {
+      "path": "static/assets/human/animations/walk-cautious.glb",
+      "sha": "631059484641dc63e2ce92216fc13ed5238b7f3b",
+      "size": 70720
+    },
+    {
+      "path": "static/assets/human/animations/walk-female.glb",
+      "sha": "c9141162ea7ca2a3a7fa56f433949b9aa1b17ecc",
+      "size": 64944
+    },
+    {
+      "path": "static/assets/human/animations/walk-formal.glb",
+      "sha": "b744f8fb9a0fe1feb00cd6f6793b79ce8ef5d010",
+      "size": 61740
+    },
+    {
+      "path": "static/assets/human/animations/walk-happy.glb",
+      "sha": "fa53db3f9bfa0c16db25f4d34ae9292d12dd9599",
+      "size": 60012
+    },
+    {
+      "path": "static/assets/human/animations/walk-injured.glb",
+      "sha": "43cb0ba834e27ed78b61c0271f2a46821fedbbaf",
+      "size": 65016
+    },
+    {
+      "path": "static/assets/human/animations/walk-large.glb",
+      "sha": "d264db02884148c1d912f6e1ceac92bd778b7564",
+      "size": 61768
+    },
+    {
+      "path": "static/assets/human/animations/walk-relaxed.glb",
+      "sha": "45e996baa83b5840732aa5ce094ca97cc413ae33",
+      "size": 61260
+    },
+    {
+      "path": "static/assets/human/animations/walk-stealth.glb",
+      "sha": "be8a85411fc87117ffafa5a9f7e88fc92575b59f",
+      "size": 60724
+    },
+    {
+      "path": "static/assets/human/animations/walk.glb",
+      "sha": "4133b908b2d684e11bfb4f31ec9c2bbb612d3b0f",
+      "size": 62692
+    },
+    {
+      "path": "static/assets/human/animations/wall-run.glb",
+      "sha": "40e92013aba0d6f528ea41dfe409a6886977d000",
+      "size": 59404
+    },
+    {
+      "path": "static/assets/human/animations/weapon-block.glb",
+      "sha": "1c53fd15c4a597328913ba3394477ba5bcf12b7d",
+      "size": 63204
+    },
+    {
+      "path": "static/assets/human/animations/weapon-draw.glb",
+      "sha": "280fdbf88767ded859f68ec0df37a4ed21784ecd",
+      "size": 61504
+    },
+    {
+      "path": "static/assets/human/animations/yes.glb",
+      "sha": "a414b008d5e5a9aead92bd3f1deca2d58cc4c0a2",
+      "size": 63532
+    },
+    {
+      "path": "static/assets/human/animations/zombie-idle-2.glb",
+      "sha": "a85f3a9b050c15246dda5e2ebf72d0d0bff55133",
+      "size": 68048
+    },
+    {
+      "path": "static/assets/human/animations/zombie-idle.glb",
+      "sha": "830f0d586df2ebe787331f17e1049cd22899bc95",
+      "size": 63644
+    },
+    {
+      "path": "static/assets/human/animations/zombie-rise.glb",
+      "sha": "d7b6384966fe10311f38ecdf4489b2a9020b15c5",
+      "size": 69740
+    },
+    {
+      "path": "static/assets/human/animations/zombie-run.glb",
+      "sha": "1c0183041409cb62ac9deb968672c45907e327e2",
+      "size": 61552
+    },
+    {
+      "path": "static/assets/human/animations/zombie-scratch.glb",
+      "sha": "1b5b799df7798a47438818c70907b72b8f0a6de0",
+      "size": 67732
+    },
+    {
+      "path": "static/assets/human/animations/zombie-walk-2.glb",
+      "sha": "0beb638850a929779cac250144b30b7474cd14ff",
+      "size": 66840
+    },
+    {
+      "path": "static/assets/human/animations/zombie-walk-3.glb",
+      "sha": "04069b1e38a7157f5c711d13c688dc661a52be31",
+      "size": 64200
+    },
+    {
+      "path": "static/assets/human/animations/zombie-walk.glb",
+      "sha": "10b626549f8abb45facb2e1d465cab914bdb668f",
+      "size": 61220
+    },
+    {
+      "path": "static/assets/human/animations/zombie-yell.glb",
+      "sha": "925582f35ad3018303fff20a56b6aefe862d5205",
+      "size": 82892
+    },
+    {
+      "path": "static/assets/kaiju/animations/attack.glb",
+      "sha": "eee2c1a0d542bc26f82acec5ac4cbf924e45a29d",
+      "size": 59140
+    },
+    {
+      "path": "static/assets/kaiju/animations/death.glb",
+      "sha": "ffe69897bcedaaf72df011377fe8af5f2f337f4f",
+      "size": 71696
+    },
+    {
+      "path": "static/assets/kaiju/animations/hit.glb",
+      "sha": "2d06dbf0c1d754632856feb2b5a0f315cb1c43ed",
+      "size": 54872
+    },
+    {
+      "path": "static/assets/kaiju/animations/idle.glb",
+      "sha": "d9d9b499b28ac2bfa63f72a4ee8ea0d5a060ea83",
+      "size": 60540
+    },
+    {
+      "path": "static/assets/kaiju/animations/rest-pose.glb",
+      "sha": "46093290a87811ef1d7d79418697f0f94db27f7f",
+      "size": 49864
+    },
+    {
+      "path": "static/assets/kaiju/animations/roar.glb",
+      "sha": "487696d9690b62f43cc8e3d197b2bc1179675dfd",
+      "size": 78936
+    },
+    {
+      "path": "static/assets/kaiju/animations/swim.glb",
+      "sha": "b1e9ebf2dc998728a4705122944f198a2b455cce",
+      "size": 64744
+    },
+    {
+      "path": "static/assets/kaiju/animations/tail-attack.glb",
+      "sha": "76729a9b251a1cd3070ce1f006d1913aa49b311a",
+      "size": 66372
+    },
+    {
+      "path": "static/assets/kaiju/animations/walk-rm.glb",
+      "sha": "db5fa5dd110a81baf21351f20735e2079132c73d",
+      "size": 68480
+    },
+    {
+      "path": "static/assets/kaiju/animations/walk.glb",
+      "sha": "3642bb00824d6e622375b71bfbe14a290b0e0720",
+      "size": 68468
+    },
+    {
+      "path": "static/assets/shark/animations/bite.glb",
+      "sha": "0218c40ccd529e395716bc81d733053b2ce68129",
+      "size": 33288
+    },
+    {
+      "path": "static/assets/shark/animations/dead-floating.glb",
+      "sha": "b45adbd73ca7952bb028e43b5ff292d9ea11733e",
+      "size": 31428
+    },
+    {
+      "path": "static/assets/shark/animations/hit.glb",
+      "sha": "8dc99ad4a058b6b89af3cacc98252c6765d59b60",
+      "size": 29604
+    },
+    {
+      "path": "static/assets/shark/animations/idle.glb",
+      "sha": "1a5ab01678af9cf886f5752a7e8341771faf7c25",
+      "size": 31548
+    },
+    {
+      "path": "static/assets/shark/animations/rest-pose.glb",
+      "sha": "baa61da318fd42e92258eff6ba360473bbc43252",
+      "size": 28464
+    },
+    {
+      "path": "static/assets/shark/animations/swim-horizontal.glb",
+      "sha": "bf659f33fd0a86c9b62fc109c0b569a639d1aaa5",
+      "size": 32564
+    },
+    {
+      "path": "static/assets/shark/animations/swim-vertical.glb",
+      "sha": "e56ce94a0e1dadf8d118c5b5ccefb8b837b04dfb",
+      "size": 33904
+    },
+    {
+      "path": "static/assets/snake/animations/bite.glb",
+      "sha": "d787aadec81138748daf46fae89fda09f4c28127",
+      "size": 28320
+    },
+    {
+      "path": "static/assets/snake/animations/coiled.glb",
+      "sha": "75d9b17d566840b04cf46f49747b7e3bfb1f356a",
+      "size": 30608
+    },
+    {
+      "path": "static/assets/snake/animations/dance.glb",
+      "sha": "6bd979fbb9f8781a5fc59da03cd535e01b7b0dbd",
+      "size": 29320
+    },
+    {
+      "path": "static/assets/snake/animations/death.glb",
+      "sha": "c446c4f20cf79e089ffdfc53d24699acb28728be",
+      "size": 30140
+    },
+    {
+      "path": "static/assets/snake/animations/hit.glb",
+      "sha": "a5935a62b5178110d99182adae1afe5297e91e66",
+      "size": 27804
+    },
+    {
+      "path": "static/assets/snake/animations/idle.glb",
+      "sha": "862bc6fadf0ffcedff5c8ec20cd6a8552cd3c8af",
+      "size": 33272
+    },
+    {
+      "path": "static/assets/snake/animations/rest-pose.glb",
+      "sha": "db473d867dd4ca36d663c19b058db1690ae34c67",
+      "size": 24480
+    },
+    {
+      "path": "static/assets/snake/animations/sidewinding.glb",
+      "sha": "ec315f60dfe5f246cd44b3156afdf67d9f19f479",
+      "size": 31180
+    },
+    {
+      "path": "static/assets/spider/animations/attack.glb",
+      "sha": "0d390b3dcd5634520da9f607d86bfc76c3afaba9",
+      "size": 52420
+    },
+    {
+      "path": "static/assets/spider/animations/bite.glb",
+      "sha": "a337e62f05c601556df8f876811aad10f6dcf35b",
+      "size": 51572
+    },
+    {
+      "path": "static/assets/spider/animations/death-2.glb",
+      "sha": "4367bb1cc1373ce934f3dad82254bc7bb918810b",
+      "size": 51312
+    },
+    {
+      "path": "static/assets/spider/animations/death.glb",
+      "sha": "20a0e4d8dd20c0f0e88aa9648ccb9df70c179462",
+      "size": 53252
+    },
+    {
+      "path": "static/assets/spider/animations/eating.glb",
+      "sha": "6fc259314bb7ab9cd51f413de70382eae0eef5e2",
+      "size": 57576
+    },
+    {
+      "path": "static/assets/spider/animations/hit.glb",
+      "sha": "9c6ee5998f19bc40a52a6cc04d2314f6d6224e80",
+      "size": 49832
+    },
+    {
+      "path": "static/assets/spider/animations/idle.glb",
+      "sha": "29757e8063ad1f9062f4c7d2b02098ee5f259241",
+      "size": 62652
+    },
+    {
+      "path": "static/assets/spider/animations/jump.glb",
+      "sha": "2c0693195d1d4f163a7ae0af117102d0a24fffa0",
+      "size": 53976
+    },
+    {
+      "path": "static/assets/spider/animations/rest-pose.glb",
+      "sha": "597ee66a582dac53969b8ae0b29c595552af5905",
+      "size": 46884
+    },
+    {
+      "path": "static/assets/spider/animations/threat-display.glb",
+      "sha": "f226140a45dbb3565a03078d5749bdceaadb171d",
+      "size": 62232
+    },
+    {
+      "path": "static/assets/spider/animations/walk.glb",
+      "sha": "c2e86fcb3a86dfb47706399e974f0685cc58b051",
+      "size": 50704
+    }
+  ]
+}

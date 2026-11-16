@@ -9,3 +9,7 @@ artifacts/
 *.glb
 *.png
 *.jpg
+*.npz
+*.gif
+*.mp4
+node_modules/
