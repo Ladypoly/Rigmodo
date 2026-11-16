@@ -3,12 +3,52 @@
 import json
 import bpy
 from bpy.app.handlers import persistent
-from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty
+from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty, CollectionProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips,motion_playback,motion_store,motion_retarget,motion_library
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips,motion_playback,motion_store,motion_retarget,motion_library,character_context,animation_ui,rig_mapping,motion_contacts,animation_transfer,video_motion,reference_render,video_setup
 
 class LC_Settings(PropertyGroup):
+    ui_motion_pipeline:BoolProperty(default=False,options={'HIDDEN'})
+    keep_motion_copies:BoolProperty(name='Keep motion review copies',default=False)
+    video_job:StringProperty(options={'HIDDEN'})
+    video_jobs:StringProperty(name='Video and capture jobs',subtype='DIR_PATH',default='R:/AI/Rigmodo/Jobs' if __import__('pathlib').Path('R:/').exists() else str(video_motion.cache()/'jobs'))
+    capture_python:StringProperty(name='Capture Python',subtype='FILE_PATH',default=str(video_motion.runtime()))
+    capture_camera:EnumProperty(name='Camera',items=[('static','Static','Fixed camera'),('background','Moving camera','Estimate camera rotation from the background')],default='static')
+    video_ffmpeg:StringProperty(name='FFmpeg',subtype='FILE_PATH',default=__import__('shutil').which('ffmpeg') or str(__import__('pathlib').Path.home()/'miniconda3/Library/bin/ffmpeg.exe'))
+    video_ffprobe:StringProperty(name='FFprobe',subtype='FILE_PATH',default=__import__('shutil').which('ffprobe') or str(__import__('pathlib').Path.home()/'miniconda3/Library/bin/ffprobe.exe'))
+    comfy_url:StringProperty(name='ComfyUI URL',default='http://127.0.0.1:8288')
+    comfy_model:StringProperty(name='H3 checkpoint',default='10Eros_Max_SingularityV2_PRISM2_PikaFlex_0.85_int8HQ.safetensors')
+    comfy_clip:StringProperty(name='Text encoder',default='qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors')
+    comfy_vae:StringProperty(name='Video VAE',default='minimax_h3_video_vae_int8_convrot.safetensors')
+    comfy_audio_vae:StringProperty(name='Audio VAE',default='minimax_h3_audio_vae_fp32.safetensors')
+    comfy_output_node:StringProperty(name='Workflow output node',description='SaveVideo node ID when a workflow returns several videos')
+    comfy_workflow:StringProperty(name='Custom API workflow',subtype='FILE_PATH')
+    comfy_bindings:StringProperty(name='Workflow bindings (JSON)',default='{}')
+    comfy_shot_rules:BoolProperty(name='Add capture shot instructions',default=True)
+
+    ground_height:FloatProperty(name='Ground height (m)',default=0.)
+    mapping_role:EnumProperty(name='Role',items=[(r,r,'') for r in rig_mapping.ROLES],update=rig_mapping.role_changed)
+    mapping_bone:StringProperty(name='Bone')
+    contact_side:EnumProperty(name='Foot',items=[('Left','Left',''),('Right','Right','')])
+    contact_mode:EnumProperty(name='Contact',items=[('PLANT','Planted','Keep the support point still'),('SLIDE','Sliding','Keep floor clearance without locking travel'),('AIR','Airborne','Preserve flight')])
+    contact_start:FloatProperty(name='Start (seconds)',default=0,min=0)
+    contact_end:FloatProperty(name='End (seconds)',default=1,min=0)
+    character:PointerProperty(name='Character',type=bpy.types.Object,poll=lambda self,obj:obj.type in {'ARMATURE','MESH'},update=character_context.changed)
+    character_pinned:BoolProperty(default=False,options={'HIDDEN'})
+    character_meshes:CollectionProperty(type=character_context.LC_CharacterMesh)
+    animation_view:EnumProperty(items=[('CREATE','Create','Create an animation'),('BROWSE','Browse','Reusable motion library'),('EDIT','Edit','Refine the current animation')],default='CREATE')
+    animation_source:EnumProperty(name='Create from',items=[('TEXT','Description','Describe a movement'),('VIDEO','Video','Capture a video'),('POSES','Pose keys','Generate between timeline poses'),('ANIMATION','Animation','Retarget a source Action or file')])
+    text_method:EnumProperty(items=[('DIRECT','3D motion','Generate motion directly'),('COMFY','Video to motion','Generate reference video and capture motion')])
+    motion_duration:FloatProperty(name='Length (seconds)',default=3.,min=.5,max=30,update=animation_ui.duration_changed)
+    create_loop:BoolProperty(name='Loop',default=False,description='Finish a repeating cycle; leave disabled for attacks and deaths')
+    video_path:StringProperty(name='Video',subtype='FILE_PATH')
+    video_reference:StringProperty(name='Reference image',subtype='FILE_PATH')
+    video_cycle:EnumProperty(name='Video loop',items=[('FULL','Use whole clip','Finish this interval as a cycle'),('TRIM','Find repeated cycle','Choose matching poses and velocities conservatively'),('BRIDGE','Generate closing bridge','Use ComfyUI to connect the last video frame back to the first')])
+    video_start:FloatProperty(name='Start (seconds)',default=0,min=0)
+    source_rig:PointerProperty(name='Source rig',type=bpy.types.Object,poll=lambda self,obj:obj.type=='ARMATURE')
+    source_action:PointerProperty(name='Animation',type=bpy.types.Action)
+    animation_file:StringProperty(name='Animation file',subtype='FILE_PATH')
     motion_library_directory: StringProperty(name='Motion library folder',subtype='DIR_PATH',default=motion_store.DEFAULT_ROOT)
     library_job: StringProperty(default='',options={'HIDDEN'})
     rig_type: EnumProperty(name='Character',items=[('HUMANOID','Humanoid','Standard game character rig'),('CREATURE','Creature','UniRig predicts a custom hierarchy for animals and other articulated shapes')],default='HUMANOID')
@@ -114,7 +154,7 @@ class LC_Settings(PropertyGroup):
     setup_status: StringProperty(default='')
     setup_job: StringProperty(default='')
     show_controls: BoolProperty(name='Joint, skinning and export controls',default=False)
-    ui_step: EnumProperty(name='Step',items=[('RIG','Rig','Create or adjust joints'),('SKIN','Skin','Bind and refine weights'),('MOTION','Motion','Generate and preview animation')],default='RIG')
+    ui_step: EnumProperty(name='Step',items=[('RIG','Rig','Create or adjust joints'),('SKIN','Skin','Bind and refine weights'),('MOTION','Animate','Create, browse and edit animation')],default='RIG')
     ui_rig_mode: EnumProperty(name='Rigging',items=[('AUTO','Automatic','Infer joints from geometry'),('ASSISTED','Landmarks','Guide joints in a front-view editor')],default='AUTO')
     ui_skin_advanced: BoolProperty(name='Advanced skinning',default=False)
     ui_skin_method: EnumProperty(name='Binding',items=[('AI','AI','Use learned skinning'),('GEODESIC','Surface','Bind along surface edges'),('VOXEL','Volume','Closed-volume heat with surface fallback')],default='AI')
@@ -272,6 +312,7 @@ class WorkerModal:
         except (ReferenceError, AttributeError):
             skinning.cancel(self._folder); self._finish(context); return {'CANCELLED'}
         if event.type == 'ESC' or processing_visuals.cancelled(self._visual):
+            if hasattr(self,'cancel_external'):self.cancel_external()
             skinning.cancel(self._folder); setattr(settings, self.status_property, 'Cancelled; source character preserved')
             self._finish(context); return {'CANCELLED'}
         if event.type != 'TIMER': return {'PASS_THROUGH'}
@@ -291,8 +332,49 @@ class WorkerModal:
             self._finish(context,'FAILED'); return {'CANCELLED'}
         self._finish(context,'FINISHED'); return {'FINISHED'}
     def cancel(self, context):
-        if self._folder: skinning.cancel(self._folder)
+        if self._folder:
+            if hasattr(self,'cancel_external'):self.cancel_external()
+            skinning.cancel(self._folder)
         self._finish(context)
+
+
+class LC_OT_capture_setup(WorkerModal,Operator):
+    bl_idname='local_character.setup_video_capture';bl_label='Install / Verify Video Capture'
+    status_property='setup_status';job_property='setup_job';apply_operator='finish_capture_setup'
+    verify_only:BoolProperty(default=False,options={'HIDDEN'})
+    def execute(self,context):
+        try:
+            from pathlib import Path
+            import tempfile
+            if skinning._jobs:raise ValueError('Wait for the current task to finish')
+            settings=configuration.settings(context);python=Path(bpy.path.abspath(settings.setup_python))
+            if not python.is_file():raise ValueError('Choose Python 3.11 in Extension Settings → Setup')
+            folder=Path(tempfile.mkdtemp(prefix='rigmodo-capture-setup-'));self._folder=folder
+            motion_store.atomic(folder/'request.json',dict(python=bpy.path.abspath(settings.capture_python),models=str(Path(bpy.path.abspath(settings.models_directory))/'gemx'),source=str(video_motion.cache()/'gem-x'),verify_only=self.verify_only))
+            image_pose.launch(folder,[str(python),str(Path(__file__).with_name('video_setup.py')),'--',str(folder)],'Setting up video capture')
+            if bpy.app.background:context.scene.lc_settings.setup_job=str(folder);return {'FINISHED'}
+            return self.begin(context)
+        except (ValueError,OSError,RuntimeError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+
+
+class LC_OT_capture_setup_finish(Operator):
+    bl_idname='local_character.finish_capture_setup';bl_label='Finish Capture Setup'
+    def execute(self,context):
+        settings=configuration.settings(context)
+        if not video_setup.ready(bpy.path.abspath(settings.capture_python),__import__('pathlib').Path(bpy.path.abspath(settings.models_directory))/'gemx'):
+            self.report({'ERROR'},'Capture setup was incomplete; inspect its worker log');return {'CANCELLED'}
+        context.scene.lc_settings.setup_status='Video capture ready';return {'FINISHED'}
+
+
+class LC_OT_video_job(WorkerModal,Operator):
+    bl_idname='local_character.run_video_job';bl_label='Create Animation'
+    status_property='motion_status';job_property='video_job';apply_operator='finish_video_motion'
+    def execute(self,context):
+        from pathlib import Path
+        self._folder=Path(context.scene.lc_settings.video_job);return self.begin(context)
+    def cancel_external(self):
+        try:video_motion.cancel_external(self._folder)
+        except (OSError,ValueError):pass
 
 
 class LC_OT_library_job(WorkerModal,Operator):
@@ -539,6 +621,7 @@ class LC_OT_apply_placement(Operator):
             for obj in context.selected_objects:obj.select_set(False)
             for obj in [rig,*meshes]:obj.select_set(True)
             context.view_layer.objects.active=rig
+            if settings.character_pinned:character_context.pin(context,rig,meshes)
         except (ValueError,OSError,RuntimeError,KeyError) as exc:
             settings.placement_status=str(exc);self.report({'ERROR'},str(exc));return {'CANCELLED'}
         review=[r['side']+' '+r['finger'] for r in result.get('hand_report',[]) if r.get('requires_review')]
@@ -662,6 +745,7 @@ class LC_OT_unimate(WorkerModal,Operator):
             if not unimate.ready(settings.unimate_provider):raise ValueError('Install Creature Motion in Extension Settings → Setup')
             self._folder=unimate.prepare(context,rig,settings.motion_prompt,settings.unimate_frames,settings.motion_seed,
                 settings.motion_in_place,rig.lc_unimate_forward,settings.unimate_guidance,bpy.path.abspath(settings.unimate_provider))
+            animation_transfer.record_options(context,self._folder)
             unimate.start(self._folder)
         except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
         return self.begin(context)
@@ -677,6 +761,8 @@ class LC_OT_apply_unimate(Operator):
             request=json.loads((Path(settings.unimate_job)/'request.json').read_text())
             sources=[bpy.data.objects.get(request['rig']),*[bpy.data.objects.get(m['name']) for m in request['meshes']]]
             collection,rig,meshes,action,report=unimate.apply(context,settings.unimate_job)
+            if animation_transfer.adopt_generated(context,settings.unimate_job,request,collection,rig,meshes,action):
+                self.report({'INFO'},'Animation created on the selected character');return {'FINISHED'}
             configuration.hide_sources(context,sources)
             for obj in context.selected_objects:obj.select_set(False)
             for obj in [rig,*meshes]:obj.select_set(True)
@@ -725,12 +811,13 @@ class LC_OT_motion(WorkerModal, Operator):
             if settings.motion_engine=='MOTIONBRICKS':
                 if not motionbricks.ready(bpy.path.abspath(settings.motionbricks_provider)):raise ValueError('Install MotionBricks in Extension Settings → Setup')
                 self._folder=motionbricks.prepare(context,rig,settings.motion_seed,settings.motion_in_place,bpy.path.abspath(settings.motionbricks_provider))
+                animation_transfer.record_options(context,self._folder)
                 motionbricks.start(self._folder)
             else:
-                self._folder=motion_jobs.prepare(context,rig,settings.motion_prompt,settings.motion_frames,
-                    settings.motion_steps,settings.motion_seed,settings.motion_in_place,keyframes=settings.motion_use_keyframes,start_frame=context.scene.frame_start)
+                self._folder=motion_jobs.prepare(context,rig,settings.motion_prompt,settings.motion_frames,settings.motion_steps,settings.motion_seed,settings.motion_in_place,keyframes=settings.motion_use_keyframes,start_frame=context.scene.frame_start)
+                animation_transfer.record_options(context,self._folder)
                 motion_jobs.start(self._folder,bpy.path.abspath(settings.motion_provider))
-        except (ValueError,OSError,RuntimeError,KeyError) as exc: self.report({'ERROR'},str(exc)); return {'CANCELLED'}
+        except (ValueError,OSError,RuntimeError,KeyError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
         return self.begin(context)
 
 
@@ -747,10 +834,13 @@ class LC_OT_apply_motion(Operator):
             source_objects=[bpy.data.objects.get(request['rig']),*[bpy.data.objects.get(m['name']) for m in request['meshes']]]
             collection,rig,meshes,action,report=motion_apply.apply(context,settings.motion_job,settings.motion_hand_curl,settings.motion_contacts,settings.motion_heading,
                 hand_pose.settings(settings) if settings.hand_controls else None)
+            if animation_transfer.adopt_generated(context,settings.motion_job,request,collection,rig,meshes,action):
+                self.report({'INFO'},'Animation created on the selected character');return {'FINISHED'}
             configuration.hide_sources(context,source_objects)
             for obj in context.selected_objects: obj.select_set(False)
             for obj in [rig,*meshes]: obj.select_set(True)
             context.view_layer.objects.active=rig
+            if settings.character_pinned:character_context.pin(context,rig,meshes)
         except (ValueError,OSError,RuntimeError,KeyError) as exc:
             settings.motion_status=str(exc); self.report({'ERROR'},str(exc)); return {'CANCELLED'}
         settings.motion_status='Editable motion copy created; inspect contacts and export the selected Action'
@@ -925,9 +1015,10 @@ class LC_PT_main(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Rigmodo"
+    bl_ui_units_x = 18
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (LC_Settings, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, *motion_clips.CLASSES, *motion_library.CLASSES, LC_OT_library_job, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (*character_context.CLASSES, LC_Settings, *animation_ui.CLASSES,*rig_mapping.CLASSES,*motion_contacts.CLASSES,*animation_transfer.CLASSES,*video_motion.CLASSES,*reference_render.CLASSES,LC_OT_capture_setup,LC_OT_capture_setup_finish,LC_OT_video_job, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, *motion_clips.CLASSES, *motion_library.CLASSES, LC_OT_library_job, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
@@ -945,16 +1036,23 @@ def register():
     bpy.types.Scene.lc_settings = PointerProperty(type=LC_Settings)
     bpy.app.timers.register(migrate_workflow_tab,first_interval=0)
     bpy.app.handlers.load_post.append(migrate_workflow_tab)
+    bpy.types.VIEW3D_HT_header.prepend(animation_ui.editor_header)
     motion_clips.register()
     motion_playback.register()
     motion_library.register()
+    bpy.types.Action.lc_contact_source=PointerProperty(type=bpy.types.Action)
+    if animation_ui.cleanup not in bpy.app.handlers.load_pre:bpy.app.handlers.load_pre.append(animation_ui.cleanup)
     auto_pose.register()
     image_pose.register()
     processing_visuals.register()
 
 def unregister():
+    animation_ui.cleanup()
+    bpy.types.VIEW3D_HT_header.remove(animation_ui.editor_header)
+    if animation_ui.cleanup in bpy.app.handlers.load_pre:bpy.app.handlers.load_pre.remove(animation_ui.cleanup)
     if hasattr(bpy.types.Bone,'lc_unimate_label'):del bpy.types.Bone.lc_unimate_label
     if hasattr(bpy.types.Object,'lc_unimate_forward'):del bpy.types.Object.lc_unimate_forward
+    del bpy.types.Action.lc_contact_source
     motion_library.unregister()
     motion_playback.unregister()
     motion_clips.unregister()

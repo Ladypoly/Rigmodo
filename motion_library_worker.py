@@ -19,7 +19,11 @@ def download(url,path,blob,size):
 def import_file(path,root,source,license,family,store):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     suffix=path.suffix.lower()
-    if suffix=='.fbx':bpy.ops.import_scene.fbx(filepath=str(path))
+    if suffix=='.bvh':
+        import addon_utils
+        addon_utils.enable('io_anim_bvh')
+        bpy.ops.import_anim.bvh(filepath=str(path),update_scene_fps=True)
+    elif suffix=='.fbx':bpy.ops.import_scene.fbx(filepath=str(path))
     elif suffix in {'.glb','.gltf'}:bpy.ops.import_scene.gltf(filepath=str(path))
     elif suffix=='.blend':
         with bpy.data.libraries.load(str(path),link=False) as (available,loaded):loaded.objects=available.objects;loaded.actions=available.actions
@@ -84,7 +88,7 @@ def main(folder):
     elif request['kind']=='import':
         for name in request['files']:
             path=Path(name).resolve()
-            if not path.is_file() or path.suffix.lower() not in {'.fbx','.glb','.gltf','.blend'}:raise ValueError('Unsupported motion file: '+str(path))
+            if not path.is_file() or path.suffix.lower() not in {'.fbx','.glb','.gltf','.blend','.bvh'}:raise ValueError('Unsupported motion file: '+str(path))
             files.append((path,request.get('source','Local import'),request.get('license','User-provided'),''))
     else:raise ValueError('Unknown motion-library job')
     added=[];errors=[];skipped=[]

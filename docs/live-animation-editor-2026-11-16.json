@@ -1,0 +1,14 @@
+{
+  "tools_and_finish_header": true,
+  "bound_meshes": 2,
+  "file_saved": false,
+  "mcp_port": 9876,
+  "retopoflow_installed_version_reviewed": "3.4.11",
+  "motion_editor_open": true,
+  "source_video_visible": true,
+  "live_reload_preserved_frame": true,
+  "live_reload_preserved_scene": true,
+  "accepted_armatures": 1,
+  "version": "0.18.0",
+  "passed": true
+}

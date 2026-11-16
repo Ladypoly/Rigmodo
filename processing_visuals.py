@@ -48,6 +48,12 @@ def start(context,kind,folder=None,run=None):
     if rig is None:
         rigs={m.object for o in meshes for m in o.modifiers if m.type=='ARMATURE' and m.object}
         if len(rigs)==1:rig=next(iter(rigs))
+    if kind!='SETUP':
+        from . import character_context
+        try:
+            pinned=character_context.resolve(context)
+            if pinned is not None:rig,scope=pinned;meshes=tuple(scope[:MAX_MESHES])
+        except ValueError:pass
     if kind=='SETUP':rig=None;meshes=()
     token=uuid.uuid4().hex
     _sessions[token]=Session(context.scene,kind,str(folder or ''),rig,meshes,run)

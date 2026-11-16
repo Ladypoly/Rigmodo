@@ -96,6 +96,17 @@ def bounds(action,slot):
     return lo,hi
 
 
+def sample_times(values):
+    values=np.unique(np.round(np.asarray(values,dtype=np.float64),6))
+    # Float32 capture times and the bake grid can differ by microseconds.
+    kept=[float(values[0])]
+    for value in values[1:]:
+        if value-kept[-1]>1e-5:kept.append(float(value))
+    if len(kept)==1:kept.append(float(values[-1]))
+    else:kept[-1]=float(values[-1])
+    return np.asarray(kept,dtype=np.float32)
+
+
 def capture(context,rig,action,slot):
     if any(p.constraints for p in rig.pose.bones) or rig.constraints:raise ValueError('Bake control-rig constraints before saving to the library')
     lo,hi=bounds(action,slot);fps=context.scene.render.fps/context.scene.render.fps_base
@@ -103,14 +114,16 @@ def capture(context,rig,action,slot):
     if duration>180 or len(rig.data.bones)>512:raise ValueError('Library clips are limited to 180 seconds and 512 bones')
     names=[b.name for b in rig.data.bones];parents=[names.index(b.parent.name) if b.parent else -1 for b in rig.data.bones]
     old=rig.animation_data;previous=(old.action,old.action_slot,old.use_nla,old.action_blend_type,old.action_influence) if old else None
-    frame=context.scene.frame_current;sub=context.scene.frame_subframe;pose=[p.matrix_basis.copy() for p in rig.pose.bones]
+    frame=context.scene.frame_current;sub=context.scene.frame_subframe;pose=[p.matrix_basis.copy() for p in rig.pose.bones];modes={p.name:p.rotation_mode for p in rig.pose.bones}
     reference=rig.matrix_world.copy();samples=max(2,math.ceil(duration*30)+1);values=[]
     keys=[float(p.co.x) for c in curves_for(action,slot) for p in (*c.keyframe_points,*c.sampled_points) if lo<=p.co.x<=hi]
-    times=np.unique(np.round((np.r_[np.linspace(lo,hi,samples),keys]-lo)/fps,6).astype(np.float32))
+    times=sample_times((np.r_[np.linspace(lo,hi,samples),keys]-lo)/fps)
     times[0]=0.;times[-1]=duration;frames=lo+times.astype(np.float64)*fps
     if len(frames)>30000 or len(frames)*len(names)*64>200*1024*1024:raise ValueError('Motion is too dense; trim or simplify it before saving')
     try:
-        ad=rig.animation_data_create();ad.action=action;ad.action_slot=slot;ad.use_nla=False;ad.action_blend_type='REPLACE';ad.action_influence=1.
+        from . import animation
+        animation.attach_action(rig,{'action':action,'slot':slot});ad=rig.animation_data
+        for p,matrix in zip(rig.pose.bones,pose):p.matrix_basis=matrix
         context.scene.frame_set(math.floor(lo),subframe=lo%1);context.view_layer.update();reference=rig.matrix_world.copy()
         for f in frames:
             context.scene.frame_set(math.floor(f),subframe=f%1);context.view_layer.update()
@@ -119,17 +132,35 @@ def capture(context,rig,action,slot):
         data=dict(names=np.asarray(names),parents=np.asarray(parents,dtype=np.int32),rest=np.asarray([b.matrix_local for b in rig.data.bones],dtype=np.float32),
                   poses=np.asarray(values,dtype=np.float32),times=times,
                   labels=np.asarray([getattr(b,'lc_unimate_label',b.get('lc_unimate_label','')) for b in rig.data.bones]))
+        from . import rig_mapping
+        roles=rig_mapping.names(rig)
+        if roles!=[rig_mapping.canonical(n) for n in names]:data['roles']=np.asarray(roles)
+        samples=action.get('lc_contact_samples')
+        if samples:
+            values=json.loads(samples)
+            data['contact_probabilities']=np.column_stack([np.interp(data['times'],values['times'],np.asarray(values['probabilities'])[:,i]) for i in range(2)]).astype(np.float32)
+        metadata={key:action[key] for key in ('lc_contact_overrides','lc_capture_provenance','lc_capture_video','lc_capture_offset_seconds','lc_motion_prompt','lc_library_source','lc_library_license') if key in action}
+        if metadata:data['provenance']=np.asarray([json.dumps(metadata)])
         validate(data);return data
     finally:
         if previous:
             ad.action,ad.action_slot,ad.use_nla,ad.action_blend_type,ad.action_influence=previous
         else:rig.animation_data_clear()
-        for p,matrix in zip(rig.pose.bones,pose):p.matrix_basis=matrix
+        for p,matrix in zip(rig.pose.bones,pose):p.rotation_mode=modes[p.name];p.matrix_basis=matrix
         context.scene.frame_set(frame,subframe=sub);context.view_layer.update()
 
 
 def validate(data):
     names=data['names'];n=len(names);poses=data['poses'];f=len(data['times'])
+    if 'roles' in data and (data['roles'].shape!=(n,) or data['roles'].dtype.kind not in 'US'):raise ValueError('Invalid humanoid role array')
+    if 'provenance' in data:
+        if data['provenance'].shape!=(1,) or data['provenance'].dtype.kind not in 'US' or data['provenance'].nbytes>256*1024:raise ValueError('Invalid motion provenance')
+        metadata=json.loads(str(data['provenance'][0]))
+        if not isinstance(metadata,dict) or any(not isinstance(v,(str,int,float,bool)) for v in metadata.values()):raise ValueError('Motion provenance must contain simple values')
+    if 'source_times' in data and (data['source_times'].shape!=(f,) or not np.isfinite(data['source_times']).all() or not np.all(np.diff(data['source_times'])>0)):raise ValueError('Invalid source timestamps')
+    if 'contact_probabilities' in data:
+        probabilities=data['contact_probabilities']
+        if probabilities.shape!=(f,2) or not np.isfinite(probabilities).all() or (probabilities<0).any() or (probabilities>1).any():raise ValueError('Invalid foot-contact probabilities')
     if not 1<=n<=512 or len(set(map(str,names)))!=n or not 2<=f<=30000:raise ValueError('Invalid motion dimensions')
     if data['rest'].shape!=(n,4,4) or poses.shape!=(f,n,4,4) or data['parents'].shape!=(n,):raise ValueError('Invalid skeleton or pose array shape')
     if not all(data[k].dtype.kind in 'fiu' and np.isfinite(data[k]).all() for k in ('rest','poses','times')):raise ValueError('Motion contains invalid numeric values')
@@ -142,8 +173,11 @@ def validate(data):
             visited.add(p);p=int(data['parents'][p])
 
 
-def read(root,key):
-    path=clip_dir(root,key)/'motion.npz'
+def read(root,key):return read_file(clip_dir(root,key)/'motion.npz')
+
+
+def read_file(path):
+    path=Path(path)
     if path.stat().st_size>100*1024*1024:raise ValueError('Motion payload is too large')
     import zipfile
     with zipfile.ZipFile(path) as z:
@@ -154,7 +188,12 @@ def read(root,key):
                 reader=np.lib.format.read_array_header_1_0 if version==(1,0) else np.lib.format.read_array_header_2_0
                 shape,_,dtype=reader(stream)
                 if dtype.hasobject or math.prod(shape)*dtype.itemsize>200*1024*1024:raise ValueError('Unsafe motion array header')
-    with np.load(path,allow_pickle=False) as archive:data={k:archive[k] for k in ('names','parents','rest','poses','times','labels')}
+    with np.load(path,allow_pickle=False) as archive:
+        data={k:archive[k] for k in ('names','parents','rest','poses','times','labels')}
+        if 'roles' in archive:data['roles']=archive['roles']
+        if 'contact_probabilities' in archive:data['contact_probabilities']=archive['contact_probabilities']
+        if 'source_times' in archive:data['source_times']=archive['source_times']
+        if 'provenance' in archive:data['provenance']=archive['provenance']
     validate(data);return data
 
 
@@ -183,6 +222,11 @@ def write(root,data,name,source='Own animation',license='User-provided',family='
     validate(data)
     digest=hashlib.sha256()
     for k in ('names','parents','rest','poses','times','labels'):digest.update(data[k].tobytes())
+    if 'roles' in data:digest.update(data['roles'].tobytes())
+    if 'contact_probabilities' in data:digest.update(data['contact_probabilities'].tobytes())
+    if 'provenance' in data:
+        overrides=json.loads(str(data['provenance'][0])).get('lc_contact_overrides')
+        if overrides:digest.update(overrides.encode('utf-8'))
     key=digest.hexdigest()[:32]
     with locked(root):return _write(root,key,data,name,source,license,family,loop,tags)
 
@@ -193,7 +237,7 @@ def _write(root,key,data,name,source,license,family,loop,tags):
     if any(c['id']==key for c in existing['clips']):return key,False
     temporary=folder/'motion.pending.npz';np.savez_compressed(temporary,**data);os.replace(temporary,folder/'motion.npz')
     thumbnail(data,folder/'preview.png')
-    record=dict(id=key,name=name,source=source,license=license,family=family or ('Human' if humanoid(data['names']) else 'Creature'),
+    record=dict(id=key,name=name,source=source,license=license,family=family or ('Human' if humanoid(data.get('roles',data['names'])) else 'Creature'),
                 tags=tags,duration=float(data['times'][-1]),bones=len(data['names']),loop=bool(loop),favorite=False)
     atomic(folder/'clip.json',record);existing['clips'].append(record);atomic(Path(root)/'catalog.json',existing)
     return key,True

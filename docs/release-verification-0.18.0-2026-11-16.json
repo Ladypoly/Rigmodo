@@ -1,0 +1,261 @@
+{
+  "version": "0.18.0",
+  "extension_zip_validated": true,
+  "source_modules_compile": true,
+  "private_assets_excluded": true,
+  "artifacts": {
+    "local_character-0.18.0.zip": {
+      "bytes": 401709,
+      "sha256": "fddd408f74f327eda87143ee12877f312c61a828533edcaf9d583ffe74706a1c"
+    },
+    "local_character-unity-companion-0.18.0.zip": {
+      "bytes": 12333,
+      "sha256": "9c079e5b22fdd4ebcb8ab76bb7f90352284522d3ba22f0248cbe3a38c9ef2b7e"
+    }
+  },
+  "evidence": {
+    "version": "0.18.0",
+    "passed": true,
+    "checks": {
+      "character": {
+        "passed": true,
+        "pinned_rig_and_mesh_scope": true,
+        "selection_changes_safe": true,
+        "removed_character_rejected": true,
+        "survives_save_reload": true,
+        "registration_cycle": true,
+        "duration_in_seconds": true
+      },
+      "contacts": {
+        "passed": true,
+        "planted_drift_reduced": true,
+        "airborne_arc_preserved": true,
+        "in_place_stride_preserved": true,
+        "original_action_preserved": true,
+        "no_new_objects": true,
+        "rest_and_lengths_preserved": true,
+        "maximum_length_error": 1.231115149269435e-07
+      },
+      "transfer": {
+        "passed": true,
+        "retarget_ground_loop_pipeline": true,
+        "periodic_contacts": true,
+        "loop_position_seam_m": 0.0,
+        "source_action_create_workflow": true,
+        "pinned_target_used": true,
+        "source_rig_and_action_preserved": true
+      },
+      "generated": {
+        "passed": true,
+        "generated_motion_same_character": true,
+        "owned_review_removed": true,
+        "original_action_unchanged": true,
+        "internal_variants_hidden": true,
+        "different_spine_counts": true,
+        "bone_lengths_preserved": true,
+        "contact_overrides_validated": true
+      },
+      "artist_keys": {
+        "passed": true,
+        "artist_anchors_preserved": true,
+        "arbitrary_timeline_start": true,
+        "source_action_preserved": true,
+        "request_hash_sealed": true,
+        "maximum_quaternion_error": 0.0
+      },
+      "library": {
+        "passed": true,
+        "real_cc0_source": true,
+        "humanoid_a_pose_retarget": true,
+        "mirror_and_spacing": true,
+        "speed_and_trim": true,
+        "lengths_preserved": true,
+        "maximum_length_error": 1.874134319956866e-07,
+        "source_capture_preserved": true,
+        "data_roundtrip": true,
+        "duplicate_detection": true,
+        "preview_cancel_preserved": true,
+        "no_new_objects": true,
+        "favorites_persist": true,
+        "path_validation": true,
+        "range_validation": true,
+        "target_scale_and_drivers_validated": true,
+        "starter_clips": 330
+      },
+      "rotation": {
+        "passed": true,
+        "malformed_mode_metadata_ignored": true,
+        "euler_preview_restored": true,
+        "original_rotation_order_retained": true,
+        "clip_switch_restores_rotation_modes": true
+      },
+      "one_shot": {
+        "passed": true,
+        "attack_and_death_default_once": true,
+        "walk_default_loop": true,
+        "explicit_override": true,
+        "full_endpoint_for_one_shot": true,
+        "loop_duplicate_endpoint_excluded": true,
+        "per_clip_export_loop": true,
+        "legacy_export_fallback_preserved": true,
+        "generated_prompt_stamped": true,
+        "handlers_registered_once": true
+      },
+      "bvh": {
+        "passed": true,
+        "bvh_ingestion": true,
+        "physical_timestamps": true,
+        "source_motion_preserved": true
+      },
+      "workflow": {
+        "passed": true,
+        "h3_constraints": true,
+        "loop_and_bridge_references": true,
+        "workflow_bindings_validated": true,
+        "owned_queue_cancel_only": true,
+        "no_global_interrupt": true,
+        "credential_url_rejected": true,
+        "pose_aware_cycle_selection": true
+      },
+      "video": {
+        "passed": true,
+        "real_gemx_worker": true,
+        "same_character": true,
+        "contacts": true,
+        "loop": true,
+        "metrics": {
+          "provider": "GEM-X",
+          "quality": {
+            "missing_track_frames": [],
+            "other_person_frames": [],
+            "mean_joint_confidence": 0.9622048139572144,
+            "low_confidence_frames": []
+          },
+          "source_revision": "4aef1452e5df171deff4f293c08e643eb450981e",
+          "elapsed_seconds": 26.437999999998283,
+          "device": "cuda",
+          "peak_torch_bytes": 3674924032,
+          "frames": 60,
+          "fps": 30,
+          "cache_hit": true
+        }
+      },
+      "comfy": {
+        "passed": true,
+        "real_comfy_server": true,
+        "actual_capture": true,
+        "exact_prompt_output": true,
+        "same_character": true,
+        "contacts": true,
+        "loop": true,
+        "portable_library_confidence": true,
+        "metrics": {
+          "provider": "GEM-X",
+          "quality": {
+            "missing_track_frames": [],
+            "other_person_frames": [],
+            "mean_joint_confidence": 0.9632611870765686,
+            "low_confidence_frames": []
+          },
+          "source_revision": "4aef1452e5df171deff4f293c08e643eb450981e",
+          "elapsed_seconds": 45.5,
+          "device": "cuda",
+          "peak_torch_bytes": 3674924032,
+          "frames": 60,
+          "fps": 30,
+          "checkpoint_manifest_sha256": "2fffac80db72fdafa510f093acfd49da53838e0520e5060c5708b50db171ad4a",
+          "source_video_sha256": "f9f8f91dddf35ae71188fa89b03e6f11227ff266f0d20544ab073cfafc89ef84",
+          "workflow_sha256": "217a3882e4dba9df45da65170ca5bbdee63e54ffb0de19235c0970a8274d0f0a"
+        },
+        "h3_sampling_tested": false
+      },
+      "gui_create": {
+        "passed": true,
+        "view": "CREATE",
+        "native_panel_rendered": true,
+        "motion_editor_opens_closes": true,
+        "original_viewport_retained": true,
+        "selection_and_frame_restored": true,
+        "overlay_handlers_removed": true,
+        "source_editor_type": "CLIP_EDITOR"
+      },
+      "gui_edit": {
+        "passed": true,
+        "view": "EDIT",
+        "native_panel_rendered": true,
+        "motion_editor_opens_closes": true,
+        "original_viewport_retained": true,
+        "selection_and_frame_restored": true,
+        "overlay_handlers_removed": true,
+        "source_editor_type": "CLIP_EDITOR"
+      },
+      "gui_lifecycle": {
+        "passed": true,
+        "view": "EDIT",
+        "native_panel_rendered": true,
+        "motion_editor_opens_closes": true,
+        "original_viewport_retained": true,
+        "selection_and_frame_restored": true,
+        "overlay_handlers_removed": true,
+        "source_editor_type": "CLIP_EDITOR",
+        "video_24_to_scene_60_sync": true,
+        "reload_cleanup_restores_layout": true
+      },
+      "mediapipe": {
+        "passed": true,
+        "provider": "MediaPipe Pose Landmarker Lite",
+        "device": "CPU",
+        "elapsed_seconds": 0.6090000000003783,
+        "decoded_frames": 48,
+        "detected_frames": 48,
+        "mean_visibility": 0.9713084760187852,
+        "fps": 24.0,
+        "world_joints": 33,
+        "model_sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+        "comparison_limit": "Detection baseline only; not a temporal world-motion or contact model. No retargeted quality equivalence claimed."
+      },
+      "unity": {
+        "passed": true,
+        "genericPlayback": true,
+        "humanoidAvatar": true,
+        "humanoidPlayback": true,
+        "loopFlag": true,
+        "scenePreserved": true,
+        "genericFootMovement": 0.3176876902580261,
+        "humanoidFootMovement": 0.3152116537094116,
+        "genericLoopError": 0.0,
+        "clipSeconds": 1.9583333730697632,
+        "error": ""
+      },
+      "extracted_archive": {
+        "passed": true,
+        "extracted_worker_binding": true,
+        "source_preserved": true,
+        "deformation_guard_available": true,
+        "provider_inventory_available": true,
+        "vertices": 8,
+        "bones": 53,
+        "version": "0.18.0"
+      }
+    },
+    "hardware": "RTX 4090 24 GB, Windows, Blender 5.2.0, Unity 6000.3.21f1",
+    "limits": [
+      "New H3 sampling and generated closing bridge not executed; schema/graph and generic ComfyUI pipeline tested.",
+      "Single visible humanoid, continuous footage and flat-floor contacts; manual review is required for depth and motion fidelity.",
+      "16 GB GPUs and long/high-resolution footage were not benchmarked.",
+      "MediaPipe measured detection only; no retargeted quality equivalence.",
+      "RetopoFlow session pattern adopted using native Blender tools; its complete custom UI framework was not imported."
+    ]
+  },
+  "baseline_record": {
+    "file": "release-verification-0.17.0-2026-11-16.json",
+    "sha256": "275a56351af455cd8b1d5ec7e75cace55a7bc90b5fb106b123fe60eb6a30a86f"
+  },
+  "limits": [
+    "New H3 sampling and generated closing bridge not executed; schema/graph and generic ComfyUI pipeline tested.",
+    "Single visible humanoid, continuous footage and flat-floor contacts; manual review is required for depth and motion fidelity.",
+    "16 GB GPUs and long/high-resolution footage were not benchmarked.",
+    "MediaPipe measured detection only; no retargeted quality equivalence.",
+    "RetopoFlow session pattern adopted using native Blender tools; its complete custom UI framework was not imported."
+  ]
+}

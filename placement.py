@@ -25,6 +25,11 @@ def sha(path):
     with Path(path).open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
 
 def selected(context):
+    from . import character_context
+    pinned=character_context.resolve(context)
+    if pinned is not None:
+        if not pinned[1]:raise ValueError('Choose the character geometry')
+        return pinned
     meshes=[o for o in context.selected_objects if o.type=='MESH']
     rigs={m.object for o in meshes for m in o.modifiers if m.type=='ARMATURE' and m.object}
     rigs.update(o for o in context.selected_objects if o.type=='ARMATURE')

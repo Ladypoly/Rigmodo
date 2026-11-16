@@ -35,6 +35,7 @@ def publish(root,entry):
         data=dict(data,rest=np.array([rig.data.bones[str(n)].matrix_local for n in data['names']],dtype=np.float32))
         action=motion_retarget.apply(bpy.context,rig,data,entry['name'],loop=entry['loop'])
         if hasattr(action,'lc_clip_owner'):action.lc_clip_owner=None
+        if hasattr(action,'lc_contact_source'):action.lc_contact_source=None
         action['lc_library_id']=entry['id'];action['lc_library_source']=entry['source'];action['lc_library_license']=entry['license'];action.asset_mark()
         meta=action.asset_data;meta.author=entry['source'];meta.license=entry['license']
         meta.description=f"{entry['duration']:.2f} s · {entry['bones']} bones. Apply the full clip with Rigmodo → Apply / Adjust."

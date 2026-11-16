@@ -65,7 +65,9 @@ def restore_preview(context):
             for p,m in zip(rig.pose.bones,state['pose']):p.rotation_mode=state['modes'][p.name];p.matrix_basis=m
             scene=state['scene'];scene.use_preview_range,scene.frame_preview_start,scene.frame_preview_end=state['range']
             scene.lc_settings.loop_action=state['loop'];scene.frame_set(state['frame'],subframe=state['subframe']);context.view_layer.update()
-        if action.users-int(action.use_fake_user)==0:bpy.data.actions.remove(action)
+        owned=state.get('owned_actions',[action])
+        for item in [action,*[a for a in owned if a!=action]]:
+            if item.name in bpy.data.actions and item.users-int(item.use_fake_user)==0:bpy.data.actions.remove(item)
     except ReferenceError:pass
 
 
@@ -81,11 +83,16 @@ def build(context,preview=False):
     backup=dict(rig=rig,old=old,scene=context.scene,modes={p.name:p.rotation_mode for p in rig.pose.bones},pose=[p.matrix_basis.copy() for p in rig.pose.bones],frame=context.scene.frame_current,subframe=context.scene.frame_subframe,
                 range=(context.scene.use_preview_range,context.scene.frame_preview_start,context.scene.frame_preview_end),loop=context.scene.lc_settings.loop_action)
     data=motion_store.read(root(context),entry['id'])
-    action=motion_retarget.apply(context,rig,data,entry['name']+(' · Preview' if preview else ''),state.trim_start,state.trim_end,state.speed,state.mirror,state.in_place,state.spacing,state.loop)
-    action['lc_library_source']=entry['source'];action['lc_library_license']=entry['license'];action['lc_library_id']=entry['id']
-    motion_clips.select(context,rig,action,action.slots[0])
+    from . import animation_transfer
+    settings=context.scene.lc_settings;old_settings={key:getattr(settings,key) for key in ('motion_in_place','create_loop')}
+    before=set(bpy.data.actions)
+    try:
+        settings.motion_in_place=state.in_place;settings.create_loop=state.loop
+        action=animation_transfer.finish(context,rig,data,entry['name']+(' · Preview' if preview else ''),dict(lc_library_source=entry['source'],lc_library_license=entry['license'],lc_library_id=entry['id']),dict(start=state.trim_start,end=state.trim_end,speed=state.speed,mirror=state.mirror,spacing=state.spacing))
+    finally:
+        for key,value in old_settings.items():setattr(settings,key,value)
     if preview:
-        backup['action']=action;_preview=backup
+        backup['action']=action;backup['owned_actions']=list(set(bpy.data.actions)-before);_preview=backup
         from .animation import selected_action
         motion_playback.preview(context,rig,selected_action(rig,context.scene))
     return action
@@ -272,7 +279,7 @@ class LC_OT_library_save(Operator):
 
 class LC_OT_library_import(Operator,ImportHelper):
     bl_idname='local_character.import_library_motions';bl_label='Batch Import Motions'
-    filename_ext='';filter_glob:StringProperty(default='*.fbx;*.glb;*.gltf;*.blend',options={'HIDDEN'})
+    filename_ext='';filter_glob:StringProperty(default='*.fbx;*.glb;*.gltf;*.blend;*.bvh',options={'HIDDEN'})
     files:CollectionProperty(type=OperatorFileListElement);directory:StringProperty(subtype='DIR_PATH')
     mixamo:BoolProperty(name='Mixamo downloads',default=False,description='Record Adobe Mixamo provenance for these files')
     def draw(self,context):self.layout.prop(self,'mixamo')
@@ -291,7 +298,7 @@ class LC_OT_library_folder(Operator):
     def execute(self,context):
         try:
             directory=Path(self.directory);paths=directory.rglob('*') if self.recursive else directory.glob('*')
-            files=[p for p in sorted(paths) if p.is_file() and p.suffix.lower() in {'.fbx','.glb','.gltf','.blend'}]
+            files=[p for p in sorted(paths) if p.is_file() and p.suffix.lower() in {'.fbx','.glb','.gltf','.blend','.bvh'}]
             if not files:raise ValueError('No motion files found in that folder')
             if len(files)>5000:raise ValueError('Choose a smaller folder (at most 5000 files per import)')
             restore_preview(context);return start_job(context,'import',files,self.mixamo)

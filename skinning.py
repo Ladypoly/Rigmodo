@@ -32,6 +32,11 @@ def provider_cache():
 
 
 def selection(context):
+    from . import character_context
+    pinned=character_context.resolve(context)
+    if pinned is not None:
+        if not pinned[0] or not pinned[1]:raise ValueError('Choose a rig and the character geometry')
+        return pinned
     meshes = [o for o in context.selected_objects if o.type == 'MESH']
     rigs = {o for o in context.selected_objects if o.type == 'ARMATURE'}
     rigs.update(m.object for o in meshes for m in o.modifiers if m.type == 'ARMATURE' and m.object)

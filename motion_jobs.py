@@ -29,6 +29,11 @@ def sha(path):
 
 
 def selected_rig(context):
+    from . import character_context
+    pinned=character_context.resolve(context)
+    if pinned is not None:
+        if not pinned[0]:raise ValueError('Generate a character rig first')
+        return pinned[0]
     rigs = {o for o in context.selected_objects if o.type == 'ARMATURE'}
     rigs.update(m.object for o in context.selected_objects if o.type == 'MESH'
                 for m in o.modifiers if m.type == 'ARMATURE' and m.object)
@@ -56,6 +61,10 @@ def validate_rig(context, rig):
 
 
 def character_meshes(context,rig):
+    from . import character_context
+    pinned=character_context.resolve(context)
+    if pinned is not None and pinned[0]==rig:
+        skinning.ensure_unique_character_meshes(pinned[1]);return pinned[1]
     helpers={b.custom_shape for b in rig.pose.bones if b.custom_shape}
     meshes=[o for o in context.selected_objects if o.type=='MESH' and o not in helpers and any(
         m.type=='ARMATURE' and m.object==rig for m in o.modifiers)]

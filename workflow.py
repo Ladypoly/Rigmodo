@@ -11,6 +11,8 @@ _runs={}
 
 
 def select(context,rig,meshes):
+    from . import character_context
+    if context.scene.lc_settings.character_pinned:character_context.pin(context,rig,meshes)
     for obj in context.selected_objects:obj.select_set(False)
     for obj in [rig,*meshes]:
         obj.hide_set(False);obj.select_set(True)

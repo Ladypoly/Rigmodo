@@ -1,6 +1,6 @@
 # Rigmodo
 
-Version 0.17.0 adds a local motion library in Blender’s Asset Browser, full-clip humanoid retargeting, batch imports, generated-motion saving, and optional Mixamo batch-downloader setup.
+Version 0.18.0 adds a character-centered interface, focused Motion Editor, shared retargeting and flat-floor contacts, local GEM-X video capture, ComfyUI video workflows and loop finishing. See [the animation workflow](docs/animation-workflow.md) for setup, usage, validation and current limits.
 
 Independent Blender 5.2 extension for local humanoid and creature joint placement, AI skinning, regional correction, humanoid motion and Unity export. No ARP, proprietary Voxel Heat Diffusion or Mesh2Motion is required. Optional SAM image posing needs approved checkpoint access during setup; inference stays local.
 

@@ -4,13 +4,13 @@ import math
 import bpy
 import numpy as np
 from mathutils import Matrix,Vector,Quaternion
-from . import motion_store,animation,motion_playback
+from . import motion_store,animation,motion_playback,rig_mapping
 
 
 def mapping(names):
     result={}
     for i,name in enumerate(names):
-        key=motion_store.canonical(str(name))
+        key=rig_mapping.canonical(str(name))
         if key in result:raise ValueError('Ambiguous skeleton names: '+key)
         result[key]=i
     return result
@@ -21,6 +21,23 @@ def body_frame(rest,index):
     left=rest[index['LeftArm']].translation-rest[index['RightArm']].translation
     left=(left-up*left.dot(up)).normalized();back=up.cross(left).normalized()
     return Matrix((left,back,up)).transposed()
+
+
+def spine_chain(parents,index):
+    chain=[];i=index['Head']
+    while i>=0:
+        chain.append(i)
+        if i==index['Hips']:return list(reversed(chain))
+        i=int(parents[i])
+    raise ValueError('Head must descend from the mapped Hips')
+
+
+def chain_positions(rest,chain):
+    values=[0.]
+    for a,b in zip(chain,chain[1:]):values.append(values[-1]+(rest[b].translation-rest[a].translation).length)
+    length=values[-1]
+    if length<1e-6:raise ValueError('Humanoid spine has no usable length')
+    return np.asarray(values)/length
 
 
 def sample(data,seconds):
@@ -42,12 +59,13 @@ def apply(context,rig,data,name,start=0.,end=None,speed=1.,mirror=False,in_place
     context.view_layer.update()
     scales=rig.matrix_world.to_scale()
     if rig.matrix_world.determinant()<=0 or max(scales)-min(scales)>1e-5:raise ValueError('Apply mirrored or nonuniform rig scale on a working copy first')
-    source_names=list(map(str,data['names']));src=mapping(source_names);dst=mapping([b.name for b in rig.data.bones])
+    source_names=list(map(str,data['names']));source_roles=list(map(str,data.get('roles',source_names)));target_roles=rig_mapping.names(rig)
+    src=mapping(source_roles);dst=mapping(target_roles);target_role={b.name:r for b,r in zip(rig.data.bones,target_roles)}
     rest=[Matrix(m.tolist()) for m in data['rest']];target={b.name:b.matrix_local.copy() for b in rig.data.bones}
     ordered=sorted(rig.data.bones,key=lambda b:len(b.parent_recursive));lookup={str(n):i for i,n in enumerate(data['names'])}
     same=all(b.name in lookup and np.max(np.abs(np.asarray(b.matrix_local)-data['rest'][lookup[b.name]]))<1e-5 and
              (source_names[data['parents'][lookup[b.name]]] if data['parents'][lookup[b.name]]>=0 else None)==(b.parent.name if b.parent else None) for b in rig.data.bones)
-    human=motion_store.humanoid(source_names) and motion_store.humanoid([b.name for b in rig.data.bones])
+    human=set(rig_mapping.CORE)<=src.keys() and set(rig_mapping.CORE)<=dst.keys()
     if not same and not human:raise ValueError('Creature motions need the same skeleton. Humanoid motions can be retargeted across supported human rigs')
     if spacing and not human:raise ValueError('Arm spacing is a humanoid control')
     if human:
@@ -57,6 +75,16 @@ def apply(context,rig,data,name,start=0.,end=None,speed=1.,mirror=False,in_place
             return sum((matrices[index['Left'+a]].translation-matrices[index['Left'+b]].translation).length for a,b in [('UpLeg','Leg'),('Leg','Foot')])
         scale=leg_length(target_rest,dst)/max(leg_length(rest,src),1e-6)
         anchor=src['Hips'];up=source_basis.col[2];left=source_basis.col[0]
+        source_chain=spine_chain(data['parents'],src);target_bones=list(rig.data.bones)
+        target_parents=[target_bones.index(b.parent) if b.parent else -1 for b in target_bones];target_chain=spine_chain(target_parents,dst)
+        chain_map={}
+        if len(source_chain)!=len(target_chain):
+            positions=chain_positions(rest,source_chain)
+            for target_i,u in zip(target_chain,chain_positions(target_rest,target_chain)):
+                if target_i==dst['Hips']:continue
+                hi=min(len(positions)-1,max(1,int(np.searchsorted(positions,u))))
+                lo=hi-1;alpha=float((u-positions[lo])/max(positions[hi]-positions[lo],1e-6))
+                chain_map[target_bones[target_i].name]=(source_chain[lo],source_chain[hi],alpha)
     else:
         conversion=Matrix.Identity(3);scale=1.;anchor=next(i for i,p in enumerate(data['parents']) if p<0);up=Vector((0,0,1));left=None
         for i,label in enumerate(data['labels']):
@@ -69,7 +97,7 @@ def apply(context,rig,data,name,start=0.,end=None,speed=1.,mirror=False,in_place
         reflection=Matrix((np.eye(3)-2*np.outer(left,left)).tolist())
     pairs={}
     for i,n in enumerate(source_names):
-        key=motion_store.canonical(n);opposite=key.replace('Left','Right') if 'Left' in key else key.replace('Right','Left')
+        key=rig_mapping.canonical(source_roles[i]);opposite=key.replace('Left','Right') if 'Left' in key else key.replace('Right','Left')
         other=src.get(opposite,i)
         if other==i and data['labels'][i]:
             label=str(data['labels'][i]);opposite=label.replace('Left','Right') if 'Left' in label else label.replace('Right','Left')
@@ -94,40 +122,50 @@ def apply(context,rig,data,name,start=0.,end=None,speed=1.,mirror=False,in_place
     try:
         action=bpy.data.actions.new(name);ad=rig.animation_data_create();ad.action=action;ad.use_nla=False;ad.action_blend_type='REPLACE';ad.action_influence=1.
         fps=context.scene.render.fps/context.scene.render.fps_base
-        seconds=np.unique(np.r_[start,data['times'][(data['times']>start)&(data['times']<end)],np.linspace(start,end,max(2,math.ceil((end-start)*30)+1)),end]);previous_q={}
+        seconds=motion_store.sample_times(np.r_[start,data['times'][(data['times']>start)&(data['times']<end)],np.linspace(start,end,max(2,math.ceil((end-start)*30-1e-5)+1)),end]);previous_q={}
         samples={b.name:[] for b in ordered}
         for seconds_value in seconds:
             poses_source=sample(data,float(seconds_value));t=float((seconds_value-start)/(end-start));shift=travel*t if in_place else Vector()
             poses={}
             for bone in ordered:
-                key=motion_store.canonical(bone.name);i=lookup.get(bone.name) if same else src.get(key)
+                key=target_role[bone.name];i=lookup.get(bone.name) if same else src.get(key)
                 inherited=poses[bone.parent.name]@target[bone.parent.name].inverted()@target[bone.name] if bone.parent else target[bone.name].copy()
                 if same and not mirror:
                     m=poses_source[i].copy();m.translation-=shift
+                elif human and not same and bone.name in chain_map:
+                    lo,hi,alpha=chain_map[bone.name]
+                    a=(poses_source[lo].to_quaternion().to_matrix()@rest[lo].to_quaternion().to_matrix().transposed()).to_quaternion()
+                    b=(poses_source[hi].to_quaternion().to_matrix()@rest[hi].to_quaternion().to_matrix().transposed()).to_quaternion()
+                    delta=a.slerp(b,alpha).to_matrix()
+                    if mirror:delta=reflection@delta@reflection
+                    m=(conversion@delta@conversion.transposed()@target[bone.name].to_quaternion().to_matrix()).to_4x4();m.translation=inherited.translation
                 elif i is not None:
                     j=pairs[i];reference=calibration_src.get(j,rest[j].to_quaternion().to_matrix());delta=poses_source[j].to_quaternion().to_matrix()@reference.transposed()
                     if mirror:delta=reflection@delta@reflection
                     target_i=dst[key];target_reference=calibration_dst.get(target_i,target[bone.name].to_quaternion().to_matrix()) if human else target[bone.name].to_quaternion().to_matrix()
                     m=(conversion@delta@conversion.transposed()@target_reference).to_4x4();m.translation=inherited.translation
-                    if i==anchor or (not bone.parent and not human):
+                    if i==anchor or human and key=='Root' or (not bone.parent and not human):
                         displacement=poses_source[j].translation-rest[j].translation-shift
                         if mirror:displacement=reflection@displacement
                         m.translation=target[bone.name].translation+conversion@displacement*scale
+                elif human and key=='Root':
+                    m=inherited;displacement=poses_source[anchor].translation-rest[anchor].translation-shift
+                    displacement-=up*displacement.dot(up);m.translation=target[bone.name].translation+conversion@displacement*scale
                 else:m=inherited
                 poses[bone.name]=m
             if spacing:
                 for side,sign in [('Left',1),('Right',-1)]:
-                    arm=next((b for b in ordered if motion_store.canonical(b.name)==side+'Arm'),None)
+                    arm=next((b for b in ordered if target_role[b.name]==side+'Arm'),None)
                     if not arm:continue
                     pivot=poses[arm.name].translation
-                    hips=next(b for b in ordered if motion_store.canonical(b.name)=='Hips')
+                    hips=next(b for b in ordered if target_role[b.name]=='Hips')
                     body_delta=poses[hips.name].to_quaternion().to_matrix()@target[hips.name].to_quaternion().to_matrix().transposed()
                     turn=Matrix.Translation(pivot)@Matrix.Rotation(math.radians(-sign*spacing),4,body_delta@target_basis.col[1])@Matrix.Translation(-pivot)
                     for b in [arm,*arm.children_recursive]:poses[b.name]=turn@poses[b.name]
             for bone in ordered:
                 basis=bone.convert_local_to_pose(poses[bone.name],target[bone.name],parent_matrix=poses[bone.parent.name] if bone.parent else Matrix.Identity(4),parent_matrix_local=target[bone.parent.name] if bone.parent else Matrix.Identity(4),invert=True)
                 q=basis.to_quaternion().normalized();loc=basis.translation
-                if not same and bone.parent and motion_store.canonical(bone.name)!='Hips':loc=Vector()
+                if not same and bone.parent and target_role[bone.name] not in {'Hips','Root'}:loc=Vector()
                 if bone.name in previous_q and q.dot(previous_q[bone.name])<0:q.negate()
                 previous_q[bone.name]=q.copy();samples[bone.name].append((1+(float(seconds_value)-start)/speed*fps,q.copy(),loc.copy()))
         for bone in ordered:
@@ -137,6 +175,12 @@ def apply(context,rig,data,name,start=0.,end=None,speed=1.,mirror=False,in_place
                     c=action.fcurve_ensure_for_datablock(rig,p.path_from_id(prop),index=axis,group_name=bone.name)
                     for row in samples[bone.name]:c.keyframe_points.insert(row[0],row[which][axis],options={'FAST'}).interpolation='LINEAR'
                     c.update()
+        for bone in ordered:
+            pose=rig.pose.bones[bone.name]
+            for axis in range(3):
+                curve=action.fcurve_ensure_for_datablock(rig,pose.path_from_id('scale'),index=axis,group_name=bone.name)
+                for frame in (1.,1+(end-start)/speed*fps):curve.keyframe_points.insert(frame,1.,options={'FAST'}).interpolation='LINEAR'
+                curve.update()
         ad.action_slot=action.slots[0];action.use_frame_range=True;action.frame_start=1
         end_frame=1+(end-start)/speed*fps
         action.frame_end=round(end_frame) if abs(end_frame-round(end_frame))<1e-4 else end_frame

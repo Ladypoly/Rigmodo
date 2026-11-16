@@ -35,6 +35,6 @@ def inventory(settings):
     joint_cache=Path(bpy.path.abspath(settings.placement_python)).parent.parent.parent
     checks={
         'Joint placement':Path(bpy.path.abspath(settings.placement_python)).is_file() and all(model_storage.resolve(joint_cache/'models'/name).is_file() for name in ('joints.pth','joints_coarse.pth')) and all((joint_cache/'source'/name).is_file() for name in placement.SOURCE_HASHES),
-        'AI skinning':Path(settings.skin_executable).is_file() and all((Path(settings.skin_models)/name).is_file() for name in skinning.MODEL_HASHES),
+        'AI skinning':Path(settings.skin_executable).is_file() and all((model_storage.resolve(Path(settings.skin_models)/name)).is_file() for name in skinning.MODEL_HASHES),
         'Generated motion':(Path(settings.motion_provider)/'bin/kmd-generate.exe').is_file() and all(model_storage.resolve(Path(settings.motion_provider)/'weights'/name).is_file() for name in motion_jobs.FILES)}
     return checks

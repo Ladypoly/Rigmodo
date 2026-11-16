@@ -34,7 +34,7 @@ def compatible(action,slot,rig):
 def available(rig):
     return [(action,slot) for action in sorted(bpy.data.actions,key=lambda a:a.name.casefold())
             for slot in (list(action.slots) if action.is_action_layered else [None])
-            if compatible(action,slot,rig)]
+            if not action.get('lc_internal_variant') and compatible(action,slot,rig)]
 
 
 def identifier(action,slot):return f'{action.session_uid}:{slot.handle if slot else 0}'
