@@ -6,9 +6,21 @@ from bpy.app.handlers import persistent
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, StringProperty, CollectionProperty
 from bpy.types import Operator, Panel, PropertyGroup, AddonPreferences
 from mathutils import Vector
-from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips,motion_playback,motion_store,motion_retarget,motion_library,character_context,animation_ui,rig_mapping,motion_contacts,animation_transfer,video_motion,reference_render,video_setup
+from . import skeleton, preflight, exporter, skinning, regions, regional_jobs, motion_jobs, motion_apply, placement, motion_finish, workflow,twists,install_jobs,rig_modules,hand_pose,deformation_qa,configuration,landmarks,hands,ui,motion_keyframes,character_result,auto_pose,image_pose,processing_visuals,creatures,unimate,creature_annotation,motionbricks,model_storage,motion_clips,motion_playback,motion_store,motion_retarget,motion_library,character_context,animation_ui,rig_mapping,motion_contacts,animation_transfer,video_motion,reference_render,video_setup,motion_sources
 
 class LC_Settings(PropertyGroup):
+    motion_system:EnumProperty(name='System',items=[('KIMODO','Kimodo','Text to humanoid motion'),('MOTIONBRICKS','MotionBricks','Pose-key transitions'),('VIDEO','Video to Motion','Reusable video motion capture'),('UNIMATE','UniMate','Skeleton-conditioned creature motion')],default='VIDEO')
+    pose_source_rig:PointerProperty(name='Pose source',type=bpy.types.Object,poll=lambda self,obj:obj.type=='ARMATURE' and not obj.get('lc_source_preview'))
+    source_name:StringProperty(name='Motion name',maxlen=120)
+    source_job:StringProperty(options={'HIDDEN'})
+    source_loop:BoolProperty(name='Loop',default=False)
+    source_in_place:BoolProperty(name='In place',default=False)
+    video_input:EnumProperty(name='Input',items=[('FILES','Video files','Capture existing videos'),('COMFY','ComfyUI','Generate a video, then capture it')])
+    capture_whole_video:BoolProperty(name='Capture whole video',default=True)
+    retarget_selected_characters:BoolProperty(name='Use selected characters',default=False)
+    retarget_in_place:BoolProperty(name='In place',default=False)
+    retarget_loop:EnumProperty(name='Playback',items=[('SOURCE','Use source','Keep the source motion loop setting'),('LOOP','Loop','Create a periodic copy'),('ONCE','Play once','Keep the complete one-shot')])
+    retarget_report:StringProperty(options={'HIDDEN'})
     ui_motion_pipeline:BoolProperty(default=False,options={'HIDDEN'})
     keep_motion_copies:BoolProperty(name='Keep motion review copies',default=False)
     video_job:StringProperty(options={'HIDDEN'})
@@ -34,10 +46,10 @@ class LC_Settings(PropertyGroup):
     contact_mode:EnumProperty(name='Contact',items=[('PLANT','Planted','Keep the support point still'),('SLIDE','Sliding','Keep floor clearance without locking travel'),('AIR','Airborne','Preserve flight')])
     contact_start:FloatProperty(name='Start (seconds)',default=0,min=0)
     contact_end:FloatProperty(name='End (seconds)',default=1,min=0)
-    character:PointerProperty(name='Character',type=bpy.types.Object,poll=lambda self,obj:obj.type in {'ARMATURE','MESH'},update=character_context.changed)
+    character:PointerProperty(name='Character',type=bpy.types.Object,poll=lambda self,obj:obj.type in {'ARMATURE','MESH'} and not obj.get('lc_source_preview'),update=character_context.changed)
     character_pinned:BoolProperty(default=False,options={'HIDDEN'})
     character_meshes:CollectionProperty(type=character_context.LC_CharacterMesh)
-    animation_view:EnumProperty(items=[('CREATE','Create','Create an animation'),('BROWSE','Browse','Reusable motion library'),('EDIT','Edit','Refine the current animation')],default='CREATE')
+    animation_view:EnumProperty(items=[('CREATE','Create','Generate reusable source motions','NONE',0),('EDIT','Retarget','Apply motions to chosen characters','NONE',2),('BROWSE','Library','Browse and import reusable motions','NONE',1)],default='CREATE')
     animation_source:EnumProperty(name='Create from',items=[('TEXT','Description','Describe a movement'),('VIDEO','Video','Capture a video'),('POSES','Pose keys','Generate between timeline poses'),('ANIMATION','Animation','Retarget a source Action or file')])
     text_method:EnumProperty(items=[('DIRECT','3D motion','Generate motion directly'),('COMFY','Video to motion','Generate reference video and capture motion')])
     motion_duration:FloatProperty(name='Length (seconds)',default=3.,min=.5,max=30,update=animation_ui.duration_changed)
@@ -154,7 +166,7 @@ class LC_Settings(PropertyGroup):
     setup_status: StringProperty(default='')
     setup_job: StringProperty(default='')
     show_controls: BoolProperty(name='Joint, skinning and export controls',default=False)
-    ui_step: EnumProperty(name='Step',items=[('RIG','Rig','Create or adjust joints'),('SKIN','Skin','Bind and refine weights'),('MOTION','Animate','Create, browse and edit animation')],default='RIG')
+    ui_step: EnumProperty(name='Step',items=[('RIG','Rig','Create or adjust joints'),('SKIN','Skin','Bind and refine weights'),('MOTION','Motion','Create, retarget and reuse motions')],default='RIG')
     ui_rig_mode: EnumProperty(name='Rigging',items=[('AUTO','Automatic','Infer joints from geometry'),('ASSISTED','Landmarks','Guide joints in a front-view editor')],default='AUTO')
     ui_skin_advanced: BoolProperty(name='Advanced skinning',default=False)
     ui_skin_method: EnumProperty(name='Binding',items=[('AI','AI','Use learned skinning'),('GEODESIC','Surface','Bind along surface edges'),('VOXEL','Volume','Closed-volume heat with surface fallback')],default='AI')
@@ -297,7 +309,7 @@ class WorkerModal:
         setattr(settings, self.job_property, str(self._folder))
         setattr(settings, self.status_property, 'Running locally; Escape cancels')
         kind={'placement_status':'RIG','creature_status':'RIG','region_status':'SKIN','motion_status':'MOTION','setup_status':'SETUP'}.get(self.status_property,'SKIN')
-        self._visual=processing_visuals.start(context,kind,self._folder)
+        self._visual=processing_visuals.start(context,getattr(self,'visual_kind',kind),self._folder)
         self._timer = context.window_manager.event_timer_add(.5, window=context.window)
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
@@ -313,7 +325,7 @@ class WorkerModal:
             skinning.cancel(self._folder); self._finish(context); return {'CANCELLED'}
         if event.type == 'ESC' or processing_visuals.cancelled(self._visual):
             if hasattr(self,'cancel_external'):self.cancel_external()
-            skinning.cancel(self._folder); setattr(settings, self.status_property, 'Cancelled; source character preserved')
+            skinning.cancel(self._folder); setattr(settings,self.status_property,getattr(self,'cancel_status','Cancelled; source character preserved'))
             self._finish(context); return {'CANCELLED'}
         if event.type != 'TIMER': return {'PASS_THROUGH'}
         state = skinning.poll(self._folder)
@@ -323,9 +335,11 @@ class WorkerModal:
                 for area in context.screen.areas: area.tag_redraw()
             return {'PASS_THROUGH'}
         try:
-            if state['status'] != 'complete': raise ValueError(state.get('error') or 'Worker failed; inspect worker.log in the last job folder')
-            if context.scene != self._scene: raise ValueError('Return to the source scene and create the weighted copy from the finished job')
-            result = getattr(bpy.ops.local_character, self.apply_operator)('EXEC_DEFAULT')
+            if state['status'] != 'complete':
+                if hasattr(self,'cancel_external'):self.cancel_external()
+                raise ValueError(state.get('error') or 'Worker failed; inspect worker.log in the last job folder')
+            if context.scene!=self._scene and getattr(self,'requires_source_scene',True):raise ValueError('Return to the source scene before applying this result')
+            with context.temp_override(scene=self._scene):result=getattr(bpy.ops.local_character,self.apply_operator)('EXEC_DEFAULT')
             if result != {'FINISHED'}: raise ValueError(getattr(settings, self.status_property))
         except (ValueError, OSError, RuntimeError, KeyError) as exc:
             setattr(settings, self.status_property, str(exc)); self.report({'ERROR'}, str(exc))
@@ -336,6 +350,19 @@ class WorkerModal:
             if hasattr(self,'cancel_external'):self.cancel_external()
             skinning.cancel(self._folder)
         self._finish(context)
+
+
+class LC_OT_source_motion_job(WorkerModal,Operator):
+    bl_idname='local_character.run_source_motion_job';bl_label='Create Source Motion'
+    status_property='motion_status';job_property='source_job';apply_operator='finish_motion_source'
+    visual_kind='SETUP';requires_source_scene=False
+    cancel_status='Stopped; completed motions remain in the library'
+    def execute(self,context):
+        from pathlib import Path
+        self._folder=Path(context.scene.lc_settings.source_job);return self.begin(context)
+    def cancel_external(self):
+        try:motion_sources.cancel_external(self._folder)
+        except (OSError,ValueError,KeyError):pass
 
 
 class LC_OT_capture_setup(WorkerModal,Operator):
@@ -1018,7 +1045,7 @@ class LC_PT_main(Panel):
     bl_ui_units_x = 18
     def draw(self, context):ui.draw(self.layout,context)
 
-CLASSES = (*character_context.CLASSES, LC_Settings, *animation_ui.CLASSES,*rig_mapping.CLASSES,*motion_contacts.CLASSES,*animation_transfer.CLASSES,*video_motion.CLASSES,*reference_render.CLASSES,LC_OT_capture_setup,LC_OT_capture_setup_finish,LC_OT_video_job, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, *motion_clips.CLASSES, *motion_library.CLASSES, LC_OT_library_job, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
+CLASSES = (*character_context.CLASSES, LC_Settings, *animation_ui.CLASSES,*motion_sources.CLASSES,LC_OT_source_motion_job,*rig_mapping.CLASSES,*motion_contacts.CLASSES,*animation_transfer.CLASSES,*video_motion.CLASSES,*reference_render.CLASSES,LC_OT_capture_setup,LC_OT_capture_setup_finish,LC_OT_video_job, LC_Preferences, LC_OT_model_storage, LC_OT_finish_model_storage, LC_OT_annotate_creature, LC_OT_setup_motionbricks, LC_OT_finish_motionbricks_setup, LC_OT_unimate, LC_OT_apply_unimate, LC_OT_setup_unimate, LC_OT_finish_unimate_setup, *auto_pose.CLASSES, *image_pose.CLASSES, *processing_visuals.CLASSES, *ui.CLASSES, *landmarks.CLASSES, *hands.CLASSES, *motion_keyframes.CLASSES, *motion_clips.CLASSES, *motion_library.CLASSES, LC_OT_library_job, LC_OT_creature,LC_OT_apply_creature,LC_OT_setup_creatures,LC_OT_finish_creature_setup,LC_OT_create_template, LC_OT_preflight, LC_OT_export, LC_OT_skin, LC_OT_apply_skin,
            LC_OT_protect, LC_OT_mark_region, LC_OT_clear_region, LC_OT_refine, LC_OT_apply_region,
            LC_OT_place,LC_OT_refine_hands,LC_OT_apply_placement,LC_OT_lock_joints,LC_OT_motion, LC_OT_apply_motion, LC_OT_finish_loop,LC_OT_preview_motion,
            LC_OT_install,LC_OT_install_finished,LC_OT_twists,LC_OT_twist_pose,LC_OT_optional_bone,LC_OT_hand_preset,LC_OT_deformation_check,LC_OT_build,LC_OT_advance_workflow,LC_PT_main)
@@ -1036,20 +1063,18 @@ def register():
     bpy.types.Scene.lc_settings = PointerProperty(type=LC_Settings)
     bpy.app.timers.register(migrate_workflow_tab,first_interval=0)
     bpy.app.handlers.load_post.append(migrate_workflow_tab)
-    bpy.types.VIEW3D_HT_header.prepend(animation_ui.editor_header)
     motion_clips.register()
     motion_playback.register()
     motion_library.register()
     bpy.types.Action.lc_contact_source=PointerProperty(type=bpy.types.Action)
-    if animation_ui.cleanup not in bpy.app.handlers.load_pre:bpy.app.handlers.load_pre.append(animation_ui.cleanup)
     auto_pose.register()
     image_pose.register()
     processing_visuals.register()
+    bpy.app.timers.register(motion_sources.initial_refresh,first_interval=.1)
 
 def unregister():
-    animation_ui.cleanup()
-    bpy.types.VIEW3D_HT_header.remove(animation_ui.editor_header)
-    if animation_ui.cleanup in bpy.app.handlers.load_pre:bpy.app.handlers.load_pre.remove(animation_ui.cleanup)
+    video_motion.cleanup()
+    motion_sources.cleanup()
     if hasattr(bpy.types.Bone,'lc_unimate_label'):del bpy.types.Bone.lc_unimate_label
     if hasattr(bpy.types.Object,'lc_unimate_forward'):del bpy.types.Object.lc_unimate_forward
     del bpy.types.Action.lc_contact_source

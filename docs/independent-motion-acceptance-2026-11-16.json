@@ -1,0 +1,255 @@
+{
+  "version": "0.19.0",
+  "passed": true,
+  "checks": {
+    "independent_generation": {
+      "video_batch": {
+        "job": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\IndependentWorkflow-019\\Jobs\\source-kgelfxkp",
+        "seconds": 79.16,
+        "added": [
+          "ecc1361b2c2c2f6e9cb025d74c85391c"
+        ],
+        "completed": [
+          {
+            "file": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\full-avatar-walk\\avatar-walk.mp4",
+            "name": "avatar-walk",
+            "id": "ecc1361b2c2c2f6e9cb025d74c85391c",
+            "created": true
+          },
+          {
+            "file": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\full-avatar-walk\\avatar-walk.mp4",
+            "name": "avatar-walk",
+            "id": "ecc1361b2c2c2f6e9cb025d74c85391c",
+            "created": false
+          }
+        ],
+        "errors": [
+          {
+            "file": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\IndependentWorkflow-019\\bad.mp4",
+            "error": "Command '['C:\\\\Users\\\\Elin\\\\miniconda3\\\\Library\\\\bin\\\\ffprobe.EXE', '-v', 'error', '-show_entries', 'format=duration', '-of', 'json', 'R:\\\\AI\\\\Rigmodo\\\\Jobs\\\\Acceptance\\\\IndependentWorkflow-019\\\\bad.mp4']' returned non-zero exit status 1."
+          }
+        ],
+        "system": "VIDEO"
+      },
+      "video_without_avatar": true,
+      "batch_dedup_and_failure_isolation": true,
+      "kimodo": {
+        "job": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\IndependentWorkflow-019\\Jobs\\source-275ph67l",
+        "seconds": 76.65,
+        "added": [
+          "fde9972362cc582682c59f62d4afea47"
+        ],
+        "completed": [
+          {
+            "name": "Independent Wave",
+            "id": "fde9972362cc582682c59f62d4afea47",
+            "created": true
+          }
+        ],
+        "errors": [],
+        "system": "KIMODO"
+      },
+      "kimodo_without_avatar": true,
+      "motionbricks": {
+        "job": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\IndependentWorkflow-019\\Jobs\\source-imgfh_ll",
+        "seconds": 14.53,
+        "added": [
+          "1f21952151e0fb98109b27da8df8ef92"
+        ],
+        "completed": [
+          {
+            "name": "Independent Pose Transition",
+            "id": "1f21952151e0fb98109b27da8df8ef92",
+            "created": true
+          }
+        ],
+        "errors": [],
+        "system": "MOTIONBRICKS"
+      },
+      "motionbricks_ordinary_keyframes": true,
+      "anchor_quaternion_error": 0,
+      "disposable_preview_restores_scene": true,
+      "retarget_two_proportions_contacts_loop": true,
+      "separate_character_actions": true,
+      "passed": true
+    },
+    "comfy_source": {
+      "passed": true,
+      "system": "COMFY",
+      "seconds": 60.66,
+      "job": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\IndependentComfy-019\\Jobs\\source-32ncku8b",
+      "source_scene_unchanged": true,
+      "reusable_source": true,
+      "h3_sampling_tested": false,
+      "real_comfy_api": true,
+      "actual_gemx_capture": true,
+      "owned_models_released": true,
+      "no_avatar": true
+    },
+    "creature_source": {
+      "passed": true,
+      "system": "UNIMATE",
+      "seconds": 15.54,
+      "job": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\IndependentUniMate-019-fixed\\Jobs\\source-zp4ltne9",
+      "source_scene_unchanged": true,
+      "reusable_source": true,
+      "h3_sampling_tested": false,
+      "creature_joint_labels_preserved": true,
+      "original_scorpion_preserved": true
+    },
+    "keyed_source_loop": {
+      "passed": true,
+      "real_motionbricks_inference": true,
+      "exact_guides_after_loop_finishing": true,
+      "maximum_quaternion_error": 0,
+      "arbitrary_start_and_24fps": true,
+      "scoped_image_drops": true,
+      "source_action_preserved": true,
+      "job": "R:\\AI\\Rigmodo\\Jobs\\Acceptance\\IndependentKeyedLoop-019\\Jobs\\source-j8tu92_r"
+    },
+    "source_cancel": {
+      "passed": true,
+      "real_video_worker_cancelled": true,
+      "source_scene_unchanged": true,
+      "main_blender_has_no_torch": true,
+      "processing_visuals_cleaned": true,
+      "owned_process_exited": true
+    },
+    "sidebar": {
+      "passed": true,
+      "native_sidebar": true,
+      "named_systems": [
+        "Kimodo",
+        "MotionBricks",
+        "Video to Motion",
+        "UniMate"
+      ],
+      "no_avatar_required_for_panel": true,
+      "all_stage_draws": true,
+      "advanced_rna_references": true,
+      "no_custom_editor": true,
+      "screens": [
+        "create-kimodo",
+        "create-motionbricks",
+        "create-video",
+        "create-unimate",
+        "edit-video",
+        "browse-video"
+      ]
+    },
+    "multi_retarget": {
+      "passed": true,
+      "two_sources_two_targets": true,
+      "one_shots_preserved": true,
+      "speed_trim_mirror": true,
+      "per_character_actions": true,
+      "rest_unchanged": true,
+      "preview_error_cleans_temporary_skeleton": true,
+      "conflicting_loop_guides_rejected_before_generation": true
+    },
+    "memory_ownership": {
+      "passed": true,
+      "idle_owned_release": true,
+      "busy_queue_preserved": true,
+      "submission_race_rechecked": true,
+      "other_client_cache_preserved": true,
+      "bridge_cleanup_idempotent": true,
+      "pending_submission_identifiable": true,
+      "cleanup_on_exception": true
+    },
+    "rig_skin_ui": {
+      "passed": true,
+      "global_preferences_used": true,
+      "legacy_settings_migrated": true,
+      "workflow_panel_has_no_runtime_fields": true,
+      "eight_front_anchors_exact": true,
+      "model_depth_preserved": true,
+      "landmarks_locked": true,
+      "source_preserved": true,
+      "sources_hidden_after_individual_step": true,
+      "original_plus_copy_rejected": true,
+      "stale_landmarks_rejected": true,
+      "cached_actual_mia_used": true,
+      "native_weight_editor_draws": true,
+      "bone_choice_updates_group": true,
+      "pose_and_joint_editors_work": true,
+      "character_selection_helper_works": true,
+      "keyposes_use_one_toggle": true,
+      "no_capture_recall_clear_buttons": true,
+      "three_workflow_tabs": true,
+      "export_only_in_preferences": true,
+      "legacy_export_tab_migrated": true,
+      "shared_progress_has_one_cancel": true,
+      "effects_settings_only_in_preferences": true,
+      "fresh_actual_mia_fixture": true
+    },
+    "character_context_acceptance": {
+      "passed": true,
+      "pinned_rig_and_mesh_scope": true,
+      "selection_changes_safe": true,
+      "removed_character_rejected": true,
+      "survives_save_reload": true,
+      "registration_cycle": true,
+      "duration_in_seconds": true
+    },
+    "animation_transfer_acceptance": {
+      "passed": true,
+      "retarget_ground_loop_pipeline": true,
+      "periodic_contacts": true,
+      "loop_position_seam_m": 0.0,
+      "source_action_create_workflow": true,
+      "pinned_target_used": true,
+      "source_rig_and_action_preserved": true
+    },
+    "generated_motion_transfer_acceptance": {
+      "passed": true,
+      "generated_motion_same_character": true,
+      "owned_review_removed": true,
+      "original_action_unchanged": true,
+      "internal_variants_hidden": true,
+      "different_spine_counts": true,
+      "bone_lengths_preserved": true,
+      "contact_overrides_validated": true
+    },
+    "generated_key_adoption_acceptance": {
+      "passed": true,
+      "artist_anchors_preserved": true,
+      "arbitrary_timeline_start": true,
+      "source_action_preserved": true,
+      "request_hash_sealed": true,
+      "maximum_quaternion_error": 0.0
+    },
+    "motion_asset_acceptance": {
+      "passed": true,
+      "assets": 330,
+      "full_human_and_scorpion_actions": true,
+      "thumbnails_embedded": true,
+      "native_catalogs": true,
+      "no_mesh_or_armature_dependencies": true
+    },
+    "extracted_archive": {
+      "passed": true,
+      "real_motionbricks_inference": true,
+      "exact_guides_after_loop_finishing": true,
+      "maximum_quaternion_error": 0,
+      "arbitrary_start_and_24fps": true,
+      "scoped_image_drops": true,
+      "source_action_preserved": true,
+      "job": "C:\\Users\\Elin\\AppData\\Local\\Temp\\rigmodo-archive019-results\\Jobs\\source-twz3qgt7"
+    },
+    "live_reload": {
+      "passed": true,
+      "version": "0.19.0",
+      "scene_objects_selection_and_frame_preserved": true,
+      "existing_library_entries": 330,
+      "main_blender_torch_loaded": false
+    }
+  },
+  "limits": [
+    "New H3 sampling and generated closing bridges were not run; the live ComfyUI connector was verified with a lightweight workflow.",
+    "Only RTX 4090 hardware was tested.",
+    "Capture supports one visible humanoid in a continuous shot; creature video capture and terrain contacts are unsupported.",
+    "Full SAM neural inference was not repeated; the scoped drop behavior was checked.",
+    "ComfyUI has no atomic queue-and-free endpoint; final idle checks minimize but cannot eliminate concurrent submission races."
+  ]
+}

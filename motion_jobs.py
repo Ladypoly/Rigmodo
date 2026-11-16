@@ -76,8 +76,9 @@ def character_meshes(context,rig):
 
 
 def prepare(context, rig, prompt, frames=90, steps=100, seed=101, in_place=False, parent=None, keyframes=False, start_frame=1):
-    validate_rig(context, rig)
-    meshes=character_meshes(context,rig)
+    if rig is not None:validate_rig(context,rig)
+    elif keyframes:raise ValueError('Pose keys need a source pose rig')
+    meshes=character_meshes(context,rig) if rig else []
     for mesh in meshes:
         if mesh.parent_type!='OBJECT' or mesh.constraints or any(m.type=='ARMATURE' and m.object!=rig for m in mesh.modifiers):
             raise ValueError('Motion review meshes need ordinary parenting and one accepted armature')
@@ -91,8 +92,8 @@ def prepare(context, rig, prompt, frames=90, steps=100, seed=101, in_place=False
     folder = Path(tempfile.mkdtemp(prefix='motion-',dir=directory)).resolve()
     (folder/'prompt.txt').write_text(prompt.strip(),encoding='utf-8')
     request = dict(schema_version=1,provider='kimodo.cpp',provider_revision=PIN,
-        job_id=str(uuid.uuid4()),rig=rig.name,rig_pointer=str(rig.as_pointer()),
-        source_digest=skinning._digest(rig, meshes),scene_unit_scale=context.scene.unit_settings.scale_length,
+        job_id=str(uuid.uuid4()),rig=rig.name if rig else None,rig_pointer=str(rig.as_pointer()) if rig else None,
+        source_digest=skinning._digest(rig,meshes) if rig else None,scene_unit_scale=context.scene.unit_settings.scale_length,
         meshes=[dict(name=o.name,pointer=str(o.as_pointer())) for o in meshes],
         frames=int(frames),steps=int(steps),seed=int(seed),in_place=bool(in_place),fps=30,
         prompt_sha256=sha(folder/'prompt.txt'), skeleton='soma30', models=FILES)

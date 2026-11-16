@@ -52,11 +52,40 @@ def start(context,kind=None):
     return {'FINISHED'}
 
 
+_release_watchers=set()
+
+def watch_release(path):
+    from .comfy_video import Client,release_job
+    import time
+    deadline=time.monotonic()+7200;lookup_deadline=time.monotonic()+60
+    def tick():
+        again=None
+        try:
+            data=json.loads(Path(path).read_text());client=Client(data['url']);prompt=client.find_prompt(data)
+            q=client.request('/queue',timeout=1)
+            if prompt and any(entry[1]==prompt for entry in q.get('queue_running',[])+q.get('queue_pending',[])) and time.monotonic()<deadline:
+                client.cancel(prompt);again=2.
+            elif not prompt and time.monotonic()<lookup_deadline:again=2.
+            else:release_job(Path(path).parent)
+        except (OSError,ValueError,KeyError):pass
+        if again is None:_release_watchers.discard(tick)
+        return again
+    _release_watchers.add(tick);bpy.app.timers.register(tick,first_interval=1.,persistent=True)
+
+
+def cleanup():
+    for callback in _release_watchers:
+        if bpy.app.timers.is_registered(callback):bpy.app.timers.unregister(callback)
+    _release_watchers.clear()
+
+
 def cancel_external(folder):
     from .comfy_video import Client
     for path in (Path(folder)/'comfy.json',Path(folder)/'bridge/comfy.json'):
         if path.is_file():
-            data=json.loads(path.read_text());Client(data['url']).cancel(data['prompt_id'])
+            data=json.loads(path.read_text());client=Client(data['url']);prompt=client.find_prompt(data)
+            if prompt:client.cancel(prompt)
+            watch_release(path)
     return 'Cancelled'
 
 
@@ -117,4 +146,16 @@ class LC_OT_retry_video(Operator):
         return {'FINISHED'}
 
 
-CLASSES=(LC_OT_video_motion,LC_OT_finish_video,LC_OT_comfy_check,LC_OT_retry_video)
+class LC_OT_release_comfy_memory(Operator):
+    bl_idname='local_character.release_comfy_memory';bl_label='Release ComfyUI GPU Memory'
+    bl_description='Unload idle ComfyUI models; skip while its queue is busy. Models reload on the next generation'
+    def execute(self,context):
+        try:
+            from .comfy_video import Client
+            result=Client(configuration.settings(context).comfy_url).release_models()
+            self.report({'INFO'} if result['released'] else {'WARNING'},result['reason'])
+        except (OSError,ValueError) as exc:self.report({'ERROR'},str(exc));return {'CANCELLED'}
+        return {'FINISHED'}
+
+
+CLASSES=(LC_OT_release_comfy_memory,LC_OT_video_motion,LC_OT_finish_video,LC_OT_comfy_check,LC_OT_retry_video)

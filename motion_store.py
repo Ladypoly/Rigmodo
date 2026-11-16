@@ -152,6 +152,7 @@ def capture(context,rig,action,slot):
 
 def validate(data):
     names=data['names'];n=len(names);poses=data['poses'];f=len(data['times'])
+    if 'lengths' in data and (data['lengths'].shape!=(n,) or not np.isfinite(data['lengths']).all() or (data['lengths']<=0).any()):raise ValueError('Invalid bone lengths')
     if 'roles' in data and (data['roles'].shape!=(n,) or data['roles'].dtype.kind not in 'US'):raise ValueError('Invalid humanoid role array')
     if 'provenance' in data:
         if data['provenance'].shape!=(1,) or data['provenance'].dtype.kind not in 'US' or data['provenance'].nbytes>256*1024:raise ValueError('Invalid motion provenance')
@@ -191,6 +192,7 @@ def read_file(path):
     with np.load(path,allow_pickle=False) as archive:
         data={k:archive[k] for k in ('names','parents','rest','poses','times','labels')}
         if 'roles' in archive:data['roles']=archive['roles']
+        if 'lengths' in archive:data['lengths']=archive['lengths']
         if 'contact_probabilities' in archive:data['contact_probabilities']=archive['contact_probabilities']
         if 'source_times' in archive:data['source_times']=archive['source_times']
         if 'provenance' in archive:data['provenance']=archive['provenance']

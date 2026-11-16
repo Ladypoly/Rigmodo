@@ -25,9 +25,11 @@ _visual=None
 _native_drop_patch=None
 
 def drop_surface(context):
+    settings=context.scene.lc_settings
+    pose_source=settings.animation_view=='CREATE' and context.mode=='POSE' and settings.pose_source_rig==context.active_object and (settings.motion_system=='MOTIONBRICKS' or settings.motion_system=='KIMODO' and settings.motion_use_keyframes)
     return bool(context.area and context.area.type=='VIEW_3D' and context.region and context.region.type=='UI'
                 and context.region.active_panel_category=='Rigmodo'
-                and context.scene.lc_settings.ui_step=='MOTION' and context.mode in {'OBJECT','POSE'}
+                and context.scene.lc_settings.ui_step=='MOTION' and (settings.animation_view=='EDIT' or pose_source) and context.mode in {'OBJECT','POSE'}
                 and context.active_object and context.active_object.type=='ARMATURE')
 
 def cache():return skinning.provider_cache().parent/'sam-3d-body-b5c765a'
@@ -264,7 +266,7 @@ class LC_OT_image_pose(Operator,ImportHelper):
     filepath:StringProperty(subtype='FILE_PATH',options={'SKIP_SAVE'})
     @classmethod
     def poll(cls,context):
-        return context.mode in {'OBJECT','POSE'} and context.active_object is not None and context.active_object.type=='ARMATURE' and context.scene.lc_settings.rig_type!='CREATURE' and not creatures.is_creature(context.active_object) and not skinning._jobs and not _pending and not auto_pose._sessions
+        return context.mode in {'OBJECT','POSE'} and context.active_object is not None and context.active_object.type=='ARMATURE' and not creatures.is_creature(context.active_object) and not skinning._jobs and not _pending and not auto_pose._sessions
     def invoke(self,context,event):
         if self.filepath:return self.execute(context)
         return ImportHelper.invoke(self,context,event)

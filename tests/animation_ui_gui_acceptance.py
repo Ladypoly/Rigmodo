@@ -1,50 +1,52 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
-"""Run in a separate factory-startup GUI process; exits without changing recovery files."""
+"""Render every named generator in a native sidebar in an isolated GUI process."""
 import bpy,addon_utils,importlib,sys,time,json,traceback,os
 from pathlib import Path
-args=sys.argv[sys.argv.index('--')+1:];out=Path(args[0]);out.mkdir(parents=True,exist_ok=True);view=args[1] if len(args)>1 else 'CREATE'
+out=Path(sys.argv[sys.argv.index('--')+1]);out.mkdir(parents=True,exist_ok=True)
 addon_utils.enable('bl_ext.user_default.local_character');a=importlib.import_module('bl_ext.user_default.local_character')
 bpy.context.preferences.use_preferences_save=False;bpy.context.preferences.view.show_splash=False
-rig=a.skeleton.create_armature(bpy.context);a.character_context.pin(bpy.context,rig,[])
-bpy.context.scene.render.fps=60
-s=bpy.context.scene.lc_settings;s.ui_step='MOTION';s.animation_view=view
-video=Path('R:/AI/Rigmodo/Jobs/Acceptance/full-avatar-walk/avatar-walk.mp4')
-if video.is_file():s.video_path=str(video)
-bpy.ops.mesh.primitive_cube_add(location=(4,4,0));other=bpy.context.object;bpy.context.scene.frame_set(17)
-state=dict(phase=0,started=time.monotonic())
+for obj in list(bpy.context.scene.objects):bpy.data.objects.remove(obj,do_unlink=True)
+s=bpy.context.scene.lc_settings;s.ui_step='MOTION';s.animation_view='CREATE';a.motion_sources.refresh(bpy.context)
+views=[('CREATE','KIMODO'),('CREATE','MOTIONBRICKS'),('CREATE','VIDEO'),('CREATE','UNIMATE'),('EDIT','VIDEO'),('BROWSE','VIDEO')];state=dict(index=0,wait=0,started=time.monotonic(),screens=[])
 def tick():
-    try:
-        if time.monotonic()-state['started']>35:raise AssertionError('UI timed out')
-        window=bpy.context.window_manager.windows[0];area=next(area for area in window.screen.areas if area.type=='VIEW_3D');region=next(r for r in area.regions if r.type=='WINDOW')
-        with bpy.context.temp_override(window=window,area=area,region=region):
-            if state['phase']==0:
-                area.spaces.active.show_region_ui=True;area.spaces.active.region_3d.view_distance=3.5
-                area.spaces.active.region_3d.view_location=(0,0,.9)
-                bpy.ops.wm.call_panel(name='LC_PT_main',keep_open=True);state.update(phase=1,wait=time.monotonic()+1)
-            elif time.monotonic()>state['wait'] and state['phase']==1:
-                bpy.ops.screen.screenshot(filepath=str(out/(view.lower()+'.png')))
-                state['sidebar']=area.spaces.active.show_region_ui;state['toolbar']=area.spaces.active.show_region_toolbar
-                state.update(area_count=len(window.screen.areas),original_pointer=area.as_pointer(),selected=list(bpy.context.selected_objects),active=bpy.context.view_layer.objects.active,frame=bpy.context.scene.frame_current)
-                assert bpy.ops.local_character.open_motion_editor()=={'FINISHED'}
-                editor=a.animation_ui._editors[window.as_pointer()]['area']
-                if editor.type=='CLIP_EDITOR':
-                    bpy.context.scene.frame_set(61);a.animation_ui.sync_video(bpy.context.scene)
-                    assert editor.spaces.active.clip_user.frame_current==round(editor.spaces.active.clip.fps)+1
-                state.update(phase=2,wait=time.monotonic()+1)
-            elif time.monotonic()>state['wait']:
-                editor_state=a.animation_ui._editors[window.as_pointer()];kind=editor_state['area'].type
-                bpy.ops.screen.screenshot(filepath=str(out/'editor.png'))
-                assert bpy.ops.local_character.close_motion_editor()=={'FINISHED'}
-                assert len(window.screen.areas)==state['area_count']
-                assert any(item.as_pointer()==state['original_pointer'] and item.type=='VIEW_3D' for item in window.screen.areas)
-                assert area.spaces.active.show_region_ui==state['sidebar'] and area.spaces.active.show_region_toolbar==state['toolbar']
-                assert list(bpy.context.selected_objects)==state['selected'] and bpy.context.view_layer.objects.active==state['active']
-                assert bpy.context.scene.frame_current==state['frame'] and not a.animation_ui._editors
-                assert a.animation_ui.sync_video not in bpy.app.handlers.frame_change_post
-                assert bpy.ops.local_character.open_motion_editor()=={'FINISHED'}
-                a.animation_ui.cleanup();assert len(window.screen.areas)==state['area_count'] and not a.animation_ui._editors
-                (out/'results.json').write_text(json.dumps(dict(passed=True,view=view,native_panel_rendered=True,motion_editor_opens_closes=True,original_viewport_retained=True,selection_and_frame_restored=True,overlay_handlers_removed=True,source_editor_type=kind,video_24_to_scene_60_sync=True,reload_cleanup_restores_layout=True),indent=2));os._exit(0)
-    except Exception:
-        (out/'error.txt').write_text(traceback.format_exc());os._exit(1)
-    return .2
+ try:
+  if time.monotonic()-state['started']>60:raise AssertionError('Sidebar GUI timed out')
+  window=bpy.context.window_manager.windows[0];area=next(a for a in window.screen.areas if a.type=='VIEW_3D');region=next(r for r in area.regions if r.type=='WINDOW');ui_region=next(r for r in area.regions if r.type=='UI')
+  if not state.get('shown'):
+   area.spaces.active.show_region_ui=True;state['shown']=True;return .5
+  if time.monotonic()<state['wait']:return .2
+  with bpy.context.temp_override(window=window,area=area,region=region):
+   if state.get('capture'):
+    label=state.pop('capture');bpy.ops.screen.screenshot(filepath=str(out/(label+'.png')));state['screens'].append(label)
+   if state['index']<len(views):
+    view,system=views[state['index']];s.animation_view=view;s.motion_system=system;area.spaces.active.show_region_ui=True;ui_region.active_panel_category='Rigmodo';area.tag_redraw()
+    state.update(index=state['index']+1,capture=view.lower()+'-'+system.lower(),wait=time.monotonic()+.8)
+   else:
+    assert not bpy.context.scene.objects and not hasattr(a.animation_ui,'_editors') and not hasattr(bpy.types,'LC_OT_motion_editor')
+    assert ui_region.active_panel_category=='Rigmodo'
+    # Validate RNA/operator references even inside collapsed sections.
+    class Layout:
+     enabled=True;scale_y=1.;use_property_split=False
+     def row(self,**kw):return self
+     def column(self,**kw):return self
+     def grid_flow(self,**kw):return self
+     def box(self):return self
+     def panel(self,*args,**kw):return self,self
+     def label(self,**kw):pass
+     def separator(self,**kw):pass
+     def menu(self,*args,**kw):pass
+     def template_list(self,*args,**kw):pass
+     def prop(self,data,key,**kw):assert key in data.bl_rna.properties,key
+     def prop_search(self,data,key,target,collection,**kw):assert key in data.bl_rna.properties and hasattr(target,collection)
+     def operator(self,name,**kw):getattr(getattr(bpy.ops,name.split('.')[0]),name.split('.')[1]).get_rna_type();return type('Props',(),{})()
+    for view,system in views:s.animation_view=view;s.motion_system=system;a.ui.draw(Layout(),bpy.context)
+    rig=a.skeleton.create_armature(bpy.context);s.pose_source_rig=rig;a.character_context.pin(bpy.context,rig,[])
+    for view,system in views:
+     s.animation_view=view;s.motion_system=system;s.motion_use_keyframes=True;a.ui.draw(Layout(),bpy.context)
+    bpy.ops.object.mode_set(mode='POSE');s.animation_view='CREATE';s.motion_system='MOTIONBRICKS';a.ui.draw(Layout(),bpy.context);bpy.ops.object.mode_set(mode='OBJECT')
+    for step in ('RIG','SKIN'):s.ui_step=step;a.ui.draw(Layout(),bpy.context)
+    report=dict(passed=True,native_sidebar=True,named_systems=['Kimodo','MotionBricks','Video to Motion','UniMate'],no_avatar_required_for_panel=True,all_stage_draws=True,advanced_rna_references=True,no_custom_editor=True,screens=state['screens'])
+    (out/'results.json').write_text(json.dumps(report,indent=2),encoding='utf-8');os._exit(0)
+ except Exception:
+  (out/'error.txt').write_text(traceback.format_exc(),encoding='utf-8');os._exit(1)
+ return .2
 bpy.app.timers.register(tick,first_interval=1)

@@ -99,7 +99,7 @@ assert len(addon.motion_keyframes.data(rig)['poses'])==1
 
 ui_ctx=SimpleNamespace(mode='OBJECT',active_object=rig,area=SimpleNamespace(type='VIEW_3D'),
     region=SimpleNamespace(type='UI',active_panel_category='Rigmodo'),scene=bpy.context.scene)
-bpy.context.scene.lc_settings.ui_step='MOTION';assert ip.LC_FH_image_pose.poll_drop(ui_ctx)
+bpy.context.scene.lc_settings.ui_step='MOTION';bpy.context.scene.lc_settings.animation_view='EDIT';assert ip.LC_FH_image_pose.poll_drop(ui_ctx)
 ui_ctx.region.active_panel_category='Item';assert not ip.LC_FH_image_pose.poll_drop(ui_ctx)
 ui_ctx.region.active_panel_category='Rigmodo';ui_ctx.region.type='WINDOW';assert not ip.LC_FH_image_pose.poll_drop(ui_ctx)
 ui_ctx.region.type='UI';bpy.context.scene.lc_settings.ui_step='SKIN';assert not ip.LC_FH_image_pose.poll_drop(ui_ctx)

@@ -35,10 +35,11 @@ def controls_changed(self,context):
 def refresh(context,key=None):
     state=context.window_manager.lc_motion_library
     if key is None and state.entries and 0<=state.index<len(state.entries):key=state.entries[state.index].key
+    selected={item.key for item in state.entries if item.source_selected}
     state.entries.clear()
     for record in sorted(motion_store.catalog(root(context))['clips'],key=lambda c:(c['family'].casefold(),c['name'].casefold())):
         item=state.entries.add();item.key=record['id'];item.name=record['name'];item.family=record['family'];item.source=record['source']
-        item.duration=record['duration'];item.loop=record['loop'];item.favorite=record.get('favorite',False);item.tags=record.get('tags','')
+        item.duration=record['duration'];item.loop=record['loop'];item.favorite=record.get('favorite',False);item.tags=record.get('tags','');item.source_selected=item.key in selected
     state.index=next((i for i,item in enumerate(state.entries) if item.key==key),0);controls_changed(state,context)
 
 
@@ -110,7 +111,7 @@ def start_job(context,kind,files=(),mixamo=False):
 
 class LC_LibraryItem(PropertyGroup):
     key:StringProperty();name:StringProperty();family:StringProperty();source:StringProperty();tags:StringProperty()
-    duration:FloatProperty();loop:BoolProperty();favorite:BoolProperty()
+    duration:FloatProperty();loop:BoolProperty();favorite:BoolProperty();source_selected:BoolProperty(name='Use motion')
 
 
 class LC_LibraryState(PropertyGroup):
@@ -169,15 +170,14 @@ class LC_PT_motion_assets(Panel):
     def poll(cls,context):return context.space_data.type=='FILE_BROWSER' and context.space_data.browse_mode=='ASSETS'
     def draw(self,context):
         layout=self.layout;state=context.window_manager.lc_motion_library
-        layout.prop(state,'target',text='Character')
         key=motion_assets.selected_key(context,root(context))
         if key:
-            row=layout.row();row.enabled=bool(state.target) and not skinning._jobs
-            row.operator('local_character.motion_library',text='Apply / Adjust',icon='ACTION')
-            row=layout.row(align=True);row.enabled=bool(state.target) and not skinning._jobs
-            row.operator('local_character.preview_library_motion',text='Preview',icon='PLAY')
-            row.operator('local_character.stop_library_preview',text='',icon='SNAP_FACE_CENTER')
-            layout.label(text='Use Apply / Adjust for the full clip.',icon='INFO')
+            from . import motion_sources
+            row=layout.row();row.enabled=not motion_sources.busy()
+            row.operator('local_character.use_motion_assets',text='Use for retargeting',icon='ACTION')
+            row=layout.row(align=True);row.enabled=not motion_sources.busy()
+            row.operator('local_character.preview_source_motion',text='Preview source',icon='PLAY')
+            row.operator('local_character.stop_source_preview',text='',icon='PAUSE')
         else:layout.label(text='Select a Rigmodo motion asset.',icon='INFO')
         column=layout.column(align=True);column.enabled=not skinning._jobs
         column.operator('local_character.import_library_motions',text='Import Files',icon='IMPORT')
@@ -317,6 +317,9 @@ class LC_OT_library_finish(Operator):
     def execute(self,context):
         try:
             folder=Path(context.scene.lc_settings.library_job);result=json.loads((folder/'results.json').read_text());refresh(context)
+            if result.get('added'):
+                from . import motion_sources
+                motion_sources.refresh(context,result['added'])
             for area in context.screen.areas if context.screen else []:
                 if area.type=='FILE_BROWSER' and area.ui_type=='ASSETS':
                     with context.temp_override(area=area):bpy.ops.asset.library_refresh()
@@ -343,10 +346,11 @@ CLASSES=(LC_LibraryItem,LC_LibraryState,LC_OT_open_motion_assets,LC_PT_motion_as
 
 def draw_asset_header(self,context):
     if context.space_data.browse_mode!='ASSETS' or not motion_assets.selected_key(context,root(context)):return
-    row=self.layout.row(align=True);row.enabled=not skinning._jobs
-    row.operator('local_character.motion_library',text='Apply Motion',icon='ACTION')
-    row.operator('local_character.preview_library_motion',text='',icon='PLAY')
-    row.operator('local_character.stop_library_preview',text='',icon='SNAP_FACE_CENTER')
+    from . import motion_sources
+    row=self.layout.row(align=True);row.enabled=not motion_sources.busy()
+    row.operator('local_character.use_motion_assets',text='Use for retargeting',icon='ACTION')
+    row.operator('local_character.preview_source_motion',text='',icon='PLAY')
+    row.operator('local_character.stop_source_preview',text='',icon='PAUSE')
 
 
 def register():

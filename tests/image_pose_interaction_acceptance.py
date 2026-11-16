@@ -18,7 +18,7 @@ rig=addon.skeleton.create_armature(bpy.context,1.75,25);rig.name='ImagePose_Inte
 rig.animation_data_create();action=bpy.data.actions.new('Existing Animation');rig.animation_data.action=action
 rig.pose.bones['Spine'].keyframe_insert(data_path='rotation_quaternion',frame=1)
 bpy.context.view_layer.update()
-scene=bpy.context.scene;scene.lc_settings.ui_step='MOTION'
+scene=bpy.context.scene;scene.lc_settings.ui_step='MOTION';bpy.context.scene.lc_settings.animation_view='EDIT'
 window=bpy.context.window;area=next(a for a in window.screen.areas if a.type=='VIEW_3D')
 area.spaces.active.show_region_ui=True
 region=next(r for r in area.regions if r.type=='UI')
@@ -100,7 +100,7 @@ def run():
             assert diff(snapshot(),state['applied'])<1e-6
             bpy.ops.object.mode_set(mode='OBJECT');rows.append('kimodo_timeline_keyframes')
             if neural:finish();return None
-            bpy.context.scene.lc_settings.ui_step='MOTION'
+            bpy.context.scene.lc_settings.ui_step='MOTION';bpy.context.scene.lc_settings.animation_view='EDIT'
             native_drop();bpy.context.scene.frame_set(2);state['stale']=snapshot();state['phase']=4
         elif phase==4 and ip._pending is None:
             assert 'changed during inference' in bpy.context.scene.lc_settings.image_pose_status

@@ -126,25 +126,17 @@ class LC_OT_pose_editor(Operator):
         return {'FINISHED'}
 
 def draw(layout,context):
-    from . import character_context,animation_ui
+    from . import animation_ui,motion_sources
     s=context.scene.lc_settings;layout.use_property_split=False
-    box=layout.box();row=box.row(align=True);row.enabled=not skinning._jobs
-    row.label(text='Character',icon='OUTLINER_OB_ARMATURE');row.operator('local_character.preferences',text='',icon='PREFERENCES')
-    row=box.row();row.enabled=not skinning._jobs;row.prop(s,'character',text='')
-    row=box.row(align=True);row.enabled=not skinning._jobs;row.operator('local_character.use_character_selection',text='Use Selection')
-    if s.character_pinned:
-        row=box.row(align=True);row.label(text='Character pinned',icon='PINNED')
-        row.operator('local_character.release_character',text='',icon='X')
+    row=layout.row(align=True);row.prop(s,'ui_step',expand=True);row.operator('local_character.preferences',text='',icon='PREFERENCES')
+    processing_visuals.draw_panel(layout,context)
+    if s.ui_step=='MOTION':animation_ui.draw(layout,context);return
+    box=layout.box();row=box.row(align=True);row.enabled=not motion_sources.busy();row.prop(s,'character',text='Character')
+    row=box.row(align=True);row.enabled=not motion_sources.busy();row.operator('local_character.use_character_selection',text='Use selected')
+    if s.character_pinned:row.operator('local_character.release_character',text='',icon='UNPINNED')
     try:rig,meshes=scope(context)
     except ValueError as exc:message(layout,str(exc),icon='INFO');return
-    if rig:box.label(text=('Rig ready · '+('Skin ready' if any(o.vertex_groups for o in meshes) else 'No skin weights')),icon='ARMATURE_DATA')
-    layout.row(align=True).prop(s,'ui_step',expand=True)
-    processing_visuals.draw_panel(layout,context)
-    if context.window and context.window.as_pointer() in animation_ui._editors:
-        layout.operator('local_character.close_motion_editor',text='Finish Editing',icon='CHECKMARK')
-    if s.ui_step=='MOTION' and context.mode=='OBJECT':
-        animation_ui.draw(layout,context,rig,animation_ui.creature_character(context,rig));return
-    draw_stage(layout,context)
+    body=layout.column();body.enabled=not motion_sources.busy();draw_stage(body,context)
 
 
 def draw_stage(layout,context):
@@ -355,6 +347,7 @@ def draw_preferences(layout,context,prefs):
     box.label(text='Capture ready' if ready else 'Capture setup needed',icon='CHECKMARK' if ready else 'INFO')
     row=box.row(align=True);row.operator('local_character.setup_video_capture',text='Install Capture');row.operator('local_character.setup_video_capture',text='Verify').verify_only=True
     box.operator('local_character.check_comfy')
+    box.operator('local_character.release_comfy_memory')
     header,body=box.panel('lc_comfy_workflows',default_closed=True);header.label(text='Video workflows')
     if body:
         for key in ('comfy_model','comfy_clip','comfy_vae','comfy_audio_vae','comfy_workflow','comfy_output_node','comfy_bindings','comfy_shot_rules'):body.prop(prefs,key)

@@ -34,7 +34,7 @@ for obj in bpy.context.selected_objects:
     obj.select_set(False)
 rig.select_set(True)
 bpy.context.view_layer.objects.active = rig
-bpy.context.scene.lc_settings.ui_step = 'MOTION'
+bpy.context.scene.lc_settings.ui_step = 'MOTION';bpy.context.scene.lc_settings.animation_view='EDIT'
 bpy.context.view_layer.update()
 before = addon.auto_pose.channel_snapshot(rig)
 counts = (len(bpy.data.objects), len(bpy.data.armatures), len(bpy.data.meshes), len(bpy.data.actions))

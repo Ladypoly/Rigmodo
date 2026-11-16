@@ -166,11 +166,8 @@ def main(folder):
     request['duration']=min(request['duration'],source['duration']-request.get('start',0))
     if request['duration']<.1:raise ValueError('Choose a video interval spanning at least two frames')
     os.environ['PATH']=str(Path(request['ffmpeg']).parent)+os.pathsep+os.environ.get('PATH','')
-    if request['kind']=='comfy':
-        from comfy_video import Client
-        client=Client(request['comfy_url']);queue,_=client.queued_ids()
-        if queue.get('queue_running') or queue.get('queue_pending'):raise ValueError('Video generated and saved; ComfyUI is busy. Retry capture from the saved video when GPU memory is available')
-        client.request('/free',{'unload_models':True,'free_memory':True})
+    from comfy_video import release_job
+    release_job(folder)
     identity=dict(video_sha256=file_hash(video),start=request.get('start',0),duration=request['duration'],camera=request.get('camera_mode','static'),adapter=3,models=file_hash(Path(request['models'])/'rigmodo-checkpoints.json') if (Path(request['models'])/'rigmodo-checkpoints.json').exists() else file_hash(Path(__file__).with_name('video_capture_lock.json')))
     key=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest();cache=folder.parent/'CaptureCache'/key;cache.mkdir(parents=True,exist_ok=True)
     if (cache/'output.npz').exists() and (cache/'metrics.json').exists():
@@ -197,3 +194,7 @@ if __name__=='__main__':
     try:main(folder)
     except Exception as exc:
         traceback.print_exc();atomic(folder/'status.json',dict(schema_version=1,status='failed',error=str(exc)));raise
+
+    finally:
+        from comfy_video import release_job
+        release_job(folder)

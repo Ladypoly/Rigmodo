@@ -14,7 +14,7 @@ else:
     addon_utils.enable(name,default_set=True);addon=importlib.import_module(name)
 configuration,ui,placement,skinning,landmarks,workflow=(getattr(addon,n) for n in ('configuration','ui','placement','skinning','landmarks','workflow'))
 output=Path(sys.argv[sys.argv.index('--')+1]);output.mkdir(parents=True,exist_ok=True)
-s=bpy.context.scene.lc_settings;prefs=configuration.preferences(bpy.context);assert prefs
+s=bpy.context.scene.lc_settings;s.motion_system='KIMODO';prefs=configuration.preferences(bpy.context);assert prefs
 s.skin_beams=7;assert configuration.settings(bpy.context).skin_beams==7
 prefs.skin_beams=8;s.skin_beams=3
 assert configuration.settings(bpy.context).skin_beams==8 and workflow.options(configuration.settings(bpy.context))['skin_beams']==8
@@ -23,6 +23,8 @@ class Layout:
     def row(self,**kwargs):return self
     def column(self,**kwargs):return self
     def box(self):return self
+    def grid_flow(self,**kwargs):return self
+    def template_list(self,*args,**kwargs):pass
     def separator(self):pass
     def label(self,**kwargs):self.records.append(('label',kwargs.get('text','')))
     def prop(self,data,key,**kwargs):assert hasattr(data,key),key;self.records.append(('prop',key))

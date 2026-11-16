@@ -45,40 +45,85 @@ class Client:
         if prompt in ids:self.request('/queue',{'delete':[prompt]});return 'Removed queued Rigmodo job'
         if any(entry[1]==prompt for entry in q.get('queue_running',[])):return 'Video generation is finishing externally; its result will be ignored'
         return 'Cancelled'
+    def find_prompt(self,data):
+        if data.get('prompt_id'):return data['prompt_id']
+        if not data.get('client_id'):return None
+        q=self.request('/queue',timeout=2)
+        records=q.get('queue_running',[])+q.get('queue_pending',[])
+        records += [record.get('prompt',[]) for record in self.request('/history?max_items=100',timeout=2).values()]
+        for entry in reversed(records):
+            if len(entry)>3 and entry[3].get('client_id')==data['client_id']:return entry[1]
+        return None
+
+    def release_models(self,prompt=None,client_id=None):
+        def queue():return self.request('/queue',timeout=2)
+        def busy(q):return bool(q.get('queue_running') or q.get('queue_pending'))
+        if busy(queue()):return dict(released=False,reason='ComfyUI is busy')
+        if prompt:
+            history=self.request('/history?max_items=1',timeout=2)
+            if not history or next(reversed(history))!=prompt:return dict(released=False,reason='Another client owns the latest cache')
+            record=history[prompt];entry=record.get('prompt',[])
+            if client_id and (len(entry)<4 or entry[3].get('client_id')!=client_id):return dict(released=False,reason='ComfyUI client ownership differs')
+        if busy(queue()):return dict(released=False,reason='ComfyUI is busy')
+        self.request('/free',dict(unload_models=True,free_memory=True),timeout=2)
+        return dict(released=True,reason='Idle models released; the next generation reloads them')
+
     def run(self,graph,folder,progress,client_id,output_node=''):
         self.validate(graph)
         while True:
             q,_=self.queued_ids()
             if not q.get('queue_running') and not q.get('queue_pending'):break
             progress('Waiting for ComfyUI');time.sleep(1)
-        submitted=self.request('/prompt',{'prompt':graph,'client_id':client_id})
-        if 'prompt_id' not in submitted:raise ValueError('ComfyUI rejected the workflow: '+str(submitted.get('node_errors',submitted.get('error','Unknown error'))))
-        prompt=submitted['prompt_id'];(folder/'comfy.json').write_text(json.dumps(dict(prompt_id=prompt,url=self.url)))
-        started=time.monotonic()
-        while time.monotonic()-started<7200:
-            record=self.request('/history/'+urllib.parse.quote(prompt)).get(prompt)
-            if record:
-                status=record.get('status',{})
-                if status.get('status_str')=='error':
-                    (folder/'comfy-history.json').write_text(json.dumps(record))
-                    raise ValueError('ComfyUI workflow failed; inspect the saved job history')
-                outputs=[]
-                for key,node in record.get('outputs',{}).items():
-                    if output_node and str(key)!=str(output_node):continue
-                    for value in node.values():
-                        if isinstance(value,list):outputs.extend(item for item in value if isinstance(item,dict) and str(item.get('filename','')).lower().endswith(('.mp4','.mov','.webm','.mkv','.avi')))
-                if outputs:
-                    (folder/'comfy-history.json').write_text(json.dumps(record))
-                    if len(outputs)!=1:raise ValueError('Workflow returned multiple videos; set its output node in Extension Settings')
-                    output=outputs[0];name=Path(output['filename']).name;destination=folder/('generated'+Path(name).suffix)
-                    query=urllib.parse.urlencode({k:output[k] for k in ('filename','subfolder','type') if k in output})
-                    with urllib.request.urlopen(self.url+'/view?'+query,timeout=60) as response,destination.open('wb') as stream:
-                        import shutil
-                        shutil.copyfileobj(response,stream)
-                    return destination
-                if status.get('completed'):raise ValueError('Workflow completed without a video output; choose a SaveVideo output node')
-            progress('Generating reference video');time.sleep(1)
-        raise ValueError('Video generation exceeded the two-hour job limit; inspect ComfyUI before retrying')
+        metadata=folder/'comfy.json'
+        metadata.write_text(json.dumps(dict(url=self.url,client_id=client_id)))
+        try:
+            submitted=self.request('/prompt',{'prompt':graph,'client_id':client_id})
+            if 'prompt_id' not in submitted:raise ValueError('ComfyUI rejected the workflow: '+str(submitted.get('node_errors',submitted.get('error','Unknown error'))))
+            prompt=submitted['prompt_id'];metadata.write_text(json.dumps(dict(prompt_id=prompt,url=self.url,client_id=client_id)))
+            started=time.monotonic()
+            while time.monotonic()-started<7200:
+                record=self.request('/history/'+urllib.parse.quote(prompt)).get(prompt)
+                if record:
+                    status=record.get('status',{})
+                    if status.get('status_str')=='error':
+                        (folder/'comfy-history.json').write_text(json.dumps(record))
+                        raise ValueError('ComfyUI workflow failed; inspect the saved job history')
+                    outputs=[]
+                    for key,node in record.get('outputs',{}).items():
+                        if output_node and str(key)!=str(output_node):continue
+                        for value in node.values():
+                            if isinstance(value,list):outputs.extend(item for item in value if isinstance(item,dict) and str(item.get('filename','')).lower().endswith(('.mp4','.mov','.webm','.mkv','.avi')))
+                    if outputs:
+                        (folder/'comfy-history.json').write_text(json.dumps(record))
+                        if len(outputs)!=1:raise ValueError('Workflow returned multiple videos; set its output node in Extension Settings')
+                        output=outputs[0];name=Path(output['filename']).name;destination=folder/('generated'+Path(name).suffix)
+                        query=urllib.parse.urlencode({k:output[k] for k in ('filename','subfolder','type') if k in output})
+                        with urllib.request.urlopen(self.url+'/view?'+query,timeout=60) as response,destination.open('wb') as stream:
+                            import shutil
+                            shutil.copyfileobj(response,stream)
+                        return destination
+                    if status.get('completed'):raise ValueError('Workflow completed without a video output; choose a SaveVideo output node')
+                progress('Generating reference video');time.sleep(1)
+            raise ValueError('Video generation exceeded the two-hour job limit; inspect ComfyUI before retrying')
+        finally:release_job(folder)
+
+
+def release_job(folder):
+    """Only release the cache of this job's most recent completed prompt."""
+    import os
+    results=[]
+    for directory in (Path(folder),Path(folder)/'bridge'):
+        metadata=directory/'comfy.json';record=directory/'comfy-memory.json'
+        if not metadata.is_file():continue
+        try:
+            data=json.loads(metadata.read_text());previous=json.loads(record.read_text()) if record.is_file() else {}
+            client=Client(data['url']);prompt=client.find_prompt(data)
+            if not prompt:results.append(dict(released=False,reason='No owned ComfyUI prompt found'));continue
+            if previous.get('released') and previous.get('prompt_id')==prompt:results.append(previous);continue
+            result=client.release_models(prompt,data.get('client_id'));result['prompt_id']=prompt
+            temporary=record.with_name(record.name+'.'+uuid.uuid4().hex);temporary.write_text(json.dumps(result));os.replace(temporary,record);results.append(result)
+        except (ValueError,OSError,KeyError,TypeError) as exc:results.append(dict(released=False,reason=str(exc)))
+    return results
 
 
 def bind(graph,bindings,values):

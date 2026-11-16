@@ -132,19 +132,23 @@ def record_options(context,folder):
     if not state.ui_motion_pipeline:return
     from . import configuration
     folder=Path(folder);request=json.loads((folder/'request.json').read_text())
-    if state.create_loop and request.get('keyframe_inputs'):
+    if state.create_loop:validate_key_loop(folder,request,state.motion_in_place)
+    request['ui_pipeline']=dict(motion_in_place=state.motion_in_place,create_loop=state.create_loop,motion_contacts=state.motion_contacts,ground_height=state.ground_height,keep_copies=configuration.settings(context).keep_motion_copies)
+    motion_store.atomic(folder/'request.json',request)
+    if (folder/'request.sha256').exists():(folder/'request.sha256').write_text(motion_jobs.sha(folder/'request.json'),encoding='utf-8')
+
+
+def validate_key_loop(folder,request,in_place):
+    if request.get('keyframe_inputs'):
         from mathutils import Quaternion,Vector
         keys=motion_jobs.check_inputs(folder,request);period=(keys['frames']-1)*keys['scene_fps']/30
         if abs(period-round(period))>1e-4:raise ValueError('For a keyed loop, choose a duration aligned to whole scene frames')
         first,last=keys['poses'][0],keys['poses'][-1]
         if abs(first['frame']-keys['start_frame'])<1e-4 and abs(last['frame']-keys['start_frame']-period)<1e-4:
             for name,a in first['basis'].items():
-                if name=='Root' and not state.motion_in_place:continue
+                if name=='Root' and not in_place:continue
                 b=last['basis'][name]
                 if (Vector(a['location'])-Vector(b['location'])).length>.005 or abs(Quaternion(a['rotation']).dot(Quaternion(b['rotation'])))<.999 or (Vector(a['scale'])-Vector(b['scale'])).length>.001:raise ValueError('First and last pose keys conflict with Loop. Match the endpoint poses or create a one-shot')
-    request['ui_pipeline']=dict(motion_in_place=state.motion_in_place,create_loop=state.create_loop,motion_contacts=state.motion_contacts,ground_height=state.ground_height,keep_copies=configuration.settings(context).keep_motion_copies)
-    motion_store.atomic(folder/'request.json',request)
-    if (folder/'request.sha256').exists():(folder/'request.sha256').write_text(motion_jobs.sha(folder/'request.json'),encoding='utf-8')
 
 
 def adopt_generated(context,folder,request,collection,rig,meshes,action):

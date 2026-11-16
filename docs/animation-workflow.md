@@ -1,63 +1,66 @@
-# Rigmodo animation workflow — 0.18.0
+# Rigmodo animation workflow — 0.19.0
 
-Open **Rigmodo** in the 3D View header or sidebar. Select the character and click **Use Selection**. This pins its rig and mesh scope, so selecting a floor, light, or another object does not redirect an animation job.
+Open the normal **Rigmodo** tab in Blender’s 3D View sidebar (`N`). The main steps are **Rig · Skin · Motion**. Motion contains **Create · Retarget · Library**. Provider installation, paths, sampling defaults and recovery controls live in **Extension Settings** (the cog).
 
-The main steps are **Rig · Skin · Animate**. Animate contains **Create · Browse · Edit**. Provider paths, model setup, ComfyUI profiles and recovery tools stay in Extension Settings. Existing rigging, skinning, image posing, key poses, creature generation and the native motion library remain available.
+## Create reusable motions
 
-## Create
+Choose a clearly named system:
 
-- **Description → 3D motion:** Kimodo on an accepted Rigmodo humanoid, or UniMate on a creature. Ordinary timeline pose keys can guide humanoid generation. The result is applied to the original character; keeping separate review copies is an optional preference.
-- **Description → Video to motion:** send a configured API workflow to an already running ComfyUI, retrieve its exact video output, then capture, retarget and finish an Action. Use a disk reference image or **Use Character Image**. The latter renders in a disposable scene without adding cameras or floors to the character scene.
-- **Video:** choose a continuous full-body humanoid clip, its start time and duration. GEM-X runs in a separate local environment. Capture creates a reusable skeleton and contact confidence independently of the target avatar.
-- **Pose keys:** insert ordinary keys and generate transitions with MotionBricks. Artist anchors and their timeline start are retained. Loop endpoint poses must agree; incompatible anchors produce a clear error.
-- **Animation:** select a source rig and Action, or an FBX, BVH, GLB, glTF or Blender file. Files import in an isolated Blender process with automatic scripts disabled. Multi-animation files go through the motion library so the artist can choose the clip.
+| Tab | Input | Needs a scene rig? |
+| --- | --- | --- |
+| Kimodo | Text, optionally timeline pose keys | Only for pose guidance |
+| MotionBricks | Two or more ordinary timeline pose keys | A pose rig; use **New pose rig** if needed |
+| Video to Motion | Existing videos, or a configured ComfyUI video workflow | No |
+| UniMate | Creature skeleton and a short text prompt | The creature skeleton |
 
-Use **Loop** for cycles and leave it disabled for attacks, deaths and other one-shots. **In place** removes net horizontal travel while retaining vertical movement and body sway. Generation uses physical timestamps rather than assuming the scene runs at 30 fps. The H3 profile displays its actual output duration.
+**Generate to library** / **Capture to library** saves reusable motions, thumbnails and native Action assets under `R:\AI\MotionLibrary\Rigmodo`. Creation does not apply an Action to a target avatar. Kimodo and video capture work in an empty scene. Local generation and capture run in owned child processes; inference models are not loaded into the interactive Blender process.
 
-## Edit and automatic foot contacts
+For MotionBricks or guided Kimodo, choose **Use selected** or create a pose rig, click **Edit pose keys**, pose bones and insert normal Blender keys in the active Action, then **Finish pose editing**. Kimodo uses Timeline Start plus Seconds. MotionBricks uses the keyed interval and supports sparse guides 0.5–2 seconds apart. Source Actions remain unchanged. The saved motion starts at time zero, so a guide authored at frame 100 is reusable on other timelines. Exact artist anchors survive source finishing. Conflicting first/last keyed poses are rejected before generating a loop.
 
-**Open Motion Editor** creates a focused 3D View plus source-video or animation editor. Its header offers **Finish Editing**; invoking it through the interface also supports Escape. Closing restores the previous selection, mode and frame and joins only the area Rigmodo created. The rig, Action and intentional edits remain. Cyan viewport points mark the estimated heel and forefoot.
+UniMate infers facing and joint labels from names and rest geometry. Review ambiguous anatomy; the facing override is under Advanced. The source preserves inferred anatomical labels for creature reuse. The released model supports 15–60 samples at 30 Hz and 5–71 joints including virtual end tips. Creature clips need a matching supported skeleton.
 
-Bone mapping recognizes common game-rig names and supports explicit saved role overrides. Hierarchy/geometry suggestions require review; the proposed assignments are visible before acceptance. Different central spine counts are interpolated along the spine. Rest bones, weights and proportions remain fixed. Constraints, drivers and unsupported mirrored/nonuniform scale are rejected with preparation instructions.
+### Video batches and ComfyUI
 
-Automatic contacts combine learned probabilities, sole clearance, foot speed and interval continuity. The solver aligns one estimated floor, applies bounded pelvis correction and two-bone leg IK, and retains jump flight. It works on flat ground; world Z=0 is the default, with a ground-height override. In-place clips retain their treadmill-style foot travel. Explicit planted intervals can lock a chosen support point instead.
+In **Video to Motion → Video files**, choose a single video or **Batch capture videos…**. Whole-video capture accepts up to 60 seconds per file, with at most 200 files in one batch. Turn off **Capture whole video** for a selected interval. Clips process sequentially; failed files are reported without discarding completed clips. Identical captured results are reused. Each capture process exits between files, releasing its GPU allocations.
 
-Expand **Contact correction** to inspect intervals and mark a range as **Planted**, **Sliding** or **Airborne**. Later overlapping overrides take priority. Reset overrides when needed, then run **Correct Foot Contacts** to create another Action. Use **Heel at Cursor** and **Forefoot at Cursor** to calibrate the markers for unusual shoes. Unreachable contacts are reported; inspect them rather than assuming the ankle height measures sole clearance.
+**Video to Motion → ComfyUI** generates a reference video, then captures it to the library. Use an image from disk, or render the selected character into a disposable reference scene. An avatar is optional. Configure the existing local ComfyUI endpoint and either its built-in H3 profile or a custom API-format workflow in Settings. Bind inputs with JSON such as `{"prompt":"12.text","image":"20.image","output_prefix":"90.filename_prefix"}`; specify the output node when a workflow returns several videos. Existing ComfyUI checkpoints are reused in place.
 
-## Loops
+Captured motion and raw provider output remain in the job folder under `R:\AI\Rigmodo\Jobs`. Creation and capture failures do not require retargeting again; finished library motions are independent of the generator and original video. Completed batch clips survive cancellation. Use Refresh if a cancelled batch added clips before stopping.
 
-Loop finishing bakes an editable copy, preserves intended root travel, matches boundary channels and runs contacts over three neighboring cycles before extracting the middle period. Loop diagnostics record position, rotation and velocity disagreement. Clips with a significant residual seam are flagged. A duplicate endpoint is stored while playback uses the existing period metadata.
+## Retarget to one or many characters
 
-Video loops offer three advanced methods:
+1. In **Retarget**, search and tick source motions. With no boxes ticked, the highlighted row is the active source. **Preview source** uses a disposable skeleton; Stop removes it and restores selection, frame, preview range and playback intent.
+2. Choose a **Character**, or enable **Use all selected characters** to apply each source to each selected rig. Selecting bound meshes also identifies their rigs.
+3. Choose source playback, Loop, or Play once; optionally enable In place. Click **Retarget motions**. Each target gets its own editable Actions; source clips, rest bones, proportions, meshes and weights remain intact.
 
-1. **Use whole clip:** finish the selected interval in 3D.
-2. **Find repeated cycle:** conservatively compare captured pose, orientation and velocity to choose a repeat. If no convincing cycle exists, request manual trimming or a different method.
-3. **Generate closing bridge:** experimental ComfyUI H3 first/last image guidance connecting the clip's end to its beginning. The original video is retained. This does not use the handoff's unlicensed SPEED interpolation model.
+**Motion adjustments** contains speed, mirror and humanoid arm spacing. Trim is available for a single source; a multi-source batch uses complete clips. **Retarget options** contains automatic foot placement, ground height, reviewed bone mapping and contact overrides. The current-animation selector supports previewing, deleting and saving created Actions. An existing scene rig/Action can be retargeted under **Scene animation / image pose**.
 
-New generated H3 loops use matching first/last reference images. Matching images alone are not considered proof of a valid 3D loop. The 24 fps H3 profile uses 17k+5 frames in its trained 124–362 frame range; for example 124 frames are 5.17 seconds, not exactly 5 seconds.
+Mapping recognizes common game-rig names and supports saved role overrides and different spine counts. Geometry/hierarchy suggestions require review. Unsupported constraints, drivers and mirrored/nonuniform scales produce preparation instructions rather than modifying the rig.
 
-## Library and storage
+Automatic contacts combine learned confidence, sole clearance, speed and interval continuity. The solver uses bounded pelvis correction and leg IK while retaining jump flight. It assumes a flat floor, default world Z=0. Set ground height and heel/forefoot markers for unusual shoes. Explicit Planted, Sliding or Airborne intervals override automatic choices; later overlapping intervals take priority. Review reported unreachable contacts. Terrain and moving platforms are not supported.
 
-**Browse** opens Blender's Asset Browser. The Animation menu provides **Save to Library**, **New Empty Animation**, and **Delete Animation**; the search control chooses an existing compatible Action. Shared or linked Actions are protected from deletion. Library previews restore the previous animation and remove only their owned temporary Actions.
+## Library and native Asset Browser
 
-Library files retain contact samples and capture provenance, so reapplying motion does not require the model or source video. Jobs and raw provider output remain under `R:\AI\Rigmodo\Jobs`; reusable motion remains under `R:\AI\MotionLibrary\Rigmodo`. Capture weights are under `R:\AI\Models\Rigmodo\gemx`, with a separate runtime at `R:\AI\Rigmodo\Runtime\VideoCapture`. Existing ComfyUI weights are reused in place.
+**Library** provides the searchable source list, batch file/folder import, saving a character Action, and **Open Asset Browser**. Imported FBX/BVH/GLB/glTF/Blender animations become reusable sources. Native thumbnails/catalogs remain supported. Select one or multiple Rigmodo assets and click **Use for retargeting**; then choose targets in the Rigmodo sidebar. Asset previews require no target avatar.
 
-Capture results are cached by source content and capture configuration. **Retry Last Video Job** resumes an unchanged character's failed job and reuses an already generated video. It does not regenerate that video because capture failed. Queue cancellation removes only Rigmodo's known queued prompt IDs. A shared running ComfyUI step is allowed to finish externally; downstream capture/application is cancelled. No global interrupt is sent and another client's queue is never cleared.
+The existing library is preserved. **Get CC0 Motions** and the optional user-authenticated Mixamo downloader remain in the Asset Browser’s Rigmodo panel. Authenticated Mixamo downloading is unverified. See [the library guide](local-motion-library.md) for provenance and license details.
 
-## Setup and tested boundaries
+## Loops and one-shots
 
-In Extension Settings, install or verify **Video Capture**, set FFmpeg/FFprobe, and check ComfyUI at the configured endpoint (default `http://127.0.0.1:8288`). Setup pins source, dependencies and checkpoint hashes. The capture environment does not replace existing rigging, skinning or generation runtimes. Custom ComfyUI workflows must be exported in API format; bind fields using JSON such as `{"prompt":"12.text","image":"20.image","output_prefix":"90.filename_prefix"}` and specify the output node when several videos are returned.
+Leave Loop disabled for attacks and deaths. Loop finishing creates editable periodic motion while preserving intended Root travel. Retargeting can keep the source’s playback intent or override it. Contact finishing solves neighboring cycles before extracting the middle period; diagnostics retain position, rotation and velocity disagreement. Repeating playback omits the duplicate endpoint.
 
-The real two-second avatar capture produced 60 samples at 30 Hz in 26.44 seconds on an RTX 4090, with a 3.42 GiB peak PyTorch allocation. This excludes other applications, driver/ONNX allocation and startup time. A CPU MediaPipe Lite detection baseline processed the 48 source frames in 0.61 seconds, but that was a 33-point detection benchmark, not an equivalent temporal world-motion/contact pipeline. GEM-X is the current quality-path default; no 16 GB hardware claim follows from this test.
+Video loops offer whole-clip finishing, conservative repeated-cycle selection, or an experimental ComfyUI closing bridge under Advanced. Failed cycle detection requests trimming rather than inventing a repeat. A 3D endpoint match cannot guarantee visually perfect motion, contacts or collision-free transitions. Generated closing-bridge sampling remains untested.
 
-Actual video capture, ComfyUI upload/output tracking using a lightweight workflow, library persistence, contacts, looping, exact artist keys and Blender FBX round trips passed. An isolated Unity 6000.3.21f1 project created a valid Humanoid Avatar and played the captured clip as both Generic and Humanoid; the Generic loop seam was zero in that fixture. H3 graph/model schemas were checked against the real server; new H3 sampling and a generated closing bridge were not run in this delivery.
+## GPU memory and shared ComfyUI
 
-Initial capture supports one visible humanoid in a continuous shot. Likely cuts and ambiguous multiple people are rejected; crop or trim the intended subject before retrying. Diagnostics flag missing tracks and low-confidence ranges. Terrain, moving platforms, control-rig solving, multiple-person selection and creature video capture are not included. GEM-X temporal body capture does not imply reliable animated fingers. Review inferred depth, motion fidelity and contacts on each character.
+Rigmodo’s native/capture workers exit after their stage or on cancellation. For ComfyUI, completed owned prompts request idle model unloading before capture, including closing-bridge jobs and failure paths. Queue state and latest prompt/client ownership are checked before cleanup. Cancellation removes only known queued Rigmodo prompts; an already running shared-server job finishes externally and its result is ignored. No global interrupt or queue clearing is sent. A watcher releases the owned cache once it is idle. Because ComfyUI offers no atomic queue-and-free API, a concurrent submission can still race the final check.
 
-H3 is an optional externally configured workflow, not a bundled open-source dependency. Its [published community license](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/LICENSE) excludes the EU and other territories from its ordinary grant and describes separate licensing. Private use does not remove those terms. A different permitted ComfyUI workflow can use the same connector.
+**Extension Settings → Video / ComfyUI → Release ComfyUI GPU Memory** manually unloads idle server models and skips busy queues. Other clients’ automatic cleanup ownership is respected. Models load again for the next generation.
 
-## RetopoFlow findings
+## Validation and limits
 
-The installed RetopoFlow 3.4.11 uses a modal 3D View session, custom GPU/UI drawing, input routing and explicit Blender UI restoration. Its CookieCutter framework draws an HTML/CSS-like document through viewport callbacks; it is not a new Python-registered native Blender editor type. See the [entry lifecycle](https://github.com/CGCookie/retopoflow/blob/master/retopoflow/retopoflow.py) and [UI implementation](https://github.com/CGCookie/retopoflow/blob/master/retopoflow/rf/rf_ui.py).
+Real inference passed for unconditioned Kimodo, ordinary-key MotionBricks, video batches without an avatar, ComfyUI video-to-library capture, and UniMate on the saved original Scorpion. MotionBricks guide quaternion error was zero in the acceptance fixture. Two differently sized humanoids received separate Actions, periodic contacts and loop finishing. Native sidebar renders cover all four systems and all three motion stages; rig/skin/landmark/weight UI regression checks passed. Existing Action assets and character/keyed-motion regression checks passed.
 
-Rigmodo follows the useful interaction pattern: a small everyday interface and focused editing sessions, with a clear exit and restored context. Existing landmark/hand editors, native weight painting and Auto Pose remain the rig/skin/pose tools; Motion Editor adds source preview, contacts and sole overlays. This delivery reuses native Blender widgets, timeline and Asset Browser instead of importing RetopoFlow's full UI/undo framework or its non-code assets. A larger custom rig/skin tool palette remains a separate interface iteration.
+The RTX 4090 is the tested GPU. Earlier GEM-X measurements reached 3.42 GiB of PyTorch allocation for the short fixture, excluding other applications, ONNX/driver allocation and startup. No 16 GB hardware guarantee follows from this. H3 graph schemas and the real ComfyUI API path are checked; new H3 sampling was not run. H3 remains an optional externally licensed workflow; see its [published model license](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/LICENSE).
+
+Video capture currently supports one visible humanoid in a continuous shot. Cuts and ambiguous multiple people are rejected; crop or trim first. Creature video capture, terrain contacts, control-rig solving and reliable animated fingers are outside the current capture scope. Review inferred depth, anatomy, collisions and contact quality before export.

@@ -253,7 +253,12 @@ def poll(folder):
     job = _jobs.get(str(folder))
     if not job: return json.loads((folder / 'status.json').read_text())
     code = job['process'].poll()
-    if code is None: return {'status': 'running', 'elapsed_seconds': time.monotonic() - job['started'], 'phase':job.get('phase','Running locally')}
+    if code is None:
+        phase=job.get('phase','Running locally');path=folder/'progress.json'
+        try:
+            if path.is_file() and path.stat().st_size<16384:phase=str(json.loads(path.read_text()).get('phase',phase))[:240]
+        except (OSError,ValueError):pass
+        return dict(status='running',elapsed_seconds=time.monotonic()-job['started'],phase=phase)
     job['log'].close()
     if job.get('job_object'):job['job_object'].close()
     _jobs.pop(str(folder))
